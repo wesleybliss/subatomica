@@ -29,6 +29,15 @@ export async function getUserTeams(userId: string): Promise<Team[]> {
 
 }
 
+export async function getTeamById(teamId: string): Promise<Team> {
+    
+    return db.select()
+        .from(teams)
+        .where(eq(teams.id, teamId))
+        .first()
+    
+}
+
 export async function ensureUserHasTeam(userId: string): Promise<Team> {
     
     const userTeams = await getUserTeams(userId)
