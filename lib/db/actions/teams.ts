@@ -1,10 +1,12 @@
 'use server'
 import { eq } from 'drizzle-orm'
-import { db as tursoDatabase } from '@/lib/db/turso/client.turso'
-import { teams } from '@/lib/db/turso/schema.turso'
+import * as client from '@/lib/db/client'
+import * as schema from '@/lib/db/schema'
 import { Team } from '@/types'
+import { SQLiteTableWithColumns } from 'drizzle-orm/sqlite-core'
 
-const db = tursoDatabase!
+const db = client.db!
+const teams = schema.teams as SQLiteTableWithColumns<any>
 
 export async function createTeam(name: string, userId: string): Promise<Team> {
     
