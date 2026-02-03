@@ -1,7 +1,7 @@
 'use server'
 import { and, eq } from 'drizzle-orm'
 import { db } from '../client'
-import { getCurrentUser } from './shared'
+import { getCurrentUser } from '@/lib/db/actions/shared'
 import { projects } from '../schema'
 import { Project } from '@/types'
 

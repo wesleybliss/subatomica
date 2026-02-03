@@ -1,8 +1,10 @@
 'use server'
 import { eq } from 'drizzle-orm'
-import { db } from '@/lib/db/client'
-import { teams } from '@/lib/db/schema'
+import { db as tursoDatabase } from '@/lib/db/turso/client.turso'
+import { teams } from '@/lib/db/turso/schema.turso'
 import { Team } from '@/types'
+
+const db = tursoDatabase!
 
 export async function createTeam(name: string, userId: string): Promise<Team> {
     

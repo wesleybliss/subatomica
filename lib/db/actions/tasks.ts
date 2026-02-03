@@ -1,8 +1,10 @@
 import { or, and, desc, eq, like } from 'drizzle-orm'
-import { db } from '../client'
-import { getCurrentUser } from './shared'
-import { tasks } from '../schema'
+import { db as tursoDatabase } from '@/lib/db/turso/client.turso'
+import { getCurrentUser } from '@/lib/db/actions/shared'
+import { tasks } from '@/lib/db/turso/schema.turso'
 import { Task } from '@/types'
+
+const db = tursoDatabase!
 
 export async function createTask(data: { title: string; content: string; projectId: string }): Promise<Task> {
     
