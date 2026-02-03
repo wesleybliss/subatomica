@@ -1,9 +1,11 @@
 'use server'
+import * as client from '@/lib/db/client'
 import { and, eq } from 'drizzle-orm'
-import { db } from '../client'
 import { getCurrentUser } from '@/lib/db/actions/shared'
 import { projects } from '../schema'
 import { Project } from '@/types'
+
+const db: any = client.db!
 
 export async function createProject(name: string, teamId: string): Promise<Project> {
     

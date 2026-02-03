@@ -1,15 +1,13 @@
 'use server'
-import { eq } from 'drizzle-orm'
 import * as client from '@/lib/db/client'
-import * as schema from '@/lib/db/schema'
+import { teams } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 import { Team } from '@/types'
-import { SQLiteTableWithColumns } from 'drizzle-orm/sqlite-core'
 
-const db = client.db!
-const teams = schema.teams as SQLiteTableWithColumns<any>
+const db: any = client.db!
 
 export async function createTeam(name: string, userId: string): Promise<Team> {
-    
+
     const [team] = await db
         .insert(teams)
         .values({
@@ -17,18 +15,18 @@ export async function createTeam(name: string, userId: string): Promise<Team> {
             userId,
         })
         .returning()
-    
+
     return team
-    
+
 }
 
 export async function getUserTeams(userId: string): Promise<Team[]> {
-    
+
     return db.select()
         .from(teams)
         .where(eq(teams.userId, userId))
         .orderBy(teams.name)
-    
+
 }
 
 export async function ensureUserHasTeam(userId: string): Promise<Team> {

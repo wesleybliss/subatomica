@@ -31,17 +31,13 @@ export const tursoTable = <
         id: text('id')
             .primaryKey()
             .$defaultFn(() => uuidv7()),
-        
         updatedAt: timestamp('updatedAt')
             .notNull()
             .$defaultFn(() => new Date().toISOString()),
-        
         createdAt: timestamp('createdAt')
             .notNull()
             .$defaultFn(() => new Date().toISOString()),
-        
         deletedAt: timestamp('deletedAt'),
-        
         ...columns,
     })
     

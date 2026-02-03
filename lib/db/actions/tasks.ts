@@ -1,10 +1,11 @@
+'use server'
+import * as client from '@/lib/db/client'
 import { or, and, desc, eq, like } from 'drizzle-orm'
-import { db as tursoDatabase } from '@/lib/db/turso/client.turso'
 import { getCurrentUser } from '@/lib/db/actions/shared'
 import { tasks } from '@/lib/db/turso/schema.turso'
 import { Task } from '@/types'
 
-const db = tursoDatabase!
+const db: any = client.db!
 
 export async function createTask(data: { title: string; content: string; projectId: string }): Promise<Task> {
     
