@@ -37,19 +37,15 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
     
     if (!activeTeam) return null
     return (
-        <SidebarMenu>
+        <SidebarMenu className="w-full">
             <SidebarMenuItem>
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        className={[
-                            'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground',
-                            'flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm',
-                        ].join(' ')}>
+                        className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground
+                            flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm">
                         <div
-                            className={[
-                                'bg-sidebar-primary text-sidebar-primary-foreground',
-                                'flex aspect-square size-7 items-center justify-center rounded-lg',
-                            ].join(' ')}>
+                            className="bg-sidebar-primary text-sidebar-primary-foreground
+                                flex aspect-square size-7 items-center justify-center rounded-lg">
                             <div className="size-7 bg-primary rounded flex items-center justify-center">
                                 <span className="text-xs font-bold text-primary-foreground">
                                     {activeTeamInitial}
@@ -57,16 +53,14 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                             </div>
                         </div>
                         <div
-                            className={[
-                                'group-data-[state=collapsed]/sidebar:hidden grid flex-1',
-                                'text-left text-sm leading-tight',
-                            ].join(' ')}>
+                            className="group-data-[state=collapsed]/sidebar:hidden grid flex-1
+                                text-left text-sm leading-tight">
                             <span className="truncate font-medium">
                                 {teamName}
                             </span>
                         </div>
                         <ChevronsUpDown
-                            className="ml-auto group-data-[state=collapsed]/sidebar:hidden" />
+                            className="ml-auto group-data-[state=collapsed]/sidebar:hidden size-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"

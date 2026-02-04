@@ -61,7 +61,7 @@ const TeamsAccountMenu = ({ collapsed = false }: TeamsAccountMenuProps) => {
                             <span className="text-sm font-medium text-sidebar-foreground">
                                 {activeTeamName}
                             </span>
-                            <ChevronDown size={18} className="text-muted-foreground" />
+                            <ChevronDown className="text-muted-foreground" />
                         </>
                     )}
                 </DropdownMenuTrigger>
