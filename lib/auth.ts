@@ -78,5 +78,9 @@ export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL.replace(/\/$/, ''),
     trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(','),
 })
-
+console.log('wtf', {
+    secret: process.env.BETTER_AUTH_SECRET,
+    baseURL: process.env.BETTER_AUTH_URL.replace(/\/$/, ''),
+    trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(','),
+})
 export type Session = typeof auth.$Infer.Session
