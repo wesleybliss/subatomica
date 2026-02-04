@@ -7,7 +7,7 @@ import useDebugToolsViewModel from './DebugToolsViewModel'
 
 const DebugTools = () => {
     const vm = useDebugToolsViewModel()
-
+    
     return (
         <div
             className={cn('fixed bottom-17 bg-slate-100', {
@@ -16,17 +16,15 @@ const DebugTools = () => {
                 'w-[35%] min-h-100 max-h-200 right-3 overflow-auto opacity-90 rounded':
                     vm.debugToolsMode === DebugToolsMode.panel,
                 'max-w-[90%] max-h-[90%] inset-x-5 overflow-auto rounded': vm.debugToolsMode === DebugToolsMode.full,
-            })}
-        >
+            })}>
             {vm.debugToolsMode === DebugToolsMode.minified && (
                 <header
                     className="mx-auto px-4 py-3 cursor-pointer"
-                    onClick={() => vm.setDebugToolsMode(DebugToolsMode.panel)}
-                >
+                    onClick={() => vm.setDebugToolsMode(DebugToolsMode.panel)}>
                     <Bug />
                 </header>
             )}
-
+            
             {vm.debugToolsMode !== DebugToolsMode.minified && (
                 <>
                     <header className="w-full flex items-center justify-end gap-2 px-2 py-1 bg-slate-200">
@@ -34,8 +32,7 @@ const DebugTools = () => {
                             variant="ghost"
                             size="icon"
                             className="size-8 opacity-30 hover:opacity-100"
-                            onClick={() => vm.setDebugToolsMode(DebugToolsMode.minified)}
-                        >
+                            onClick={() => vm.setDebugToolsMode(DebugToolsMode.minified)}>
                             <Minimize2 />
                         </Button>
                         <Button
@@ -48,12 +45,11 @@ const DebugTools = () => {
                                         ? DebugToolsMode.full
                                         : DebugToolsMode.panel,
                                 )
-                            }
-                        >
+                            }>
                             <Expand />
                         </Button>
                     </header>
-
+                    
                     <div className="px-4 py-3">
                         <div>
                             TODO

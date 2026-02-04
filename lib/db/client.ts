@@ -6,7 +6,10 @@ import { LibSQLDatabase } from 'drizzle-orm/libsql'
 if (!process.env.DATABASE_DIALECT)
     throw new Error('client.ts: DATABASE_DIALECT env variable is not set')
 
-export const db: LibSQLDatabase<Record<string, never>> | NeonHttpDatabase<Record<string, never>> = process.env.DATABASE_DIALECT === 'turso'
+type SupportedDatabase = LibSQLDatabase<Record<string, never>>
+    | NeonHttpDatabase<Record<string, never>>
+
+export const db: SupportedDatabase = process.env.DATABASE_DIALECT === 'turso'
     ? tursoDatabase!
     : postgresDatabase!
 

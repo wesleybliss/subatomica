@@ -1,5 +1,5 @@
 import { postgresTable as table, postgresTimestamp as timestamp } from '@/lib/db/shared'
-import { boolean, integer, text, uuid, varchar } from 'drizzle-orm/pg-core'
+import { boolean, index, integer, text, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core'
 
 // Users table (managed by BetterAuth)
 export const users = table('users', {
@@ -18,7 +18,9 @@ export const sessions = table('sessions', {
     userId: uuid('userId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
-})
+}, table => ({
+    userIdIndex: index('sessions_user_id_idx').on(table.userId),
+}))
 
 // Accounts table (managed by BetterAuth)
 export const accounts = table('accounts', {
@@ -37,14 +39,19 @@ export const accounts = table('accounts', {
     
     // Non-auth fields
     // @todo
-})
+}, table => ({
+    providerAccountUnique: uniqueIndex('accounts_provider_account_unique').on(table.providerId, table.accountId),
+    userProviderUnique: uniqueIndex('accounts_user_provider_unique').on(table.userId, table.providerId),
+}))
 
 // Verifications table (managed by BetterAuth)
 export const verifications = table('verifications', {
     identifier: text('identifier').notNull(),
     value: text('value').notNull(),
     expiresAt: timestamp('expiresAt').notNull(),
-})
+}, table => ({
+    identifierValueUnique: uniqueIndex('verifications_identifier_value_unique').on(table.identifier, table.value),
+}))
 
 // Teams table
 export const teams = table('teams', {
@@ -52,7 +59,10 @@ export const teams = table('teams', {
     ownerId: uuid('ownerId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
-})
+}, table => ({
+    ownerNameUnique: uniqueIndex('teams_owner_name_unique').on(table.ownerId, table.name),
+    ownerIdIndex: index('teams_owner_id_idx').on(table.ownerId),
+}))
 
 // Team Members table (for collaboration)
 export const teamMembers = table('team_members', {
@@ -63,7 +73,11 @@ export const teamMembers = table('team_members', {
         .notNull()
         .references(() => teams.id, { onDelete: 'cascade' }),
     role: text('role').notNull().default('member'), // 'owner', 'admin', 'member'
-})
+}, table => ({
+    teamUserUnique: uniqueIndex('team_members_team_user_unique').on(table.teamId, table.userId),
+    teamIdIndex: index('team_members_team_id_idx').on(table.teamId),
+    userIdIndex: index('team_members_user_id_idx').on(table.userId),
+}))
 
 // Projects table
 export const projects = table('projects', {
@@ -75,7 +89,12 @@ export const projects = table('projects', {
     ownerId: uuid('ownerId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
-})
+    isStarred: boolean('isStarred').notNull().default(false),
+}, table => ({
+    teamNameUnique: uniqueIndex('projects_team_name_unique').on(table.teamId, table.name),
+    teamIdIndex: index('projects_team_id_idx').on(table.teamId),
+    ownerIdIndex: index('projects_owner_id_idx').on(table.ownerId),
+}))
 
 // Tasks table
 export const tasks = table('tasks', {
@@ -89,11 +108,16 @@ export const tasks = table('tasks', {
     description: text('description').notNull().default(''),
     status: text('status').notNull().default('backlog'), // 'backlog', 'todo', 'in-progress', 'done'
     priority: text('priority').default('medium'), // 'low', 'medium', 'high', 'urgent'
-    dueDate: text('dueDate'), // ISO date string
+    dueDate: timestamp('dueDate'),
     assigneeId: uuid('assigneeId').references(() => users.id, { onDelete: 'set null' }),
     order: integer('order').notNull().default(0), // for lexicographical sorting in Kanban
     isStarred: boolean('isStarred').notNull().default(false),
-})
+}, table => ({
+    projectIdIndex: index('tasks_project_id_idx').on(table.projectId),
+    userIdIndex: index('tasks_user_id_idx').on(table.userId),
+    assigneeIdIndex: index('tasks_assignee_id_idx').on(table.assigneeId),
+    statusIndex: index('tasks_status_idx').on(table.status),
+}))
 
 // Comments table
 export const comments = table('comments', {
@@ -104,7 +128,10 @@ export const comments = table('comments', {
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
     content: text('content').notNull().default(''),
-})
+}, table => ({
+    taskIdIndex: index('comments_task_id_idx').on(table.taskId),
+    userIdIndex: index('comments_user_id_idx').on(table.userId),
+}))
 
 // Type exports
 export type UsersInsert = typeof users.$inferInsert

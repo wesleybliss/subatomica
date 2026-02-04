@@ -1,7 +1,6 @@
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
-import { getDefaultTeamId } from '@/lib/constants'
 import { getTeamByLastUpdated } from '@/lib/db/actions'
 
 export default async function DashboardPage() {

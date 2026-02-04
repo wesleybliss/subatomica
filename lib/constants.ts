@@ -1,4 +1,4 @@
-// @ts-expect-error
+// @ts-expect-error @todo add types
 import * as rwp from 'react-wire-persisted'
 import { Project, Task, Team } from '@/types'
 

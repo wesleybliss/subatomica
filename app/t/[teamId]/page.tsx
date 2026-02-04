@@ -13,7 +13,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
     let team
     let tasks
     let projects
-
+    
     try {
         ;[team, tasks, projects] = await Promise.all([
             getTeamById(teamId),
@@ -24,16 +24,15 @@ export default async function TeamPage({ params }: TeamPageProps) {
         console.error('TeamPage', error)
         return <div className="p-6">Unable to load team</div>
     }
-
+    
     if (!team)
         return <div className="p-6">Team not found</div>
-
+    
     return (
         <KanbanView
             teamId={teamId}
             teamName={team.name}
             initialTasks={tasks}
-            projects={projects}
-        />
+            projects={projects}/>
     )
 }

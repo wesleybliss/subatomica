@@ -24,24 +24,24 @@ const STATUSES: Array<{ id: TaskStatus; label: string; color: string }> = [
 export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBoardProps) {
     const [localTasks, setLocalTasks] = useState<Task[]>(tasks)
     const [isCreating, setIsCreating] = useState<string | null>(null)
-
+    
     useEffect(() => {
         setLocalTasks(tasks)
     }, [tasks])
-
+    
     const handleDrop = async (taskId: string, newStatus: TaskStatus, targetTaskId?: string) => {
         console.log('[v0] Drag drop:', { taskId, newStatus, targetTaskId })
-
+        
         const task = localTasks.find(t => t.id === taskId)
         if (!task) return
-
+        
         // Optimistic update
         const tasksInNewStatus = localTasks
             .filter(t => t.status === newStatus && t.id !== taskId)
             .sort((a, b) => a.order - b.order)
-
+        
         let newOrder: number
-
+        
         if (!targetTaskId) {
             // Drop at end
             const maxOrder = tasksInNewStatus.length > 0
@@ -53,7 +53,7 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
             const targetIndex = tasksInNewStatus.findIndex(t => t.id === targetTaskId)
             const prevTask = targetIndex > 0 ? tasksInNewStatus[targetIndex - 1] : null
             const nextTask = tasksInNewStatus[targetIndex]
-
+            
             if (prevTask && nextTask) {
                 // Calculate midpoint
                 newOrder = (prevTask.order + nextTask.order) / 2
@@ -65,13 +65,13 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
                 newOrder = 1000
             }
         }
-
+        
         setLocalTasks(prev =>
             prev.map(t =>
-                t.id === taskId ? { ...t, status: newStatus, order: newOrder } : t
-            )
+                t.id === taskId ? { ...t, status: newStatus, order: newOrder } : t,
+            ),
         )
-
+        
         // Update in database
         try {
             await updateTaskOrder(taskId, newStatus, newOrder)
@@ -82,10 +82,10 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
             setLocalTasks(tasks)
         }
     }
-
+    
     const handleCreateTask = async (status: TaskStatus) => {
         if (!projectId) return
-
+        
         setIsCreating(status)
         try {
             await createTask({
@@ -101,14 +101,14 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
             setIsCreating(null)
         }
     }
-
+    
     return (
         <div className="flex gap-4 h-full overflow-x-auto pb-4">
             {STATUSES.map(status => {
                 const statusTasks = localTasks
                     .filter(t => t.status === status.id)
                     .sort((a, b) => a.order - b.order)
-
+                
                 return (
                     <div key={status.id} className="flex-shrink-0 w-[320px]">
                         <div className="flex items-center justify-between mb-3">
@@ -126,18 +126,16 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
                                 size="sm"
                                 className="h-6 w-6 p-0"
                                 onClick={() => handleCreateTask(status.id)}
-                                disabled={isCreating === status.id}
-                            >
+                                disabled={isCreating === status.id}>
                                 <Plus className="w-3 h-3" />
                             </Button>
                         </div>
-
+                        
                         <KanbanColumn
                             status={status.id}
                             tasks={statusTasks}
                             onDrop={handleDrop}
-                            teamId={teamId}
-                        />
+                            teamId={teamId}/>
                     </div>
                 )
             })}

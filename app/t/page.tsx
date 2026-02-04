@@ -25,7 +25,7 @@ export default async function TeamsPage() {
                     ))}
                 </ul>
             </div>
-            
+        
         </div>
         
     )

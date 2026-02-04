@@ -12,9 +12,9 @@ export default async function TeamLayout({
 }) {
     const { teamId } = await params
     const team = await getTeamById(teamId)
-
+    
     if (!team) redirect('/')
-
+    
     return (
         <div className="flex h-screen overflow-hidden bg-background">
             <PrimarySidebar teamId={teamId} />

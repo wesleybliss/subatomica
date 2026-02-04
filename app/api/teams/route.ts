@@ -9,14 +9,14 @@ export async function GET() {
     try {
         const user = await getCurrentUser()
         const result = await getUserTeams(user.id)
-
+        
         return NextResponse.json(result)
     } catch (e) {
         log.e('teamsRoute', e)
-
+        
         return NextResponse.json(
             { error: 'Failed to fetch teams.' },
-            { status: 500 }
+            { status: 500 },
         )
     }
 }

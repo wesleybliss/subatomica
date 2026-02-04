@@ -15,17 +15,17 @@ interface KanbanViewProps {
 
 export function KanbanView({ teamId, teamName, initialTasks, projects }: KanbanViewProps) {
     const router = useRouter()
-    const [selectedProjectId, setSelectedProjectId] = useState(
-        projects[0]?.id ?? 'all'
+    const [selectedProjectId] = useState(
+        projects[0]?.id ?? 'all',
     )
-
+    
     const filteredTasks = useMemo(() => {
         if (selectedProjectId === 'all') return initialTasks
         return initialTasks.filter(task => task.projectId === selectedProjectId)
     }, [initialTasks, selectedProjectId])
-
+    
     const canCreateTask = selectedProjectId !== 'all'
-
+    
     return (
         <div className="flex h-full flex-col">
             <header className="flex items-center justify-between border-b border-border px-6 py-4">
@@ -37,11 +37,11 @@ export function KanbanView({ teamId, teamName, initialTasks, projects }: KanbanV
             </header>
             <div className="flex-1 overflow-hidden px-6 py-5">
                 {projects.length === 0 ? (
-                    <div className="flex flex-col gap-8 h-full items-center justify-center text-sm text-muted-foreground">
+                    <div className="flex flex-col gap-8 h-full items-center
+                        justify-center text-sm text-muted-foreground">
                         <div>Create a project to start tracking tasks.</div>
                         <div>
-                            <Button
-                            >
+                            <Button >
                                 <FolderPlus />
                                 Create Project
                             </Button>
@@ -52,8 +52,7 @@ export function KanbanView({ teamId, teamName, initialTasks, projects }: KanbanV
                         tasks={filteredTasks}
                         projectId={canCreateTask ? selectedProjectId : undefined}
                         teamId={teamId}
-                        onRefresh={() => router.refresh()}
-                    />
+                        onRefresh={() => router.refresh()}/>
                 )}
             </div>
         </div>

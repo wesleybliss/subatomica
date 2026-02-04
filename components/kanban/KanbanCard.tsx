@@ -1,5 +1,6 @@
 import { Flag } from 'lucide-react'
 import { KanbanTask } from './KanbanBoard'
+import { cn } from '@/lib/utils'
 
 interface KanbanCardProps {
     task: KanbanTask
@@ -9,13 +10,17 @@ interface KanbanCardProps {
 }
 
 export function KanbanCard({ task, selected, onToggle, onClick }: KanbanCardProps) {
+    
     return (
+        
         <div
-            className={`group relative bg-card border border-border rounded-lg p-4 cursor-pointer transition-all hover:border-primary/50 ${
-                selected ? 'border-primary ring-2 ring-primary/20' : ''
-            }`}
-            onClick={onClick}
-        >
+            className={cn(
+                'group relative bg-card border border-border',
+                'rounded-lg p-4 cursor-pointer transition-all hover:border-primary/50', {
+                    'border-primary ring-2 ring-primary/20': selected,
+                },
+            )}
+            onClick={onClick}>
             {/* Header with ID and Toggle */}
             <div className="flex items-start justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2">
@@ -29,21 +34,19 @@ export function KanbanCard({ task, selected, onToggle, onClick }: KanbanCardProp
                     }}
                     className={`w-10 h-5 rounded-full transition-colors ${
                         selected ? 'bg-primary' : 'bg-muted'
-                    }`}
-                >
+                    }`}>
                     <div
                         className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
                             selected ? 'translate-x-5' : 'translate-x-0.5'
-                        }`}
-                    />
+                        }`}/>
                 </button>
             </div>
-
+            
             {/* Title */}
             <h4 className="text-sm font-medium text-card-foreground mb-3 leading-snug">
                 {task.title}
             </h4>
-
+            
             {/* Footer with Assignee and Date */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">

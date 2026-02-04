@@ -2,7 +2,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type React from 'react'
 import './globals.css'
 import type { Metadata } from 'next'
-// @ts-expect-error
+// @ts-expect-error @todo add types
 import * as reactWirePersisted from 'react-wire-persisted'
 import DebugTools from '@/components/debug/DebugTools'
 import { NS } from '@/lib/constants'
@@ -21,6 +21,27 @@ export const metadata: Metadata = {
     },
 }
 
+type GoogleFontUrlDefinition = {
+    family: string
+    weightStart: number
+    weightEnd: number
+}
+
+const googleFontUrl = (definitions: GoogleFontUrlDefinition[]) => {
+    
+    const fonts = definitions
+        .map(it => `${it.family}:wght@${it.weightStart}..${it.weightEnd}`)
+        .join('&')
+    
+    return `https://fonts.googleapis.com/css2?family=${fonts}&display=swap`
+    
+}
+
+const fonts = googleFontUrl([
+    { family: 'Geist', weightStart: 100, weightEnd: 900 },
+    { family: 'Geist+Mono', weightStart: 100, weightEnd: 900 },
+])
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -34,12 +55,9 @@ export default function RootLayout({
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 
-                <link
-                    href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap"
-                    rel="stylesheet"
-                />
+                <link href={fonts} rel="stylesheet" />
             </head>
-            <body className={`font-sans antialiased`}>
+            <body className={'font-sans antialiased'}>
                 {children}
                 
                 {VERCEL_ANALYTICS_ENABLED && <Analytics />}

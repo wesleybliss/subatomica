@@ -5,6 +5,7 @@ import { getCurrentUser } from '@/lib/db/actions/shared'
 import { projects, tasks, teamMembers, teams } from '@/lib/db/schema'
 import { Task } from '@/types'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db: any = client.db!
 
 const getAccessibleTeamIds = (userId: string) => {
@@ -12,7 +13,7 @@ const getAccessibleTeamIds = (userId: string) => {
         .select({ teamId: teamMembers.teamId })
         .from(teamMembers)
         .where(eq(teamMembers.userId, userId))
-
+    
     return db
         .select({ id: teams.id })
         .from(teams)
@@ -24,14 +25,14 @@ const getAccessibleTeamIds = (userId: string) => {
 
 const getAccessibleProjectIds = (userId: string) => {
     const accessibleTeamIds = getAccessibleTeamIds(userId)
-
+    
     return db
         .select({ id: projects.id })
         .from(projects)
         .where(inArray(projects.teamId, accessibleTeamIds))
 }
 
-export async function createTask(data: { 
+export async function createTask(data: {
     title: string
     description?: string
     projectId: string
@@ -42,7 +43,7 @@ export async function createTask(data: {
 }): Promise<Task> {
     
     const user = await getCurrentUser()
-
+    
     const accessibleTeamIds = getAccessibleTeamIds(user.id)
     const [project] = await db
         .select({ id: projects.id })
@@ -52,7 +53,7 @@ export async function createTask(data: {
             inArray(projects.teamId, accessibleTeamIds),
         ))
         .limit(1)
-
+    
     if (!project)
         throw new Error('Unauthorized')
     
@@ -62,7 +63,7 @@ export async function createTask(data: {
         .from(tasks)
         .where(and(
             eq(tasks.projectId, data.projectId),
-            eq(tasks.status, data.status || 'backlog')
+            eq(tasks.status, data.status || 'backlog'),
         ))
         .orderBy(desc(tasks.order))
         .limit(1)
@@ -88,7 +89,7 @@ export async function createTask(data: {
     
 }
 
-export async function updateTask(taskId: string, data: { 
+export async function updateTask(taskId: string, data: {
     title?: string
     description?: string
     status?: string
@@ -120,7 +121,7 @@ export async function updateTask(taskId: string, data: {
 export async function updateTaskOrder(
     taskId: string,
     newStatus: string,
-    newOrder: number
+    newOrder: number,
 ): Promise<Task> {
     
     const user = await getCurrentUser()
@@ -203,6 +204,7 @@ export async function getTasksByTeam(teamId: string): Promise<Task[]> {
         ))
         .orderBy(tasks.order, desc(tasks.createdAt))
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return result.map((r: any) => r.task)
     
 }

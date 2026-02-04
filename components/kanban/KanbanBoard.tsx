@@ -34,7 +34,7 @@ const COLUMNS = [
 
 export function KanbanBoard({ tasks, onTaskClick, onTaskToggle }: KanbanBoardProps) {
     const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set())
-
+    
     const toggleCard = (taskId: string) => {
         const newSelected = new Set(selectedCards)
         if (newSelected.has(taskId)) {
@@ -45,7 +45,7 @@ export function KanbanBoard({ tasks, onTaskClick, onTaskToggle }: KanbanBoardPro
         setSelectedCards(newSelected)
         onTaskToggle?.(taskId, !selectedCards.has(taskId))
     }
-
+    
     // Group tasks by status
     const tasksByStatus = tasks.reduce((acc, task) => {
         if (!acc[task.status]) {
@@ -54,13 +54,13 @@ export function KanbanBoard({ tasks, onTaskClick, onTaskToggle }: KanbanBoardPro
         acc[task.status].push(task)
         return acc
     }, {} as Record<string, KanbanTask[]>)
-
+    
     // Update column counts
     const columnsWithCounts = COLUMNS.map(col => ({
         ...col,
         count: tasksByStatus[col.id]?.length || 0,
     }))
-
+    
     return (
         <div className="flex gap-4 h-full overflow-x-auto pb-4">
             {columnsWithCounts.map(column => (
@@ -71,8 +71,7 @@ export function KanbanBoard({ tasks, onTaskClick, onTaskToggle }: KanbanBoardPro
                             task={task}
                             selected={selectedCards.has(task.id)}
                             onToggle={() => toggleCard(task.id)}
-                            onClick={() => onTaskClick?.(task)}
-                        />
+                            onClick={() => onTaskClick?.(task)}/>
                     ))}
                 </KanbanColumn>
             ))}

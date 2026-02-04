@@ -38,7 +38,8 @@ export default async function WorkspaceSettingsPage({ params }: { params: Promis
                                 Manage account access and settings for this team.
                             </p>
                         </div>
-                        <div className="rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs text-neutral-500">
+                        <div className="rounded-full border border-neutral-200
+                           bg-white px-4 py-2 text-xs text-neutral-500">
                             Last updated today
                         </div>
                     </div>
@@ -55,9 +56,9 @@ export default async function WorkspaceSettingsPage({ params }: { params: Promis
                 </section>
                 
                 <section>TODO</section>
-                
-            </div>
             
+            </div>
+        
         </div>
         
     )

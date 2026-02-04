@@ -28,7 +28,7 @@ export default defineConfig({
     schema: process.env.DATABASE_DIALECT === 'turso'
         ? './lib/db/turso/schema.turso.ts'
         : './lib/db/postgres/schema.postgres.ts',
-    // @ts-ignore
+    // @ts-expect-error Supports multiple dialects
     dialect: process.env.DATABASE_DIALECT! as Dialect,
     dbCredentials,
 })

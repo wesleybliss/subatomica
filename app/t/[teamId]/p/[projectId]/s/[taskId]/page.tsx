@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { getProjectById, getTasksByProjectId, getTaskById } from '@/lib/constants'
+import { getProjectById, getTaskById } from '@/lib/constants'
 
 export default async function NotePage({
     params,
@@ -8,7 +8,7 @@ export default async function NotePage({
 }) {
     const { teamId, projectId, taskId } = await params
     const project = getProjectById(projectId)
-
+    
     if (!project)
         redirect(`/t/${teamId}`)
     
@@ -16,14 +16,17 @@ export default async function NotePage({
     
     if (!task)
         redirect(`/t/${teamId}/p/${projectId}`)
-
-    const tasks = getTasksByProjectId(projectId)
-
+    
     return (
+        
         <div className="flex flex-1 overflow-hidden">
+            
+            <h1>{task.title}</h1>
+            
             <div className="flex-1 overflow-hidden bg-white">
                 TODO: task detail
             </div>
+        
         </div>
     )
 }

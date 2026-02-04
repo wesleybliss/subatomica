@@ -5,20 +5,27 @@ import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 const PrimarySidebarHeader = ({ setSearchOpen }: { setSearchOpen: (item: boolean) => void }) => {
+    
     return (
+        
         <header className="p-4 flex items-center justify-between border-b border-neutral-700">
+            
             <div className="flex items-center gap-2">
-                <Image src="/logos/sub-atomica-high-resolution-logo-grayscale-transparent.png" alt="Sub Atomica" width={24} height={24} className="shrink-0" />
-
+                
+                <Image
+                    className="shrink-0"
+                    src="/logos/sub-atomica-high-resolution-logo-grayscale-transparent.png"
+                    alt="Sub Atomica"
+                    width={24}
+                    height={24} />
+                
                 <DropdownMenu>
                     <DropdownMenuTrigger
                         render={
                             <Button
                                 variant="ghost"
-                                className="font-medium text-neutral-100 hover:bg-neutral-700 hover:text-neutral-100"
-                            />
-                        }
-                    >
+                                className="font-medium text-neutral-100 hover:bg-neutral-700 hover:text-neutral-100"/>
+                        }>
                         Sub Atomica
                         <ChevronDown className="ml-1 h-4 w-4" />
                     </DropdownMenuTrigger>
@@ -33,8 +40,9 @@ const PrimarySidebarHeader = ({ setSearchOpen }: { setSearchOpen: (item: boolean
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+            
             </div>
-
+            
             <div className="flex items-center gap-1">
                 <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-neutral-700 hover:text-neutral-100">
                     <Edit className="h-4 w-4" />
@@ -43,13 +51,15 @@ const PrimarySidebarHeader = ({ setSearchOpen }: { setSearchOpen: (item: boolean
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 hover:bg-neutral-700 hover:text-neutral-100"
-                    onClick={() => setSearchOpen(true)}
-                >
+                    onClick={() => setSearchOpen(true)}>
                     <Search className="h-4 w-4" />
                 </Button>
             </div>
+        
         </header>
+        
     )
+    
 }
 
 export default PrimarySidebarHeader

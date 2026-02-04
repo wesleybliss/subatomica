@@ -20,9 +20,11 @@ export const tursoTable = <
     TTableName extends string,
     TColumnsMap extends TursoColumns
 >(
-    name: TTableName,
-    columns: TColumnsMap,
-) => {
+        name: TTableName,
+        columns: TColumnsMap,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        extraConfig?: (table: any) => Record<string, any>,
+    ) => {
     
     const { sqliteTable, text } = sqliteCore
     const timestamp = tursoTimestamp
@@ -39,7 +41,8 @@ export const tursoTable = <
             .$defaultFn(() => new Date().toISOString()),
         deletedAt: timestamp('deletedAt'),
         ...columns,
-    })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any, extraConfig as any)
     
 }
 
@@ -58,9 +61,11 @@ export const postgresTable = <
     TTableName extends string,
     TColumnsMap extends PostgresColumns
 >(
-    name: TTableName,
-    columns: TColumnsMap,
-) => {
+        name: TTableName,
+        columns: TColumnsMap,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        extraConfig?: (table: any) => Record<string, any>,
+    ) => {
     
     const { pgTable, uuid } = postgresCore
     const timestamp = postgresTimestamp
@@ -73,6 +78,7 @@ export const postgresTable = <
         createdAt: timestamp('createdAt').notNull().defaultNow(),
         deletedAt: timestamp('deletedAt'),
         ...columns,
-    })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any, extraConfig as any)
     
 }

@@ -51,20 +51,20 @@ export const auth = betterAuth({
         fields: timestampFields,
     },
     hooks: {
-        before: createAuthMiddleware(async (ctx) => {
+        before: createAuthMiddleware(async ctx => {
             if (ctx.path !== '/sign-up/email') return
-
+            
             const inviteCode = ctx.body?.inviteCode
-
+            
             console.log('raw body', ctx.body)
             console.log(inviteCode, '==?', process.env.INVITE_CODE, { res: inviteCode === process.env.INVITE_CODE })
-
+            
             if (!inviteCode || inviteCode !== process.env.INVITE_CODE)
                 throw new APIError('BAD_REQUEST', {
                     message: 'Invalid invite code',
                 })
         }),
-        after: createAuthMiddleware(async (ctx) => {
+        after: createAuthMiddleware(async ctx => {
             
             // Ensure user has a workspace after signup or signin
             if (ctx.path === '/sign-up/email' || ctx.path === '/sign-in/email') {

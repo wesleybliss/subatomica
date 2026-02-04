@@ -1,7 +1,5 @@
 import { createClient } from '@libsql/client'
 import { drizzle, LibSQLDatabase } from 'drizzle-orm/libsql'
-import { Team } from '@/types'
-import { teams } from '@/lib/db/schema'
 
 if (!process.env.DATABASE_URL)
     throw new Error('DATABASE_URL is not set')
@@ -19,20 +17,3 @@ export const db: LibSQLDatabase<Record<string, never>> | undefined = process.env
     : undefined
 
 export default db
-
-/*
-async function createTeam(name: string, userId: string): Promise<Team> {
-    
-    const fn = db!.insert(teams)
-    
-    const [team] = await db!
-        .insert(teams)
-        .values({
-            name,
-            userId,
-        })
-        .returning()
-    
-    return team
-    
-}*/

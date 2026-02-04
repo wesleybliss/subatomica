@@ -12,11 +12,11 @@ export default async function WorkspaceSettingsLayout({
 }) {
     const { teamId } = await params
     const team = await getTeamById(teamId)
-
+    
     if (!team) {
         redirect('/')
     }
-
+    
     return (
         <div className="flex h-screen overflow-hidden">
             <PrimarySidebar teamId={teamId} />

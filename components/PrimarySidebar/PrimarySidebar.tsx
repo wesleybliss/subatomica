@@ -1,12 +1,11 @@
 'use client'
-
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
     Search,
     Users,
     Eye,
-    FolderKanban,
+    /*FolderKanban,*/
     Code,
     Palette,
     TrendingUp,
@@ -17,7 +16,7 @@ import TeamsAccountMenu from '@/components/PrimarySidebar/TeamsAccountMenu'
 
 const PrimarySidebar = ({ teamId }: { teamId: string }) => {
     const pathname = usePathname()
-
+    
     const navItems = [
         { icon: Search, label: 'Search', href: `/t/${teamId}/search` },
         { icon: Users, label: 'Teams', href: `/t/${teamId}/teams` },
@@ -28,12 +27,13 @@ const PrimarySidebar = ({ teamId }: { teamId: string }) => {
         { icon: Settings, label: 'Settings', href: `/t/${teamId}/settings` },
         { icon: LayoutGrid, label: 'Kanban', href: `/t/${teamId}`, active: true },
     ]
-
+    
     return (
+        
         <div className="w-60 h-screen bg-sidebar border-r border-sidebar-border flex flex-col">
             {/* Header */}
             <TeamsAccountMenu />
-
+            
             {/* Navigation */}
             <nav className="flex-1 overflow-y-auto p-3">
                 <div className="space-y-1">
@@ -48,8 +48,7 @@ const PrimarySidebar = ({ teamId }: { teamId: string }) => {
                                     isActive
                                         ? 'bg-sidebar-accent text-sidebar-foreground font-medium'
                                         : 'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
-                                }`}
-                            >
+                                }`}>
                                 <Icon className="w-4 h-4 shrink-0" />
                                 <span>{item.label}</span>
                             </Link>

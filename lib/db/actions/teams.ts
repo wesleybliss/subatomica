@@ -6,11 +6,12 @@ import { Team } from '@/types'
 import { getCurrentUser } from '@/lib/db/actions/shared'
 import { User } from 'better-auth'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db: any = client.db!
 
 export async function createTeam(name: string, ownerId: string, tempUser?: User): Promise<Team> {
     const user = tempUser || await getCurrentUser()
-
+    
     if (ownerId !== user.id)
         throw new Error('Unauthorized')
     
@@ -21,7 +22,7 @@ export async function createTeam(name: string, ownerId: string, tempUser?: User)
             ownerId,
         })
         .returning()
-
+    
     await db
         .insert(teamMembers)
         .values({
@@ -29,22 +30,22 @@ export async function createTeam(name: string, ownerId: string, tempUser?: User)
             teamId: team.id,
             role: 'owner',
         })
-
+    
     return team
-
+    
 }
 
 export async function getUserTeams(userId: string, tempUser?: User): Promise<Team[]> {
     const user = tempUser || await getCurrentUser()
-
+    
     if (userId !== user.id)
         throw new Error('Unauthorized')
-
+    
     const memberTeamIds = db
         .select({ teamId: teamMembers.teamId })
         .from(teamMembers)
         .where(eq(teamMembers.userId, user.id))
-
+    
     return db.select()
         .from(teams)
         .where(or(
@@ -56,12 +57,12 @@ export async function getUserTeams(userId: string, tempUser?: User): Promise<Tea
 
 export async function getTeamById(teamId: string): Promise<Team> {
     const user = await getCurrentUser()
-
+    
     const memberTeamIds = db
         .select({ teamId: teamMembers.teamId })
         .from(teamMembers)
         .where(eq(teamMembers.userId, user.id))
-
+    
     const [team] = await db.select()
         .from(teams)
         .where(and(
@@ -72,18 +73,18 @@ export async function getTeamById(teamId: string): Promise<Team> {
             ),
         ))
         .limit(1)
-
+    
     return team
 }
 
 export async function getTeamByLastUpdated(): Promise<Team> {
     const user = await getCurrentUser()
-
+    
     const memberTeamIds = db
         .select({ teamId: teamMembers.teamId })
         .from(teamMembers)
         .where(eq(teamMembers.userId, user.id))
-
+    
     const [team] = await db.select()
         .from(teams)
         .where(or(
@@ -92,7 +93,7 @@ export async function getTeamByLastUpdated(): Promise<Team> {
         ))
         .orderBy(desc(teams.updatedAt))
         .limit(1)
-
+    
     return team
 }
 
