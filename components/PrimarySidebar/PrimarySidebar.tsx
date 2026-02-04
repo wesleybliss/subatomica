@@ -21,7 +21,6 @@ const PrimarySidebar = ({ teamId }: { teamId: string }) => {
         { icon: Search, label: 'Search', href: `/t/${teamId}/search` },
         { icon: Users, label: 'Teams', href: `/t/${teamId}/teams` },
         { icon: Eye, label: 'Views', href: `/t/${teamId}/views` },
-        { icon: Eye, label: 'Views', href: `/t/${teamId}/views-2` },
         { icon: Code, label: 'Engineering', href: `/t/${teamId}/engineering` },
         { icon: Palette, label: 'Design', href: `/t/${teamId}/design` },
         { icon: TrendingUp, label: 'Marketing', href: `/t/${teamId}/marketing` },
@@ -30,9 +29,9 @@ const PrimarySidebar = ({ teamId }: { teamId: string }) => {
     ]
 
     return (
-        <div className="w-[240px] h-screen bg-sidebar border-r border-sidebar-border flex flex-col">
+        <div className="w-60 h-screen bg-sidebar border-r border-sidebar-border flex flex-col">
             {/* Header */}
-            <div className="p-4 border-b border-sidebar-border">
+            <div className="p-4">
                 <button
                     type="button"
                     className="flex items-center gap-2 w-full text-left hover:bg-sidebar-accent rounded-lg p-2 transition-colors"

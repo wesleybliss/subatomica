@@ -10,11 +10,20 @@ interface TeamPageProps {
 export default async function TeamPage({ params }: TeamPageProps) {
     const { teamId } = await params
     
-    const [team, tasks, projects] = await Promise.all([
-        getTeamById(teamId),
-        getTasksByTeam(teamId),
-        getProjects(teamId),
-    ]).catch(e => console.error('TeamPage', e))
+    let team
+    let tasks
+    let projects
+
+    try {
+        ;[team, tasks, projects] = await Promise.all([
+            getTeamById(teamId),
+            getTasksByTeam(teamId),
+            getProjects(teamId),
+        ])
+    } catch (error) {
+        console.error('TeamPage', error)
+        return <div className="p-6">Unable to load team</div>
+    }
 
     if (!team)
         return <div className="p-6">Team not found</div>

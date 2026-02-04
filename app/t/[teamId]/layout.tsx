@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import type React from 'react'
 import PrimarySidebar from '@/components/PrimarySidebar/PrimarySidebar'
-import { getTeamById } from '@/lib/constants'
+import { getTeamById } from '@/lib/db/actions/teams'
 
 export default async function TeamLayout({
     children,
@@ -11,7 +11,7 @@ export default async function TeamLayout({
     params: Promise<{ teamId: string }>
 }) {
     const { teamId } = await params
-    const team = getTeamById(teamId)
+    const team = await getTeamById(teamId)
 
     if (!team) redirect('/')
 
