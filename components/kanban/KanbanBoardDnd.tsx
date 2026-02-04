@@ -1,12 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import { Task, TaskStatus } from '@/types'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Task, TaskLane, TaskStatus, TeamMemberProfile } from '@/types'
 import { KanbanColumn } from './KanbanColumnDnd'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { createTask, updateTaskOrder } from '@/lib/db/actions/tasks'
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
     type ColumnDropData,
     type TaskDropData,
@@ -17,19 +18,34 @@ import {
 
 export interface KanbanBoardProps {
     tasks: Task[]
+    lanes: TaskLane[]
     projectId?: string
     teamId?: string
+    teamMembers: TeamMemberProfile[]
     onRefresh?: () => void
+    queryKey?: ReadonlyArray<string | number | boolean | Record<string, unknown>>
 }
 
-const STATUSES: Array<{ id: TaskStatus; label: string; color: string }> = [
-    { id: 'backlog', label: 'Backlog', color: 'bg-muted' },
-    { id: 'todo', label: 'Todo', color: 'bg-blue-500/20' },
-    { id: 'in-progress', label: 'In Progress', color: 'bg-primary/20' },
-    { id: 'done', label: 'Done', color: 'bg-green-500/20' },
-]
+type UpdateTaskOrderInput = {
+    taskId: string
+    status: TaskStatus
+    order: number
+}
 
-export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBoardProps) {
+type CreateTaskInput = {
+    status: TaskStatus
+    tempId: string
+}
+
+export function KanbanBoardDnd({
+    tasks,
+    lanes,
+    projectId,
+    teamId,
+    teamMembers,
+    onRefresh,
+    queryKey,
+}: KanbanBoardProps) {
     const [localTasks, setLocalTasks] = useState<Task[]>(tasks)
     const [isCreating, setIsCreating] = useState<string | null>(null)
     const [dropIndicator, setDropIndicator] = useState<{
@@ -37,9 +53,98 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
         taskId?: string
     } | null>(null)
     const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null)
+    const queryClient = useQueryClient()
+    const activeQueryKey = useMemo(() => queryKey || ['tasks'], [queryKey])
     useEffect(() => {
         setLocalTasks(tasks)
     }, [tasks])
+    const updateTaskOrderMutation = useMutation<Task, Error, UpdateTaskOrderInput, { previousTasks?: Task[] }>({
+        mutationFn: async ({ taskId, status, order }: UpdateTaskOrderInput) => updateTaskOrder(taskId, status, order),
+        onMutate: async ({ taskId, status, order }: UpdateTaskOrderInput) => {
+            await queryClient.cancelQueries({ queryKey: activeQueryKey })
+            const previousTasks = queryClient.getQueryData<Task[]>(activeQueryKey)
+            if (previousTasks) {
+                const nextTasks = previousTasks.map((task: Task) =>
+                    task.id === taskId
+                        ? { ...task, status, order }
+                        : task,
+                )
+                queryClient.setQueryData(activeQueryKey, nextTasks)
+            }
+            setLocalTasks(prev => prev.map((task: Task) =>
+                task.id === taskId
+                    ? { ...task, status, order }
+                    : task,
+            ))
+            return { previousTasks }
+        },
+        onError: (_error: Error, _vars: UpdateTaskOrderInput, context: { previousTasks?: Task[] } | undefined) => {
+            if (context?.previousTasks)
+                queryClient.setQueryData(activeQueryKey, context.previousTasks)
+        },
+        onSettled: () => {
+            onRefresh?.()
+        },
+    })
+    const createTaskMutation = useMutation<
+        { created: Task; tempId: string },
+        Error,
+        CreateTaskInput,
+        { previousTasks?: Task[] }
+    >({
+        mutationFn: async ({ status, tempId }: CreateTaskInput) => {
+            const created = await createTask({
+                title: 'New Task',
+                description: '',
+                projectId: projectId as string,
+                status,
+            })
+            return { created, tempId }
+        },
+        onMutate: async ({ status, tempId }: CreateTaskInput) => {
+            if (!projectId)
+                return { previousTasks: undefined }
+            await queryClient.cancelQueries({ queryKey: activeQueryKey })
+            const previousTasks = queryClient.getQueryData<Task[]>(activeQueryKey)
+            const nextOrder = Math.max(
+                0,
+                ...localTasks
+                    .filter(task => task.status === status)
+                    .map(task => task.order),
+            ) + 1000
+            const optimisticTask: Task = {
+                id: tempId,
+                title: 'New Task',
+                description: '',
+                projectId,
+                userId: 'pending',
+                status,
+                priority: null,
+                dueDate: null,
+                assigneeId: null,
+                order: nextOrder,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                deletedAt: null,
+            }
+            const nextTasks = [...(previousTasks || localTasks), optimisticTask]
+            queryClient.setQueryData(activeQueryKey, nextTasks)
+            setLocalTasks(nextTasks)
+            return { previousTasks }
+        },
+        onError: (_error: Error, _vars: CreateTaskInput, context: { previousTasks?: Task[] } | undefined) => {
+            if (context?.previousTasks)
+                queryClient.setQueryData(activeQueryKey, context.previousTasks)
+        },
+        onSuccess: ({ created, tempId }: { created: Task; tempId: string }) => {
+            queryClient.setQueryData(activeQueryKey, (current?: Task[]) =>
+                (current || []).map((task: Task) => (task.id === tempId ? created : task)),
+            )
+        },
+        onSettled: () => {
+            onRefresh?.()
+        },
+    })
     const handleDrop = useCallback(async (
         taskId: string,
         newStatus: TaskStatus,
@@ -75,21 +180,8 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
                 newOrder = 1000
             }
         }
-        setLocalTasks(prev =>
-            prev.map(t =>
-                t.id === taskId ? { ...t, status: newStatus, order: newOrder } : t,
-            ),
-        )
-        // Update in database
-        try {
-            await updateTaskOrder(taskId, newStatus, newOrder)
-            onRefresh?.()
-        } catch (error) {
-            console.error('[v0] Failed to update task order:', error)
-            // Revert optimistic update
-            setLocalTasks(tasks)
-        }
-    }, [localTasks, onRefresh, tasks])
+        updateTaskOrderMutation.mutate({ taskId, status: newStatus, order: newOrder })
+    }, [localTasks, onRefresh, tasks, updateTaskOrderMutation])
     useEffect(() => {
         const monitor = monitorForElements as unknown as (args: {
             onDragStart?: (args: { source: { data: Record<string, unknown> } }) => void
@@ -181,13 +273,8 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
         if (!projectId) return
         setIsCreating(status)
         try {
-            await createTask({
-                title: 'New Task',
-                description: '',
-                projectId,
-                status,
-            })
-            onRefresh?.()
+            const tempId = `temp-${Date.now()}`
+            await createTaskMutation.mutateAsync({ status, tempId })
         } catch (error) {
             console.error('[v0] Failed to create task:', error)
         } finally {
@@ -196,17 +283,17 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
     }
     return (
         <div className="flex gap-4 h-full overflow-x-auto pb-4">
-            {STATUSES.map(status => {
+            {lanes.map(lane => {
                 const statusTasks = localTasks
-                    .filter(t => t.status === status.id)
+                    .filter(t => t.status === lane.key)
                     .sort((a, b) => a.order - b.order)
                 return (
-                    <div key={status.id} className="flex-shrink-0 w-[320px]">
+                    <div key={lane.id} className="flex-shrink-0 w-[320px]">
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
-                                <div className={`w-2 h-2 rounded-full ${status.color}`} />
+                                <div className={`w-2 h-2 rounded-full ${lane.color || 'bg-muted'}`} />
                                 <h3 className="text-sm font-medium text-foreground">
-                                    {status.label}
+                                    {lane.name}
                                 </h3>
                                 <span className="text-xs text-muted-foreground">
                                     {statusTasks.length}
@@ -216,15 +303,16 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
                                 variant="ghost"
                                 size="sm"
                                 className="h-6 w-6 p-0"
-                                onClick={() => handleCreateTask(status.id)}
-                                disabled={isCreating === status.id}>
+                                onClick={() => handleCreateTask(lane.key)}
+                                disabled={isCreating === lane.key}>
                                 <Plus className="w-3 h-3" />
                             </Button>
                         </div>
                         <KanbanColumn
-                            status={status.id}
+                            status={lane.key}
                             tasks={statusTasks}
                             teamId={teamId}
+                            teamMembers={teamMembers}
                             dropIndicator={dropIndicator}
                             draggingTaskId={draggingTaskId}/>
                     </div>

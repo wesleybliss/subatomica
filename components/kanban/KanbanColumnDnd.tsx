@@ -1,6 +1,6 @@
 'use client'
 import { Fragment, useRef, useEffect } from 'react'
-import { Task, TaskStatus } from '@/types'
+import { Task, TaskStatus, TeamMemberProfile } from '@/types'
 import { KanbanCardDnd } from './KanbanCardDnd'
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { isTaskDragData } from './dragTypes'
@@ -9,6 +9,7 @@ interface KanbanColumnProps {
     status: TaskStatus
     tasks: Task[]
     teamId?: string
+    teamMembers: TeamMemberProfile[]
     dropIndicator?: {
         status: TaskStatus
         taskId?: string
@@ -20,6 +21,7 @@ export function KanbanColumn({
     status,
     tasks,
     teamId,
+    teamMembers,
     dropIndicator,
 }: KanbanColumnProps) {
     const columnRef = useRef<HTMLDivElement>(null)
@@ -56,7 +58,8 @@ export function KanbanColumn({
                     )}
                     <KanbanCardDnd
                         task={task}
-                        teamId={teamId}/>
+                        teamId={teamId}
+                        teamMembers={teamMembers}/>
                 </Fragment>
             ))}
             {indicatorIndex === tasks.length && (

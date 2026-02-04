@@ -1,17 +1,21 @@
 'use client'
-import { useActionState, useMemo, useState } from 'react'
+import { useActionState, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { Project, Task } from '@/types'
+import type { Project, Task, TaskLane, TeamMemberProfile } from '@/types'
 import type { CreateProjectResult } from '@/types/kanban.types'
 import { KanbanBoardDnd } from './KanbanBoardDnd'
 import { FolderPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { KanbanLaneManager } from './KanbanLaneManager'
+import { useQuery } from '@tanstack/react-query'
 
 interface KanbanViewProps {
     teamId: string
     teamName: string
     initialTasks: Task[]
     projects: Project[]
+    initialLanes: TaskLane[]
+    teamMembers: TeamMemberProfile[]
     onCreateProject?: (
         prevState: CreateProjectResult,
         formData: FormData,
@@ -23,6 +27,8 @@ export function KanbanView({
     teamName,
     initialTasks,
     projects,
+    initialLanes,
+    teamMembers,
     onCreateProject,
 }: KanbanViewProps) {
     const router = useRouter()
@@ -39,6 +45,26 @@ export function KanbanView({
         onCreateProject ?? (async (state: CreateProjectResult) => state),
         { error: null },
     )
+    const tasksQueryKey = useMemo(() => (
+        ['tasks', { teamId, projectId: selectedProjectId }] as const
+    ), [teamId, selectedProjectId])
+    const { data: tasks = filteredTasks } = useQuery({
+        queryKey: tasksQueryKey,
+        queryFn: async () => {
+            const params = new URLSearchParams({ teamId })
+            if (selectedProjectId !== 'all')
+                params.set('projectId', selectedProjectId)
+            const response = await fetch(`/api/tasks?${params.toString()}`)
+            if (!response.ok)
+                throw new Error('Failed to fetch tasks')
+            return response.json() as Promise<Task[]>
+        },
+        initialData: filteredTasks,
+    })
+    const [lanes, setLanes] = useState<TaskLane[]>(initialLanes)
+    useEffect(() => {
+        setLanes(initialLanes)
+    }, [initialLanes])
     return (
         <div className="flex h-full flex-col">
             <header className="flex items-center justify-between border-b border-border px-6 py-4">
@@ -47,6 +73,12 @@ export function KanbanView({
                         {teamName}
                     </h1>
                 </div>
+                {canCreateTask && (
+                    <KanbanLaneManager
+                        projectId={selectedProjectId}
+                        lanes={lanes}
+                        onLanesChange={setLanes}/>
+                )}
             </header>
             <div className="flex-1 overflow-hidden px-6 py-5">
                 {projects.length === 0 ? (
@@ -68,9 +100,12 @@ export function KanbanView({
                     </div>
                 ) : (
                     <KanbanBoardDnd
-                        tasks={filteredTasks}
+                        tasks={tasks}
+                        lanes={lanes}
                         projectId={canCreateTask ? selectedProjectId : undefined}
                         teamId={teamId}
+                        teamMembers={teamMembers}
+                        queryKey={tasksQueryKey}
                         onRefresh={() => router.refresh()}/>
                 )}
             </div>

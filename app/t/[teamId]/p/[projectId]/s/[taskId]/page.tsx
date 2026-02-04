@@ -1,5 +1,8 @@
 import { redirect } from 'next/navigation'
-import { getProjectById, getTaskById } from '@/lib/constants'
+import { getProjectById } from '@/lib/db/actions/projects'
+import { getTask } from '@/lib/db/actions/tasks'
+import { getTeamMembers } from '@/lib/db/actions/teams'
+import { TaskDetailForm } from '@/components/tasks/TaskDetailForm'
 
 export default async function NotePage({
     params,
@@ -7,26 +10,18 @@ export default async function NotePage({
     params: Promise<{ teamId: string; projectId: string; taskId: string }>
 }) {
     const { teamId, projectId, taskId } = await params
-    const project = getProjectById(projectId)
-    
+    const project = await getProjectById(projectId)
     if (!project)
         redirect(`/t/${teamId}`)
-    
-    const task = getTaskById(taskId)
-    
+    const task = await getTask(taskId)
     if (!task)
         redirect(`/t/${teamId}/p/${projectId}`)
-    
+    const teamMembers = await getTeamMembers(teamId)
     return (
-        
         <div className="flex flex-1 overflow-hidden">
-            
-            <h1>{task.title}</h1>
-            
-            <div className="flex-1 overflow-hidden bg-white">
-                TODO: task detail
+            <div className="flex-1 overflow-hidden bg-background p-6">
+                <TaskDetailForm task={task} teamMembers={teamMembers} />
             </div>
-        
         </div>
     )
 }

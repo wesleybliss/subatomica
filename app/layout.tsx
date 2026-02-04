@@ -9,6 +9,7 @@ import { NS } from '@/lib/constants'
 import DebugClient from '@/components/DebugClient'
 import ThemeProvider from '@/components/ThemeProvider'
 import ThemeToggle from '@/components/ThemeToggle'
+import QueryProvider from '@/components/QueryProvider'
 
 reactWirePersisted.setNamespace(NS)
 
@@ -61,11 +62,13 @@ export default function RootLayout({
             </head>
             <body className={'font-sans antialiased'}>
                 <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem>
-                    {children}
-                    <ThemeToggle />
-                    {VERCEL_ANALYTICS_ENABLED && <Analytics />}
-                    <DebugClient />
-                    <DebugTools />
+                    <QueryProvider>
+                        {children}
+                        <ThemeToggle />
+                        {VERCEL_ANALYTICS_ENABLED && <Analytics />}
+                        <DebugClient />
+                        <DebugTools />
+                    </QueryProvider>
                 </ThemeProvider>
             </body>
         </html>

@@ -1,0 +1,4 @@
+
+- Added task lanes in DB (task_lanes) with defaults via ensureProjectLanes.
+- Bot API lives under /api/v1/bot with openapi.json at /api/v1/bot/openapi.json.
+- Kanban DnD now uses TanStack Query cache for optimistic updates.

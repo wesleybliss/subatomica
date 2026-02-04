@@ -1,38 +1,24 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { Task } from '@/types'
+import { Task, TeamMemberProfile } from '@/types'
 import { Flag, Calendar } from 'lucide-react'
 import Link from 'next/link'
-import { updateTask } from '@/lib/db/actions/tasks'
 import { cn } from '@/lib/utils'
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import { isTaskDragData } from './dragTypes'
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
+import { TaskDetailDialog } from '@/components/tasks/TaskDetailDialog'
 
 interface KanbanCardDndProps {
     task: Task
     teamId?: string
+    teamMembers: TeamMemberProfile[]
 }
 
-export function KanbanCardDnd({ task, teamId }: KanbanCardDndProps) {
+export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps) {
     const cardRef = useRef<HTMLDivElement>(null)
     const [isDragging, setIsDragging] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [isSaving, setIsSaving] = useState(false)
-    const [title, setTitle] = useState(task.title)
-    const [description, setDescription] = useState(task.description ?? '')
     useEffect(() => {
         const element = cardRef.current
         if (!element) return
@@ -60,38 +46,12 @@ export function KanbanCardDnd({ task, teamId }: KanbanCardDndProps) {
             }),
         )
     }, [task.id, task.status])
-    const handleOpenChange = (open: boolean) => {
-        setIsDialogOpen(open)
-        if (open) {
-            setTitle(task.title)
-            setDescription(task.description ?? '')
-        }
-    }
-    const handleSave = async () => {
-        const nextTitle = title.trim()
-        if (!nextTitle) return
-        setIsSaving(true)
-        try {
-            await updateTask(task.id, {
-                title: nextTitle,
-                description,
-            })
-            setTitle(nextTitle)
-            setIsDialogOpen(false)
-        } catch (error) {
-            console.error('[v0] Failed to update task:', error)
-            setTitle(task.title)
-            setDescription(task.description ?? '')
-        } finally {
-            setIsSaving(false)
-        }
-    }
     // Format project ID display
     const projectDisplay = task.projectId?.slice(0, 8).toUpperCase() || 'TASK'
     const teamSegment = teamId ?? task.projectId
     const taskHref = `/t/${teamSegment}/p/${task.projectId}/s/${task.id}`
     return (
-        <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
+        <>
             <div
                 ref={cardRef}
                 className={cn(
@@ -116,7 +76,7 @@ export function KanbanCardDnd({ task, teamId }: KanbanCardDndProps) {
                     ) : null}
                 </div>
                 <h4 className="text-sm font-medium text-foreground mb-2">
-                    {title}
+                    {task.title}
                 </h4>
                 <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center gap-2">
@@ -137,40 +97,11 @@ export function KanbanCardDnd({ task, teamId }: KanbanCardDndProps) {
                     </div>
                 </div>
             </div>
-            <DialogContent className="sm:max-w-[520px]">
-                <DialogHeader>
-                    <DialogTitle>Edit task</DialogTitle>
-                </DialogHeader>
-                <div className="grid gap-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor={`task-title-${task.id}`}>Title</Label>
-                        <Input
-                            id={`task-title-${task.id}`}
-                            value={title}
-                            onChange={event => setTitle(event.target.value)}
-                            placeholder="Task title" />
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor={`task-description-${task.id}`}>Description</Label>
-                        <Textarea
-                            id={`task-description-${task.id}`}
-                            value={description}
-                            onChange={event => setDescription(event.target.value)}
-                            placeholder="Add a short description" />
-                    </div>
-                </div>
-                <DialogFooter>
-                    <DialogClose render={<Button variant="outline" type="button" />}>
-                        Cancel
-                    </DialogClose>
-                    <Button
-                        type="button"
-                        onClick={handleSave}
-                        disabled={isSaving || !title.trim()}>
-                        {isSaving ? 'Saving...' : 'Save'}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+            <TaskDetailDialog
+                task={task}
+                teamMembers={teamMembers}
+                open={isDialogOpen}
+                onOpenChange={setIsDialogOpen} />
+        </>
     )
 }

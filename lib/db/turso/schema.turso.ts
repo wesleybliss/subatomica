@@ -96,6 +96,21 @@ export const projects = table('projects', {
     ownerIdIndex: index('projects_owner_id_idx').on(table.ownerId),
 }))
 
+// Task Lanes table
+export const taskLanes = table('task_lanes', {
+    projectId: text('projectId')
+        .notNull()
+        .references(() => projects.id, { onDelete: 'cascade' }),
+    key: text('key').notNull(),
+    name: text('name').notNull(),
+    color: text('color'),
+    order: integer('order').notNull().default(0),
+    isDefault: integer('isDefault', { mode: 'boolean' }).notNull().default(false),
+}, table => ({
+    projectIdIndex: index('task_lanes_project_id_idx').on(table.projectId),
+    projectKeyUnique: uniqueIndex('task_lanes_project_key_unique').on(table.projectId, table.key),
+}))
+
 // Tasks table
 export const tasks = table('tasks', {
     userId: text('userId')
@@ -141,5 +156,6 @@ export type Session = typeof sessions.$inferSelect
 export type Team = typeof teams.$inferSelect
 export type TeamMember = typeof teamMembers.$inferSelect
 export type Project = typeof projects.$inferSelect
+export type TaskLane = typeof taskLanes.$inferSelect
 export type Task = typeof tasks.$inferSelect
 export type Comment = typeof comments.$inferSelect

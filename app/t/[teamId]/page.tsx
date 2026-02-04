@@ -1,8 +1,10 @@
 import { getTasksByTeam } from '@/lib/db/actions/tasks'
-import { getTeamById } from '@/lib/db/actions/teams'
+import { getTeamById, getTeamMembers } from '@/lib/db/actions/teams'
 import { createProject, getProjects } from '@/lib/db/actions/projects'
+import { getProjectLanes } from '@/lib/db/actions/lanes'
 import { KanbanView } from '@/components/kanban/KanbanView'
 import { CreateProjectResult } from '@/types/kanban.types'
+import type { TaskLane, TeamMemberProfile } from '@/types'
 
 interface TeamPageProps {
     params: Promise<{ teamId: string }>
@@ -32,13 +34,19 @@ export default async function TeamPage({ params }: TeamPageProps) {
     let team
     let tasks
     let projects
+    let lanes: TaskLane[] = []
+    let teamMembers: TeamMemberProfile[] = []
     
     try {
-        ;[team, tasks, projects] = await Promise.all([
+        ;[team, tasks, projects, teamMembers] = await Promise.all([
             getTeamById(teamId),
             getTasksByTeam(teamId),
             getProjects(teamId),
+            getTeamMembers(teamId),
         ])
+        lanes = projects.length > 0
+            ? await getProjectLanes(projects[0].id)
+            : []
     } catch (error) {
         console.error('TeamPage', error)
         return <div className="p-6">Unable to load team</div>
@@ -53,6 +61,8 @@ export default async function TeamPage({ params }: TeamPageProps) {
             teamName={team.name}
             initialTasks={tasks}
             projects={projects}
+            initialLanes={lanes}
+            teamMembers={teamMembers}
             onCreateProject={createProjectAction}/>
     )
 }

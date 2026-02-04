@@ -24,6 +24,7 @@ export const verifications = schema.verifications
 export const teams = schema.teams
 export const teamMembers = schema.teamMembers
 export const projects = schema.projects
+export const taskLanes = schema.taskLanes
 export const tasks = schema.tasks
 export const comments = schema.comments
 
@@ -34,5 +35,6 @@ export type Session = ActiveSchema['sessions']['$inferSelect']
 export type Team = ActiveSchema['teams']['$inferSelect']
 export type TeamMember = ActiveSchema['teamMembers']['$inferSelect']
 export type Project = ActiveSchema['projects']['$inferSelect']
+export type TaskLane = ActiveSchema['taskLanes']['$inferSelect']
 export type Task = ActiveSchema['tasks']['$inferSelect']
 export type Comment = ActiveSchema['comments']['$inferSelect']
