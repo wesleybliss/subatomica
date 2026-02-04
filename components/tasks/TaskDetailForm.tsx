@@ -26,6 +26,7 @@ export function TaskDetailForm({ task, teamMembers, onSaved, onClose }: TaskDeta
     const [assigneeId, setAssigneeId] = useState<string>(task.assigneeId ?? '')
     const [isSaving, setIsSaving] = useState(false)
     const editor = useEditor({
+        immediatelyRender: false,
         extensions: [StarterKit],
         content: task.description || '<p></p>',
         editorProps: {

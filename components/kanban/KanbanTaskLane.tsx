@@ -2,11 +2,11 @@
 import { KanbanColumn } from './KanbanColumnDnd'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Task, TaskStatus, TaskLane, DropIndicatorData, TeamMemberProfile } from '@/types'
 import { Dispatch, SetStateAction } from 'react'
+import ManageLaneDropdown from '@/components/kanban/ManageLaneDropdown'
 
 interface TaskLaneProps {
     lane: TaskLane
@@ -94,8 +94,11 @@ const KanbanTaskLane = ({
                             </Badge>
                         </>
                     )}
+                
                 </div>
+                
                 <div className="flex items-center gap-1">
+                    
                     <Button
                         variant="ghost"
                         size="sm"
@@ -104,40 +107,28 @@ const KanbanTaskLane = ({
                         disabled={isCreating === lane.key}>
                         <Plus className="w-3 h-3" />
                     </Button>
+                    
                     {canManageLanes && (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger
-                                render={(
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-6 w-6 p-0" />
-                                )}>
-                                <MoreHorizontal className="h-3.5 w-3.5" />
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem onSelect={() => handleStartRenameLane(lane)}>
-                                    <Pencil className="mr-2 h-4 w-4" />
-                                    Rename
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onSelect={() => handleDeleteLane(lane.id)}
-                                    disabled={!canDeleteLane || deletingLaneId === lane.id}>
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Delete
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <ManageLaneDropdown
+                            lane={lane}
+                            canDeleteLane={canDeleteLane}
+                            deletingLaneId={deletingLaneId}
+                            handleStartRenameLane={handleStartRenameLane}
+                            handleDeleteLane={handleDeleteLane} />
                     )}
+                
                 </div>
+            
             </div>
+            
             <KanbanColumn
                 status={lane.key}
                 tasks={statusTasks}
                 teamId={teamId}
                 teamMembers={teamMembers}
                 dropIndicator={dropIndicator}
-                draggingTaskId={draggingTaskId}/>
+                draggingTaskId={draggingTaskId} />
+        
         </div>
         
     )

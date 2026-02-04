@@ -1,22 +1,9 @@
 'use client'
-
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Task, TaskLane, TaskStatus, TeamMemberProfile } from '@/types'
+import { Task, TaskLane, TeamMemberProfile } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
-import { createTask, updateTaskOrder } from '@/lib/db/actions/tasks'
-import { createTaskLane, deleteTaskLane, updateTaskLane } from '@/lib/db/actions/lanes'
-import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-    type ColumnDropData,
-    type TaskDropData,
-    isColumnDropData,
-    isTaskDragData,
-    isTaskDropData,
-} from './dragTypes'
-import { DropIndicatorData } from '@/types/kanban.types'
 import KanbanTaskLane from '@/components/kanban/KanbanTaskLane'
+import useKanbanBoardDndViewModel from '@/components/kanban/KanbanBoardDndViewModel'
 
 export interface KanbanBoardProps {
     tasks: Task[]
@@ -29,17 +16,6 @@ export interface KanbanBoardProps {
     onLanesChange?: (lanes: TaskLane[]) => void
 }
 
-type UpdateTaskOrderInput = {
-    taskId: string
-    status: TaskStatus
-    order: number
-}
-
-type CreateTaskInput = {
-    status: TaskStatus
-    tempId: string
-}
-
 export function KanbanBoardDnd({
     tasks,
     lanes,
@@ -50,298 +26,16 @@ export function KanbanBoardDnd({
     queryKey,
     onLanesChange,
 }: KanbanBoardProps) {
-    const [localTasks, setLocalTasks] = useState<Task[]>(tasks)
-    const [isCreating, setIsCreating] = useState<string | null>(null)
-    const [isAddingLane, setIsAddingLane] = useState(false)
-    const [dropIndicator, setDropIndicator] = useState<DropIndicatorData | null>(null)
-    const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null)
-    const [editingLaneId, setEditingLaneId] = useState<string | null>(null)
-    const [editingLaneName, setEditingLaneName] = useState('')
-    const [savingLaneId, setSavingLaneId] = useState<string | null>(null)
-    const [deletingLaneId, setDeletingLaneId] = useState<string | null>(null)
-    const canManageLanes = Boolean(projectId && onLanesChange)
-    const canDeleteLane = lanes.length > 1
-    const queryClient = useQueryClient()
-    const activeQueryKey = useMemo(() => queryKey || ['tasks'], [queryKey])
-    useEffect(() => {
-        setLocalTasks(tasks)
-    }, [tasks])
-    const updateTaskOrderMutation = useMutation<Task, Error, UpdateTaskOrderInput, { previousTasks?: Task[] }>({
-        mutationFn: async ({ taskId, status, order }: UpdateTaskOrderInput) => updateTaskOrder(taskId, status, order),
-        onMutate: async ({ taskId, status, order }: UpdateTaskOrderInput) => {
-            await queryClient.cancelQueries({ queryKey: activeQueryKey })
-            const previousTasks = queryClient.getQueryData<Task[]>(activeQueryKey)
-            if (previousTasks) {
-                const nextTasks = previousTasks.map((task: Task) =>
-                    task.id === taskId
-                        ? { ...task, status, order }
-                        : task,
-                )
-                queryClient.setQueryData(activeQueryKey, nextTasks)
-            }
-            setLocalTasks(prev => prev.map((task: Task) =>
-                task.id === taskId
-                    ? { ...task, status, order }
-                    : task,
-            ))
-            return { previousTasks }
-        },
-        onError: (_error: Error, _vars: UpdateTaskOrderInput, context: { previousTasks?: Task[] } | undefined) => {
-            if (context?.previousTasks)
-                queryClient.setQueryData(activeQueryKey, context.previousTasks)
-        },
-        onSettled: () => {
-            onRefresh?.()
-        },
-    })
-    const createTaskMutation = useMutation<
-        { created: Task; tempId: string },
-        Error,
-        CreateTaskInput,
-        { previousTasks?: Task[] }
-    >({
-        mutationFn: async ({ status, tempId }: CreateTaskInput) => {
-            const created = await createTask({
-                title: 'New Task',
-                description: '',
-                projectId: projectId as string,
-                status,
-            })
-            return { created, tempId }
-        },
-        onMutate: async ({ status, tempId }: CreateTaskInput) => {
-            if (!projectId)
-                return { previousTasks: undefined }
-            await queryClient.cancelQueries({ queryKey: activeQueryKey })
-            const previousTasks = queryClient.getQueryData<Task[]>(activeQueryKey)
-            const nextOrder = Math.max(
-                0,
-                ...localTasks
-                    .filter(task => task.status === status)
-                    .map(task => task.order),
-            ) + 1000
-            const optimisticTask: Task = {
-                id: tempId,
-                title: 'New Task',
-                description: '',
-                projectId,
-                userId: 'pending',
-                status,
-                priority: null,
-                dueDate: null,
-                assigneeId: null,
-                order: nextOrder,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                deletedAt: null,
-            }
-            const nextTasks = [...(previousTasks || localTasks), optimisticTask]
-            queryClient.setQueryData(activeQueryKey, nextTasks)
-            setLocalTasks(nextTasks)
-            return { previousTasks }
-        },
-        onError: (_error: Error, _vars: CreateTaskInput, context: { previousTasks?: Task[] } | undefined) => {
-            if (context?.previousTasks)
-                queryClient.setQueryData(activeQueryKey, context.previousTasks)
-        },
-        onSuccess: ({ created, tempId }: { created: Task; tempId: string }) => {
-            queryClient.setQueryData(activeQueryKey, (current?: Task[]) =>
-                (current || []).map((task: Task) => (task.id === tempId ? created : task)),
-            )
-        },
-        onSettled: () => {
-            onRefresh?.()
-        },
-    })
-    const handleDrop = useCallback(async (
-        taskId: string,
-        newStatus: TaskStatus,
-        targetTaskId?: string,
-    ) => {
-        console.log('[v0] Drag drop:', { taskId, newStatus, targetTaskId })
-        const task = localTasks.find(t => t.id === taskId)
-        if (!task) return
-        // Optimistic update
-        const tasksInNewStatus = localTasks
-            .filter(t => t.status === newStatus && t.id !== taskId)
-            .sort((a, b) => a.order - b.order)
-        let newOrder: number
-        if (!targetTaskId) {
-            // Drop at end
-            const maxOrder = tasksInNewStatus.length > 0
-                ? Math.max(...tasksInNewStatus.map(t => t.order))
-                : 0
-            newOrder = maxOrder + 1000
-        } else {
-            // Drop before target
-            const targetIndex = tasksInNewStatus.findIndex(t => t.id === targetTaskId)
-            const prevTask = targetIndex > 0 ? tasksInNewStatus[targetIndex - 1] : null
-            const nextTask = tasksInNewStatus[targetIndex]
-            if (prevTask && nextTask) {
-                // Calculate midpoint
-                newOrder = (prevTask.order + nextTask.order) / 2
-            } else if (nextTask) {
-                // First position
-                newOrder = nextTask.order - 1000
-            } else {
-                // Only one item
-                newOrder = 1000
-            }
-        }
-        updateTaskOrderMutation.mutate({ taskId, status: newStatus, order: newOrder })
-    }, [localTasks, onRefresh, tasks, updateTaskOrderMutation])
-    useEffect(() => {
-        const monitor = monitorForElements as unknown as (args: {
-            onDragStart?: (args: { source: { data: Record<string, unknown> } }) => void
-            onDrag?: (args: {
-                location: { current: { dropTargets: Array<{ data: unknown }> } }
-            }) => void
-            onDrop?: (args: {
-                source: { data: Record<string, unknown> }
-                location: { current: { dropTargets: Array<{ data: unknown }> } }
-            }) => void
-            onDragEnd?: () => void
-        }) => () => void
-        return monitor({
-            onDragStart: (args: { source: { data: Record<string, unknown> } }) => {
-                if (isTaskDragData(args.source.data))
-                    setDraggingTaskId(args.source.data.taskId)
-            },
-            onDrag: (args: {
-                location: { current: { dropTargets: Array<{ data: unknown }> } }
-            }) => {
-                const dropTargets = args.location.current.dropTargets
-                if (!dropTargets.length) {
-                    setDropIndicator(null)
-                    return
-                }
-                const taskTarget = dropTargets.find((target: { data: unknown }) =>
-                    isTaskDropData(target.data as Record<string, unknown>),
-                )
-                if (taskTarget?.data && isTaskDropData(taskTarget.data as Record<string, unknown>)) {
-                    const taskTargetData = taskTarget.data as TaskDropData
-                    setDropIndicator({
-                        status: taskTargetData.status,
-                        taskId: taskTargetData.taskId,
-                    })
-                    return
-                }
-                const columnTarget = dropTargets.find((target: { data: unknown }) =>
-                    isColumnDropData(target.data as Record<string, unknown>),
-                )
-                if (columnTarget?.data && isColumnDropData(columnTarget.data as Record<string, unknown>)) {
-                    const columnTargetData = columnTarget.data as ColumnDropData
-                    setDropIndicator({ status: columnTargetData.status })
-                    return
-                }
-                setDropIndicator(null)
-            },
-            onDrop: (args: {
-                source: { data: Record<string, unknown> }
-                location: { current: { dropTargets: Array<{ data: unknown }> } }
-            }) => {
-                const { source, location } = args
-                if (!isTaskDragData(source.data)) return
-                const dropTargets = location.current.dropTargets
-                if (!dropTargets.length) return
-                const taskTarget = dropTargets.find((target: { data: unknown }) =>
-                    isTaskDropData(target.data as Record<string, unknown>),
-                )
-                const taskTargetData = taskTarget?.data
-                if (taskTargetData && isTaskDropData(taskTargetData as Record<string, unknown>)) {
-                    const taskData = taskTargetData as TaskDropData
-                    void handleDrop(
-                        source.data.taskId,
-                        taskData.status,
-                        taskData.taskId,
-                    )
-                    return
-                }
-                const columnTarget = dropTargets.find((target: { data: unknown }) =>
-                    isColumnDropData(target.data as Record<string, unknown>),
-                )
-                const columnTargetData = columnTarget?.data
-                if (columnTargetData && isColumnDropData(columnTargetData as Record<string, unknown>)) {
-                    const columnData = columnTargetData as ColumnDropData
-                    void handleDrop(
-                        source.data.taskId,
-                        columnData.status,
-                    )
-                }
-                setDropIndicator(null)
-                setDraggingTaskId(null)
-            },
-            onDragEnd: () => {
-                setDropIndicator(null)
-                setDraggingTaskId(null)
-            },
-        })
-    }, [handleDrop])
-    const handleCreateTask = async (status: TaskStatus) => {
-        if (!projectId) return
-        setIsCreating(status)
-        try {
-            const tempId = `temp-${Date.now()}`
-            await createTaskMutation.mutateAsync({ status, tempId })
-        } catch (error) {
-            console.error('[v0] Failed to create task:', error)
-        } finally {
-            setIsCreating(null)
-        }
-    }
-    const handleAddLane = async () => {
-        if (!projectId || !onLanesChange) return
-        setIsAddingLane(true)
-        try {
-            const created = await createTaskLane(projectId, 'New Lane', 'bg-muted')
-            const next = [...lanes, created].sort((a, b) => a.order - b.order)
-            onLanesChange(next)
-        } catch (error) {
-            console.error('[v0] Failed to create lane:', error)
-        } finally {
-            setIsAddingLane(false)
-        }
-    }
-    const handleStartRenameLane = (lane: TaskLane) => {
-        setEditingLaneId(lane.id)
-        setEditingLaneName(lane.name)
-    }
-    const handleCancelRenameLane = () => {
-        setEditingLaneId(null)
-        setEditingLaneName('')
-    }
-    const handleRenameLane = async (laneId: string) => {
-        if (!onLanesChange) return
-        const nextName = editingLaneName.trim()
-        if (!nextName) {
-            handleCancelRenameLane()
-            return
-        }
-        setSavingLaneId(laneId)
-        try {
-            const updated = await updateTaskLane(laneId, { name: nextName })
-            const next = lanes.map(lane => (lane.id === laneId ? updated : lane))
-            onLanesChange(next)
-        } catch (error) {
-            console.error('[v0] Failed to update lane:', error)
-        } finally {
-            setSavingLaneId(null)
-            handleCancelRenameLane()
-        }
-    }
-    const handleDeleteLane = async (laneId: string) => {
-        if (!onLanesChange || !canDeleteLane) return
-        setDeletingLaneId(laneId)
-        try {
-            await deleteTaskLane(laneId)
-            const next = lanes.filter(lane => lane.id !== laneId)
-            onLanesChange(next)
-        } catch (error) {
-            console.error('[v0] Failed to delete lane:', error)
-        } finally {
-            setDeletingLaneId(null)
-        }
-    }
+    
+    const vm = useKanbanBoardDndViewModel(
+        lanes,
+        tasks,
+        projectId,
+        queryKey,
+        onRefresh,
+        onLanesChange,
+    )
+    
     return (
         <div className="flex gap-4 h-full overflow-x-auto pb-4">
             {lanes.map(it => (
@@ -351,30 +45,30 @@ export function KanbanBoardDnd({
                     tasks={tasks}
                     teamId={teamId}
                     teamMembers={teamMembers}
-                    dropIndicator={dropIndicator}
-                    draggingTaskId={draggingTaskId}
-                    editingLaneId={editingLaneId}
-                    editingLaneName={editingLaneName}
-                    setEditingLaneName={setEditingLaneName}
-                    isCreating={isCreating}
-                    savingLaneId={savingLaneId}
-                    canManageLanes={canManageLanes}
-                    canDeleteLane={canDeleteLane}
-                    deletingLaneId={deletingLaneId}
-                    handleCreateTask={handleCreateTask}
-                    handleStartRenameLane={handleStartRenameLane}
-                    handleRenameLane={handleRenameLane}
-                    handleCancelRenameLane={handleCancelRenameLane}
-                    handleDeleteLane={handleDeleteLane} />
+                    dropIndicator={vm.dropIndicator}
+                    draggingTaskId={vm.draggingTaskId}
+                    editingLaneId={vm.editingLaneId}
+                    editingLaneName={vm.editingLaneName}
+                    setEditingLaneName={vm.setEditingLaneName}
+                    isCreating={vm.isCreating}
+                    savingLaneId={vm.savingLaneId}
+                    canManageLanes={vm.canManageLanes}
+                    canDeleteLane={vm.canDeleteLane}
+                    deletingLaneId={vm.deletingLaneId}
+                    handleCreateTask={vm.handleCreateTask}
+                    handleStartRenameLane={vm.handleStartRenameLane}
+                    handleRenameLane={vm.handleRenameLane}
+                    handleCancelRenameLane={vm.handleCancelRenameLane}
+                    handleDeleteLane={vm.handleDeleteLane} />
             ))}
-            {canManageLanes && (
+            {vm.canManageLanes && (
                 <div className="shrink-0 flex items-start">
                     <Button
                         variant="outline"
                         size="sm"
                         className="h-8 px-2 text-xs"
-                        onClick={handleAddLane}
-                        disabled={isAddingLane}>
+                        onClick={vm.handleAddLane}
+                        disabled={vm.isAddingLane}>
                         <Plus className="h-4 w-4" />
                         Add lane
                     </Button>
