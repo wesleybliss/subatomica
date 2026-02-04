@@ -86,6 +86,11 @@ export const tasks = table('tasks', {
         .references(() => projects.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
     content: text('content').notNull().default(''),
+    status: text('status').notNull().default('backlog'), // 'backlog', 'todo', 'in-progress', 'done'
+    priority: text('priority').default('medium'), // 'low', 'medium', 'high', 'urgent'
+    dueDate: text('dueDate'), // ISO date string
+    assigneeId: text('assigneeId').references(() => users.id, { onDelete: 'set null' }),
+    order: integer('order').notNull().default(0), // for lexicographical sorting in Kanban
 })
 
 // Type exports

@@ -7,9 +7,30 @@ import { Task } from '@/types'
 
 const db: any = client.db!
 
-export async function createTask(data: { title: string; content: string; projectId: string }): Promise<Task> {
+export async function createTask(data: { 
+    title: string
+    content?: string
+    projectId: string
+    status?: string
+    priority?: string
+    dueDate?: string
+    assigneeId?: string
+}): Promise<Task> {
     
     const user = await getCurrentUser()
+    
+    // Get max order for the status to append to end
+    const maxOrderTask = await db
+        .select()
+        .from(tasks)
+        .where(and(
+            eq(tasks.projectId, data.projectId),
+            eq(tasks.status, data.status || 'backlog')
+        ))
+        .orderBy(desc(tasks.order))
+        .limit(1)
+    
+    const order = maxOrderTask.length > 0 ? maxOrderTask[0].order + 1000 : 1000
     
     const [task] = await db
         .insert(tasks)
@@ -17,7 +38,12 @@ export async function createTask(data: { title: string; content: string; project
             projectId: data.projectId,
             userId: user.id,
             title: data.title,
-            content: data.content,
+            content: data.content || '',
+            status: data.status || 'backlog',
+            priority: data.priority,
+            dueDate: data.dueDate,
+            assigneeId: data.assigneeId,
+            order,
         })
         .returning()
     
@@ -25,7 +51,15 @@ export async function createTask(data: { title: string; content: string; project
     
 }
 
-export async function updateTask(taskId: string, data: { title?: string; content?: string }): Promise<Task> {
+export async function updateTask(taskId: string, data: { 
+    title?: string
+    content?: string
+    status?: string
+    priority?: string
+    dueDate?: string
+    assigneeId?: string
+    order?: number
+}): Promise<Task> {
     
     const user = await getCurrentUser()
     
@@ -33,6 +67,28 @@ export async function updateTask(taskId: string, data: { title?: string; content
         .update(tasks)
         .set({
             ...data,
+            updatedAt: new Date().toISOString(),
+        })
+        .where(and(eq(tasks.id, taskId), eq(tasks.userId, user.id)))
+        .returning()
+    
+    return task
+    
+}
+
+export async function updateTaskOrder(
+    taskId: string,
+    newStatus: string,
+    newOrder: number
+): Promise<Task> {
+    
+    const user = await getCurrentUser()
+    
+    const [task] = await db
+        .update(tasks)
+        .set({
+            status: newStatus,
+            order: newOrder,
             updatedAt: new Date().toISOString(),
         })
         .where(and(eq(tasks.id, taskId), eq(tasks.userId, user.id)))
@@ -51,7 +107,7 @@ export async function deleteTask(taskId: string): Promise<void> {
     
 }
 
-export async function getTasks(projectId?: string): Promise<Task[]> {
+export async function getTasks(projectId?: string, teamId?: string): Promise<Task[]> {
     
     const user = await getCurrentUser()
     
@@ -62,7 +118,28 @@ export async function getTasks(projectId?: string): Promise<Task[]> {
     return db.select()
         .from(tasks)
         .where(query)
-        .orderBy(desc(tasks.updatedAt))
+        .orderBy(tasks.order, desc(tasks.createdAt))
+    
+}
+
+export async function getTasksByTeam(teamId: string): Promise<Task[]> {
+    
+    const user = await getCurrentUser()
+    
+    // Join with projects to get tasks for a team
+    const { projects } = await import('../schema')
+    
+    const result = await db
+        .select({ task: tasks })
+        .from(tasks)
+        .innerJoin(projects, eq(tasks.projectId, projects.id))
+        .where(and(
+            eq(tasks.userId, user.id),
+            eq(projects.teamId, teamId)
+        ))
+        .orderBy(tasks.order, desc(tasks.createdAt))
+    
+    return result.map((r: any) => r.task)
     
 }
 
