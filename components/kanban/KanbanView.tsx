@@ -6,6 +6,7 @@ import type { CreateProjectResult } from '@/types/kanban.types'
 import { KanbanBoardDnd } from './KanbanBoardDnd'
 import { FolderPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { SidebarTrigger } from '@/components/ui/sidebar'
 import { useQuery } from '@tanstack/react-query'
 
 interface KanbanViewProps {
@@ -67,10 +68,13 @@ export function KanbanView({
     return (
         <div className="flex h-full flex-col">
             <header className="flex items-center justify-between border-b border-border px-6 py-4">
-                <div className="flex flex-col gap-1">
-                    <h1 className="text-sm font-semibold text-foreground">
-                        {teamName}
-                    </h1>
+                <div className="flex items-center gap-3">
+                    <SidebarTrigger className="-ml-1" />
+                    <div className="flex flex-col gap-1">
+                        <h1 className="text-sm font-semibold text-foreground">
+                            {teamName}
+                        </h1>
+                    </div>
                 </div>
             </header>
             <div className="flex-1 overflow-hidden px-6 py-5">

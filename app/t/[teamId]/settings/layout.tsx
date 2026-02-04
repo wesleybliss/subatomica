@@ -1,7 +1,10 @@
 import { redirect } from 'next/navigation'
 import type React from 'react'
-import PrimarySidebar from '@/components/PrimarySidebar/PrimarySidebar'
-import { getTeamById } from '@/lib/db/actions/teams'
+import { AppSidebar } from '@/components/app-sidebar'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { getProjects } from '@/lib/db/actions/projects'
+import { getTeamById, getUserTeams } from '@/lib/db/actions/teams'
+import { getCurrentUser } from '@/lib/db/actions/shared'
 
 export default async function WorkspaceSettingsLayout({
     children,
@@ -11,16 +14,28 @@ export default async function WorkspaceSettingsLayout({
     params: Promise<{ teamId: string }>
 }) {
     const { teamId } = await params
-    const team = await getTeamById(teamId)
-    
+    const [team, user] = await Promise.all([
+        getTeamById(teamId),
+        getCurrentUser(),
+    ])
     if (!team) {
         redirect('/')
     }
-    
+    const [teams, projects] = await Promise.all([
+        getUserTeams(user.id, user),
+        getProjects(teamId),
+    ])
     return (
-        <div className="flex h-screen overflow-hidden">
-            <PrimarySidebar teamId={teamId} />
-            {children}
-        </div>
+        <SidebarProvider>
+            <AppSidebar
+                teamId={teamId}
+                teamName={team.name}
+                teams={teams}
+                projects={projects}
+                user={user} />
+            <SidebarInset className="flex-1 overflow-hidden">
+                {children}
+            </SidebarInset>
+        </SidebarProvider>
     )
 }
