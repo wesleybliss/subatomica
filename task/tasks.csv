@@ -1,0 +1,265 @@
+"id","updatedAt","createdAt","deletedAt","userId","projectId","title","description","status","priority","dueDate","assigneeId","order","isStarred"
+"019c279a-1a49-775c-b73c-2fa8b89fa43b","2026-02-04T07:42:16.650Z","2026-02-04T07:42:16.650Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","When uploading a document, check whether the document has already be uploaded previously and notify the user.","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685ffwz5","done","medium",,,"1000","0"
+"019c279a-1b17-7202-a53f-dfe6104e8ce0","2026-02-04T07:42:16.855Z","2026-02-04T07:42:16.855Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Change Flatpickr to react-datepicker","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/86869m1bj","in-progress","medium",,,"1000","0"
+"019c279a-1bbe-706d-8582-468cfb681a5f","2026-02-04T07:42:17.022Z","2026-02-04T07:42:17.022Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Replace all direct `indexDocument` calls with a queue job to prevent memory issues","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/86865gpeh","backlog","medium",,,"1000","0"
+"019c279a-1c64-772e-b1f6-e1d33c670283","2026-02-04T07:42:49.488Z","2026-02-04T07:42:17.189Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Allow designating a user as org admin","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686gt2uh","todo","medium",,,"1000","0"
+"019c279a-1d09-73ac-a4c4-23dcbdcb8454","2026-02-04T07:42:56.918Z","2026-02-04T07:42:17.354Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Annotations Rule: If multiple page annotations captured, use the first one","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686hg3q1","backlog","medium",,,"87000","0"
+"019c279a-1db5-71da-9d6f-565c0a40ffb0","2026-02-04T07:48:26.802Z","2026-02-04T07:42:17.525Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","BUG: Clicking the Hand tool in LabelStudio doesn't allow for the tool to work on the first try","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686hg58p","in-progress","medium",,,"2000","0"
+"019c279a-1e68-758b-908c-f2a6e519eee1","2026-02-04T07:42:17.704Z","2026-02-04T07:42:17.704Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","[Vanta] Remediate ""Firewall default disallows traffic (GCP)""","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/86877gy3d","backlog","medium",,,"5000","0"
+"019c279a-1f0d-76eb-9460-faaabc3d73ce","2026-02-04T07:48:27.764Z","2026-02-04T07:42:17.869Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Update Website to handle error code from API for new check formats / checks requiring OCR","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/863gnkyt3","todo","medium",,,"2000","0"
+"019c279a-1fb8-759c-a039-77b34622db51","2026-02-04T07:48:38.194Z","2026-02-04T07:42:18.040Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","DESIGN ISSUE: Parties alignment needs updates","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/868chdhh9","backlog","medium",,,"88000","0"
+"019c279a-2066-753b-8eb3-c481da39b0da","2026-02-04T07:42:18.214Z","2026-02-04T07:42:18.214Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Add a way to cancel drawing a bounding box (Esc, or click outside the drawable area)","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686gt1f8","backlog","medium",,,"8000","0"
+"019c279a-210b-75fe-a70c-e24503650a22","2026-02-04T07:50:00.874Z","2026-02-04T07:42:18.379Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","LabelStudio: When creating a new annotation, scroll to the annotation in the right list.","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686hg4ne","todo","medium",,,"3000","0"
+"019c279a-21b6-76bf-9b77-d38e4a6b58e2","2026-02-04T07:42:18.550Z","2026-02-04T07:42:18.550Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Annotate mineral/surface information from comments on runsheets for training LLM","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686hp3rh","backlog","medium",,,"10000","0"
+"019c279a-2264-70dd-b56e-74cf916bed7d","2026-02-04T07:42:18.724Z","2026-02-04T07:42:18.725Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Review use of Full Grantor / Full Grantee","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685521zp","backlog","medium",,,"11000","0"
+"019c279a-2306-740e-8691-e3f4f46bfc25","2026-02-04T07:42:18.886Z","2026-02-04T07:42:18.886Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Add polygon bounding box for label studio","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/868655raw","backlog","medium",,,"12000","0"
+"019c279a-23b7-7103-91e0-f72a06b56d63","2026-02-04T07:42:19.063Z","2026-02-04T07:42:19.063Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Title Chain: Freeze the top rows showing the document info so this is always visible to a user","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/868814469","backlog","medium",,,"13000","0"
+"019c279a-2494-7485-a6c5-189edeec7641","2026-02-04T07:42:19.284Z","2026-02-04T07:42:19.284Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Deaf Smith Data Import","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685mxx01","backlog","medium",,,"14000","0"
+"019c279a-2562-7161-8853-3663f28965d3","2026-02-04T07:42:19.490Z","2026-02-04T07:42:19.490Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Finish Deaf Smith Conversion","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685mwd25","backlog","medium",,,"15000","0"
+"019c279a-261e-75e8-b83a-f9bda074763f","2026-02-04T07:42:19.678Z","2026-02-04T07:42:19.678Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Copy sample dataset from prod to staging","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8688af42f","backlog","medium",,,"16000","0"
+"019c279a-26d0-772e-94d2-1bd415bfc24f","2026-02-04T07:42:19.856Z","2026-02-04T07:42:19.856Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Message should go out on Customer Success Slack when new user signs up","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685eeuu1","backlog","medium",,,"17000","0"
+"019c279a-277b-7319-9461-efd813fb791f","2026-02-04T07:42:20.027Z","2026-02-04T07:42:20.027Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Review Cutting down LabelStudio Code / Forking","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685cf44t","backlog","medium",,,"18000","0"
+"019c279a-281e-7469-9f98-5254848dc7e6","2026-02-04T07:42:20.190Z","2026-02-04T07:42:20.190Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Once a Document is Ready to Be Annotated or has ML Model Applied - Remove Document Review Screen and go Straight to LabelStudio","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8684vhw6d","backlog","medium",,,"19000","0"
+"019c279a-28c6-74ff-be8d-7c5e884e3d6c","2026-02-04T07:42:20.358Z","2026-02-04T07:42:20.358Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Token System - When to Charge","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685jky9a","backlog","medium",,,"20000","0"
+"019c279a-296d-72c4-a811-67985117df77","2026-02-04T07:42:20.525Z","2026-02-04T07:42:20.525Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Flag Missing well payment in Check Parser","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/86864nb2x","backlog","medium",,,"21000","0"
+"019c279a-2a1c-7598-b441-7ecabedfe179","2026-02-04T07:42:20.700Z","2026-02-04T07:42:20.700Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Flag missing check in Check Parser","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/86864nb5v","backlog","medium",,,"22000","0"
+"019c279a-2be3-77ca-9b71-033cf72ebd2b","2026-02-04T07:42:21.155Z","2026-02-04T07:42:21.155Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Annotations: Annotate Instrument Date and Filing Date in handwritten docs","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8688043ef","backlog","medium",,,"23000","0"
+"019c279a-2c8b-76eb-92d6-1f161227a54e","2026-02-04T07:42:21.323Z","2026-02-04T07:42:21.323Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","After deleting an annotation, and adding doc to runsheet, the annotation pass through","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8688cgnya","backlog","medium",,,"24000","0"
+"019c279a-2d32-76cd-87d2-d737f5836688","2026-02-04T07:42:21.490Z","2026-02-04T07:42:21.490Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Incorporate API for pulling contact data for Tract Owners","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8688f347n","backlog","medium",,,"25000","0"
+"019c279a-2dd9-74b0-9717-8737bda2e88d","2026-02-04T07:42:21.657Z","2026-02-04T07:42:21.657Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","BUG?: Page Width for Doc Viewer in Edit Document modal doesn't seem to work properly","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/868cfuk0n","backlog","medium",,,"26000","0"
+"019c279a-2e84-75f9-abb2-006911bebd61","2026-02-04T07:42:21.828Z","2026-02-04T07:42:21.828Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Look Into Removing Useless Emails on Customer Success Slack (DMARC, etc)","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685eeunu","backlog","medium",,,"27000","0"
+"019c279a-2f31-726f-8cbc-d6e10a13ae91","2026-02-04T07:42:22.001Z","2026-02-04T07:42:22.001Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Offer Autocomplete / Drop Down Select with possible values on ES Index Search","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685ef41a","backlog","medium",,,"28000","0"
+"019c279a-2fd9-7506-972e-a6081873b8a1","2026-02-04T07:42:22.169Z","2026-02-04T07:42:22.169Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Merge Search Pages for Indexes and Annotated Data","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/863gmatqm","backlog","medium",,,"29000","0"
+"019c279a-3083-725c-8364-ce59a57fc482","2026-02-04T07:42:22.339Z","2026-02-04T07:42:22.339Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Add an additional status column for documents ""User Status""","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8684wkxqb","backlog","medium",,,"30000","0"
+"019c279a-3131-72cb-8d83-2e8dc3c0a7f5","2026-02-04T07:42:22.513Z","2026-02-04T07:42:22.513Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Put Pager Duty in More Places (Currently only for Queue Working)","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8684zw3gv","backlog","medium",,,"31000","0"
+"019c279a-31e1-71c9-a964-51664ad4fee5","2026-02-04T07:42:22.689Z","2026-02-04T07:42:22.689Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Search within Full Text Search Results","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/86864h1en","backlog","medium",,,"32000","0"
+"019c279a-3285-71bc-b5d5-964450d009e0","2026-02-04T07:42:22.853Z","2026-02-04T07:42:22.853Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Highlight matched terms in the documents table columns","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686nddqf","backlog","medium",,,"33000","0"
+"019c279a-3331-73ff-9f44-b76d5a14c215","2026-02-04T07:42:23.025Z","2026-02-04T07:42:23.025Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Update scripts & utilities to be aware of the new staging database","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687w8uap","backlog","medium",,,"34000","0"
+"019c279a-33e1-775c-aa0a-ee20f499df12","2026-02-04T07:42:23.201Z","2026-02-04T07:42:23.201Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Check Statuses / Page Counts","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8684x5h57","backlog","medium",,,"35000","0"
+"019c279a-3487-7444-bf84-a34309adafda","2026-02-04T07:42:23.367Z","2026-02-04T07:42:23.367Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Implement GhostScript to Reduce Uploaded PDF size","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8684ry3h8","backlog","medium",,,"36000","0"
+"019c279a-3530-72f6-b269-01a3cd025a3b","2026-02-04T07:42:23.536Z","2026-02-04T07:42:23.536Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Update GCS bucket strategy","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/865bhvemf","backlog","medium",,,"37000","0"
+"019c279a-35e2-773a-8049-da5d82c374b1","2026-02-04T07:42:23.714Z","2026-02-04T07:42:23.714Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","When existing data exists from a runsheet, confirm if user wants to reuse it.","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/863gukgcz","backlog","medium",,,"38000","0"
+"019c279a-368c-77a0-9ff7-b2164b2b700e","2026-02-04T07:42:23.884Z","2026-02-04T07:42:23.884Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Image Rotation - Page by Page Basis - Label Studio?","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8684xuu6v","backlog","medium",,,"39000","0"
+"019c279a-3731-72b3-a0a7-75af8fb3fc4f","2026-02-04T07:42:24.049Z","2026-02-04T07:42:24.049Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Update old reactive component to v18","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8684wpxta","backlog","medium",,,"40000","0"
+"019c279a-37e1-7040-898f-c070db20b507","2026-02-04T07:42:24.225Z","2026-02-04T07:42:24.225Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","RaziExchange API Integration","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685x12ef","backlog","medium",,,"41000","0"
+"019c279a-3893-7577-986c-d9ce12e5ce99","2026-02-04T07:42:24.403Z","2026-02-04T07:42:24.403Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Implementing Google Analytics And Getting More Granular Tracking of Actions","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685nfmpk","backlog","medium",,,"42000","0"
+"019c279a-393c-75b3-8554-603781ed80fe","2026-02-04T07:42:24.572Z","2026-02-04T07:42:24.572Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Investigate Deaf Smith missing rec info","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686m7gzr","backlog","medium",,,"43000","0"
+"019c279a-39e1-736f-9b18-51fb2c6b43cb","2026-02-04T07:42:24.737Z","2026-02-04T07:42:24.737Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Fix version bumps on deploys","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687y51eu","backlog","medium",,,"44000","0"
+"019c279a-3a84-7731-be4d-b6aa23c206ef","2026-02-04T07:42:24.900Z","2026-02-04T07:42:24.900Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Update queue API to actually return health/ktlo info like API does","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687y51xu","backlog","medium",,,"45000","0"
+"019c279a-3b33-728e-b928-bc62c5a9ac05","2026-02-04T07:42:25.075Z","2026-02-04T07:42:25.075Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Add dashboard feature to switch between different deed parser models per new functionality in BE","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/868715939","backlog","medium",,,"46000","0"
+"019c279a-3be1-7698-be04-92857f45d6ea","2026-02-04T07:42:25.250Z","2026-02-04T07:42:25.250Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Investigate utilizing Elastic APM for web errors","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687y5368","backlog","medium",,,"47000","0"
+"019c279a-3c8c-74c9-930b-360c7b448648","2026-02-04T07:42:25.420Z","2026-02-04T07:42:25.420Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Purge Check Report that's older than 2 months","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8688e5qkr","backlog","medium",,,"48000","0"
+"019c279a-3d34-7096-ab50-928ee7c17dd6","2026-02-04T07:42:25.588Z","2026-02-04T07:42:25.588Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Better Display Where Match on ES Broad Search Came From","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685efa4b","backlog","medium",,,"49000","0"
+"019c279a-3de8-75b9-8c10-434440dccec1","2026-02-04T07:42:25.768Z","2026-02-04T07:42:25.768Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Add a Text Search box in the annotations screen so that users can search a document for specific text (e.g. a parcel ID number)","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/86859nfk8","backlog","medium",,,"50000","0"
+"019c279a-3e8f-76fe-ac25-f7ce2d4eb14f","2026-02-04T07:42:25.935Z","2026-02-04T07:42:25.935Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Add button to process OCR only, using new Deed Parser endpoint","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685hyc1j","backlog","medium",,,"51000","0"
+"019c279a-3f39-742e-8970-0e444fb3b7f4","2026-02-04T07:42:26.105Z","2026-02-04T07:42:26.105Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Warning Screen for Identical Documents Uploaded","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8685fuz7b","backlog","medium",,,"52000","0"
+"019c279a-3fe4-7651-bcdb-3c8ce5ecb319","2026-02-04T07:42:26.276Z","2026-02-04T07:42:26.276Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Edit Annotation OCR Results","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/86867595c","backlog","medium",,,"53000","0"
+"019c279a-408d-73f5-b674-b578f37577d2","2026-02-04T07:42:26.445Z","2026-02-04T07:42:26.445Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Update Document, Refresh Page, Verify All Annotation Edits Persist","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/86867595e","backlog","medium",,,"54000","0"
+"019c279a-414e-7496-b0f6-5553268b4196","2026-02-04T07:42:26.639Z","2026-02-04T07:42:26.639Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Verify All Annotated Data Displaying on Doc Search Page","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/86867595k","backlog","medium",,,"55000","0"
+"019c279a-4203-7318-b602-0c7021aa5f69","2026-02-04T07:42:26.819Z","2026-02-04T07:42:26.819Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Remove react-tooltip to use daisyui tooltip","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686fj582","backlog","medium",,,"56000","0"
+"019c279a-42a4-72ab-b595-78464b6f75d8","2026-02-04T07:42:26.980Z","2026-02-04T07:42:26.980Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","On LabelStudio, change the cursor when Rectangle is selected to 'crosshair'","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686hkv1d","backlog","medium",,,"57000","0"
+"019c279a-434e-7418-96a3-677a44b4ad0d","2026-02-04T07:42:27.150Z","2026-02-04T07:42:27.150Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","On LabelStudio, Scroll to the bounding box whenever an annotation is selected on the right side","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686hkwkj","backlog","medium",,,"58000","0"
+"019c279a-43ff-7613-863b-ac2e9d814519","2026-02-04T07:42:27.327Z","2026-02-04T07:42:27.327Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Logical Check for Grantors/Grantees' Names","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686rayf4","backlog","medium",,,"59000","0"
+"019c279a-44ae-7608-8d95-8cafb5521001","2026-02-04T07:42:27.502Z","2026-02-04T07:42:27.503Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Create separate buckets for saving document images for each environment","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8688zz7q9","backlog","medium",,,"60000","0"
+"019c279a-4555-7522-8d0b-5ae508f6e989","2026-02-04T07:42:27.669Z","2026-02-04T07:42:27.669Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Add a new column into the title chainer UI to determine whether its dynamic or not","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686pma0e","backlog","medium",,,"61000","0"
+"019c279a-45fe-75b1-a618-170d53d721d6","2026-02-04T07:42:27.838Z","2026-02-04T07:42:27.838Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","SendGrid domain doesn't have a valid TLS cert","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/86870nkup","backlog","medium",,,"62000","0"
+"019c279a-46ae-75a7-9400-046b51515c7f","2026-02-04T07:42:28.015Z","2026-02-04T07:42:28.015Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Structurize out of network check annotation process (MWF update)","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8686ad33g","backlog","medium",,,"63000","0"
+"019c279a-4759-7036-a993-b38e50b9799e","2026-02-04T07:42:28.185Z","2026-02-04T07:42:28.185Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","SendGrid redirect domain SSL certificate flagged","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/868728j14","backlog","medium",,,"64000","0"
+"019c279a-4809-7502-aa20-6cca9a91a6fb","2026-02-04T07:42:28.362Z","2026-02-04T07:42:28.362Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Export all users to a spreadsheet for backup","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/86878ra72","backlog","medium",,,"65000","0"
+"019c279a-48b3-71de-adc3-ce9197bd1743","2026-02-04T07:42:28.531Z","2026-02-04T07:42:28.531Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Investigate page flicker on web","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687a5yge","backlog","medium",,,"66000","0"
+"019c279a-4961-727a-8cf7-19a58a36398a","2026-02-04T07:42:28.705Z","2026-02-04T07:42:28.705Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Fix county collection search highlighting bbox scaling","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687ak4tn","backlog","medium",,,"67000","0"
+"019c279a-4a03-7352-a823-5e1cb9f250b4","2026-02-04T07:42:28.867Z","2026-02-04T07:42:28.867Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Investigate failing runsheet exports","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687bpa9k","backlog","medium",,,"68000","0"
+"019c279a-4aaf-7292-93f8-e3393646ec0d","2026-02-04T07:42:29.039Z","2026-02-04T07:42:29.039Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Enable cloud firewalls to restrict region access","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687e0m6m","backlog","medium",,,"69000","0"
+"019c279a-4b55-74b0-b4c0-3dcd81c4774c","2026-02-04T07:42:29.205Z","2026-02-04T07:42:29.205Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Queue CRON job to check parity between database & ElasticSearch","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687efjx7","backlog","medium",,,"70000","0"
+"019c279a-4c00-7499-887d-bac9e0f683e5","2026-02-04T07:42:29.376Z","2026-02-04T07:42:29.376Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Create integration test to validate collection flow","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687eqzy4","backlog","medium",,,"71000","0"
+"019c279a-4cb3-76ec-be63-4a7ecb45c57f","2026-02-04T07:42:29.555Z","2026-02-04T07:42:29.555Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Create integration test to validate runsheet flow","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687er01m","backlog","medium",,,"72000","0"
+"019c279a-4d5d-76aa-8140-dbd5290908ff","2026-02-04T07:42:29.725Z","2026-02-04T07:42:29.725Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Inform the user that a document within a runsheet got annotation updates","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687f9jw1","backlog","medium",,,"73000","0"
+"019c279a-4e03-7346-b4a6-b5b3326d5d56","2026-02-04T07:42:29.891Z","2026-02-04T07:42:29.891Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Check on Elastic Search Dashboard. Some queries seem to be failing","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687v8k69","backlog","medium",,,"74000","0"
+"019c279a-4eb0-74a9-aef1-320e0ba323c2","2026-02-04T07:42:30.064Z","2026-02-04T07:42:30.064Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Fork Label Studio","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687zcazp","backlog","medium",,,"75000","0"
+"019c279a-4f52-7278-bfee-0d4c4ce0f95a","2026-02-04T07:42:30.226Z","2026-02-04T07:42:30.226Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Make bounding boxes updatable after repositioning in document editor","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687z3w7j","backlog","medium",,,"76000","0"
+"019c279a-5009-71cb-b668-0582a0544590","2026-02-04T07:42:30.409Z","2026-02-04T07:42:30.409Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Investigate database options","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8687et4a0","backlog","medium",,,"77000","0"
+"019c279a-50b2-7079-8cd9-8b9458ac300d","2026-02-04T07:42:30.578Z","2026-02-04T07:42:30.578Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","[Vanta] Remediate ""General security awareness training records tracked"" for Wes Bliss","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/868839q8b","backlog","medium",,,"78000","0"
+"019c279a-5157-70f0-90fb-16c4ca6fcb8a","2026-02-04T07:42:30.743Z","2026-02-04T07:42:30.743Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","[Vanta] Remediate ""General security awareness training records tracked"" for John Michael Wilshusen","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/868839rwd","backlog","medium",,,"79000","0"
+"019c279a-51fe-76ab-ada1-46f7f609cd9d","2026-02-04T07:42:30.910Z","2026-02-04T07:42:30.910Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Send alert to monitoring channel whenever deedparse fails to process a document","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8688e15df","backlog","medium",,,"80000","0"
+"019c279a-52a5-73ac-9885-0b536c1767f9","2026-02-04T07:42:31.077Z","2026-02-04T07:42:31.077Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","By default, Runsheet fields should hide Full Grantor and Full Grantee","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8688d6f1j","backlog","medium",,,"81000","0"
+"019c279a-534f-7383-ae77-9c625d4d1288","2026-02-04T07:42:31.247Z","2026-02-04T07:42:31.247Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Documents not showing if user has Annotator Role and its not assigned to any","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8688dd355","backlog","medium",,,"82000","0"
+"019c279a-53fc-7785-b323-5dc898697854","2026-02-04T07:42:31.420Z","2026-02-04T07:42:31.420Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Incorporate state court case search API for current owners","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8688f40aa","backlog","medium",,,"83000","0"
+"019c279a-54a0-752c-bd24-995b1b77f44e","2026-02-04T07:42:31.584Z","2026-02-04T07:42:31.584Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Mark property as SOLD","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8688f8ny4","backlog","medium",,,"84000","0"
+"019c279a-5556-7509-854c-036886ffbe0e","2026-02-04T07:42:31.766Z","2026-02-04T07:42:31.766Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Add possibility to allow checks for deals that are being evaluated but have not been acquired","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8688f8pdt","backlog","medium",,,"85000","0"
+"019c279a-562b-7748-abf7-6aee95e12e50","2026-02-04T07:42:31.979Z","2026-02-04T07:42:31.979Z",,"019c25bf-2c88-7317-a971-da87c8c8eebb","019c2785-c6c5-70cb-b572-b529dbbd0424","Add feature to detect/handle duplicate documents","Imported from ClickUp
+
+Original URL: https://app.clickup.com/t/8688ne5zn","backlog","medium",,,"86000","0"

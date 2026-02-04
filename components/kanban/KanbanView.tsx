@@ -6,7 +6,6 @@ import type { CreateProjectResult } from '@/types/kanban.types'
 import { KanbanBoardDnd } from './KanbanBoardDnd'
 import { FolderPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { KanbanLaneManager } from './KanbanLaneManager'
 import { useQuery } from '@tanstack/react-query'
 
 interface KanbanViewProps {
@@ -73,12 +72,6 @@ export function KanbanView({
                         {teamName}
                     </h1>
                 </div>
-                {canCreateTask && (
-                    <KanbanLaneManager
-                        projectId={selectedProjectId}
-                        lanes={lanes}
-                        onLanesChange={setLanes}/>
-                )}
             </header>
             <div className="flex-1 overflow-hidden px-6 py-5">
                 {projects.length === 0 ? (
@@ -106,6 +99,7 @@ export function KanbanView({
                         teamId={teamId}
                         teamMembers={teamMembers}
                         queryKey={tasksQueryKey}
+                        onLanesChange={setLanes}
                         onRefresh={() => router.refresh()}/>
                 )}
             </div>

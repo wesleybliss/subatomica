@@ -12,7 +12,11 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { getDefaultTeamId, getTeamById, mockTeams } from '@/lib/constants'
 
-const TeamsAccountMenu = () => {
+type TeamsAccountMenuProps = {
+    collapsed?: boolean
+}
+
+const TeamsAccountMenu = ({ collapsed = false }: TeamsAccountMenuProps) => {
     const pathname = usePathname()
     const router = useRouter()
     
@@ -34,14 +38,16 @@ const TeamsAccountMenu = () => {
     }
     
     return (
-        <div className="p-4">
+        <div className={collapsed ? 'p-3' : 'p-4'}>
             <DropdownMenu>
                 <DropdownMenuTrigger
                     render={(
                         <button
                             type="button"
+                            title={collapsed ? activeTeamName : undefined}
                             className={[
-                                'flex items-center gap-2 w-full text-left',
+                                'flex items-center w-full text-left',
+                                collapsed ? 'justify-center' : 'gap-2',
                                 'hover:bg-sidebar-accent rounded-lg p-2 transition-colors',
                             ].join(' ')} />
                     )}>
@@ -50,10 +56,14 @@ const TeamsAccountMenu = () => {
                             {activeTeamInitial}
                         </span>
                     </div>
-                    <span className="text-sm font-medium text-sidebar-foreground">
-                        {activeTeamName}
-                    </span>
-                    <ChevronDown size={18} className="text-muted-foreground" />
+                    {!collapsed && (
+                        <>
+                            <span className="text-sm font-medium text-sidebar-foreground">
+                                {activeTeamName}
+                            </span>
+                            <ChevronDown size={18} className="text-muted-foreground" />
+                        </>
+                    )}
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-56">
                     {mockTeams.map(team => (

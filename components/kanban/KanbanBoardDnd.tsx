@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Task, TaskLane, TaskStatus, TeamMemberProfile } from '@/types'
-import { KanbanColumn } from './KanbanColumnDnd'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { createTask, updateTaskOrder } from '@/lib/db/actions/tasks'
+import { createTaskLane, deleteTaskLane, updateTaskLane } from '@/lib/db/actions/lanes'
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -15,6 +15,8 @@ import {
     isTaskDragData,
     isTaskDropData,
 } from './dragTypes'
+import { DropIndicatorData } from '@/types/kanban.types'
+import KanbanTaskLane from '@/components/kanban/KanbanTaskLane'
 
 export interface KanbanBoardProps {
     tasks: Task[]
@@ -24,6 +26,7 @@ export interface KanbanBoardProps {
     teamMembers: TeamMemberProfile[]
     onRefresh?: () => void
     queryKey?: ReadonlyArray<string | number | boolean | Record<string, unknown>>
+    onLanesChange?: (lanes: TaskLane[]) => void
 }
 
 type UpdateTaskOrderInput = {
@@ -45,14 +48,19 @@ export function KanbanBoardDnd({
     teamMembers,
     onRefresh,
     queryKey,
+    onLanesChange,
 }: KanbanBoardProps) {
     const [localTasks, setLocalTasks] = useState<Task[]>(tasks)
     const [isCreating, setIsCreating] = useState<string | null>(null)
-    const [dropIndicator, setDropIndicator] = useState<{
-        status: TaskStatus
-        taskId?: string
-    } | null>(null)
+    const [isAddingLane, setIsAddingLane] = useState(false)
+    const [dropIndicator, setDropIndicator] = useState<DropIndicatorData | null>(null)
     const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null)
+    const [editingLaneId, setEditingLaneId] = useState<string | null>(null)
+    const [editingLaneName, setEditingLaneName] = useState('')
+    const [savingLaneId, setSavingLaneId] = useState<string | null>(null)
+    const [deletingLaneId, setDeletingLaneId] = useState<string | null>(null)
+    const canManageLanes = Boolean(projectId && onLanesChange)
+    const canDeleteLane = lanes.length > 1
     const queryClient = useQueryClient()
     const activeQueryKey = useMemo(() => queryKey || ['tasks'], [queryKey])
     useEffect(() => {
@@ -281,43 +289,97 @@ export function KanbanBoardDnd({
             setIsCreating(null)
         }
     }
+    const handleAddLane = async () => {
+        if (!projectId || !onLanesChange) return
+        setIsAddingLane(true)
+        try {
+            const created = await createTaskLane(projectId, 'New Lane', 'bg-muted')
+            const next = [...lanes, created].sort((a, b) => a.order - b.order)
+            onLanesChange(next)
+        } catch (error) {
+            console.error('[v0] Failed to create lane:', error)
+        } finally {
+            setIsAddingLane(false)
+        }
+    }
+    const handleStartRenameLane = (lane: TaskLane) => {
+        setEditingLaneId(lane.id)
+        setEditingLaneName(lane.name)
+    }
+    const handleCancelRenameLane = () => {
+        setEditingLaneId(null)
+        setEditingLaneName('')
+    }
+    const handleRenameLane = async (laneId: string) => {
+        if (!onLanesChange) return
+        const nextName = editingLaneName.trim()
+        if (!nextName) {
+            handleCancelRenameLane()
+            return
+        }
+        setSavingLaneId(laneId)
+        try {
+            const updated = await updateTaskLane(laneId, { name: nextName })
+            const next = lanes.map(lane => (lane.id === laneId ? updated : lane))
+            onLanesChange(next)
+        } catch (error) {
+            console.error('[v0] Failed to update lane:', error)
+        } finally {
+            setSavingLaneId(null)
+            handleCancelRenameLane()
+        }
+    }
+    const handleDeleteLane = async (laneId: string) => {
+        if (!onLanesChange || !canDeleteLane) return
+        setDeletingLaneId(laneId)
+        try {
+            await deleteTaskLane(laneId)
+            const next = lanes.filter(lane => lane.id !== laneId)
+            onLanesChange(next)
+        } catch (error) {
+            console.error('[v0] Failed to delete lane:', error)
+        } finally {
+            setDeletingLaneId(null)
+        }
+    }
     return (
         <div className="flex gap-4 h-full overflow-x-auto pb-4">
-            {lanes.map(lane => {
-                const statusTasks = localTasks
-                    .filter(t => t.status === lane.key)
-                    .sort((a, b) => a.order - b.order)
-                return (
-                    <div key={lane.id} className="flex-shrink-0 w-[320px]">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                                <div className={`w-2 h-2 rounded-full ${lane.color || 'bg-muted'}`} />
-                                <h3 className="text-sm font-medium text-foreground">
-                                    {lane.name}
-                                </h3>
-                                <span className="text-xs text-muted-foreground">
-                                    {statusTasks.length}
-                                </span>
-                            </div>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 w-6 p-0"
-                                onClick={() => handleCreateTask(lane.key)}
-                                disabled={isCreating === lane.key}>
-                                <Plus className="w-3 h-3" />
-                            </Button>
-                        </div>
-                        <KanbanColumn
-                            status={lane.key}
-                            tasks={statusTasks}
-                            teamId={teamId}
-                            teamMembers={teamMembers}
-                            dropIndicator={dropIndicator}
-                            draggingTaskId={draggingTaskId}/>
-                    </div>
-                )
-            })}
+            {lanes.map(it => (
+                <KanbanTaskLane
+                    key={it.id}
+                    lane={it}
+                    tasks={tasks}
+                    teamId={teamId}
+                    teamMembers={teamMembers}
+                    dropIndicator={dropIndicator}
+                    draggingTaskId={draggingTaskId}
+                    editingLaneId={editingLaneId}
+                    editingLaneName={editingLaneName}
+                    setEditingLaneName={setEditingLaneName}
+                    isCreating={isCreating}
+                    savingLaneId={savingLaneId}
+                    canManageLanes={canManageLanes}
+                    canDeleteLane={canDeleteLane}
+                    deletingLaneId={deletingLaneId}
+                    handleCreateTask={handleCreateTask}
+                    handleStartRenameLane={handleStartRenameLane}
+                    handleRenameLane={handleRenameLane}
+                    handleCancelRenameLane={handleCancelRenameLane}
+                    handleDeleteLane={handleDeleteLane} />
+            ))}
+            {canManageLanes && (
+                <div className="shrink-0 flex items-start">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 px-2 text-xs"
+                        onClick={handleAddLane}
+                        disabled={isAddingLane}>
+                        <Plus className="h-4 w-4" />
+                        Add lane
+                    </Button>
+                </div>
+            )}
         </div>
     )
 }

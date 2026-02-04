@@ -50,7 +50,7 @@ export function KanbanColumn({
     return (
         <div
             ref={columnRef}
-            className="space-y-2 min-h-[200px] bg-muted/30 rounded-lg p-2 pb-10">
+            className="space-y-2 min-h-50 bg-muted/30 rounded-lg p-2 pb-10">
             {tasks.map((task, index) => (
                 <Fragment key={task.id}>
                     {indicatorIndex === index && (
