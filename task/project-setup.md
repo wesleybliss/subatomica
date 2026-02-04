@@ -64,3 +64,4 @@
 - [ ] Auto-generate openapi.json for the bot API
 - [ ] Stub Vercel storage integration
 - [ ] Add team role permissions (owner delete project, members edit tasks)
+- [ ] Instead of task lanes being hard-coded, they should be defined in the database. When a user creates or opens a project, if it doesn't have any task lanes defined, it should create the default ones. The UI should allow the user to add, edit, rename, delete, etc. any lanes they want.
