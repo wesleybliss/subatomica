@@ -1,17 +1,18 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { Task } from '@/types'
+import { Task, TaskStatus } from '@/types'
 import { Flag, Calendar } from 'lucide-react'
 import Link from 'next/link'
 import { updateTask, deleteTask } from '@/lib/db/actions/tasks'
 
 interface KanbanCardDndProps {
     task: Task
-    onDrop: (taskId: string, newStatus: string, targetTaskId?: string) => void
+    onDrop: (taskId: string, newStatus: TaskStatus, targetTaskId?: string) => Promise<void> | void
+    teamId?: string
 }
 
-export function KanbanCardDnd({ task, onDrop }: KanbanCardDndProps) {
+export function KanbanCardDnd({ task, onDrop, teamId }: KanbanCardDndProps) {
     const cardRef = useRef<HTMLDivElement>(null)
     const [isDragging, setIsDragging] = useState(false)
     const [isEditing, setIsEditing] = useState(false)
@@ -65,6 +66,8 @@ export function KanbanCardDnd({ task, onDrop }: KanbanCardDndProps) {
 
     // Format project ID display
     const projectDisplay = task.projectId?.slice(0, 8).toUpperCase() || 'TASK'
+    const teamSegment = teamId ?? task.projectId
+    const taskHref = `/t/${teamSegment}/p/${task.projectId}/s/${task.id}`
 
     return (
         <div
@@ -80,7 +83,7 @@ export function KanbanCardDnd({ task, onDrop }: KanbanCardDndProps) {
         >
             <div className="flex items-start justify-between gap-2 mb-2">
                 <Link
-                    href={`/t/${task.projectId}/p/${task.projectId}/s/${task.id}`}
+                    href={taskHref}
                     className="text-xs text-muted-foreground hover:text-primary transition-colors font-mono"
                     onClick={(e) => e.stopPropagation()}
                 >

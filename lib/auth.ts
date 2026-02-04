@@ -21,7 +21,7 @@ const timestampFields = {
 
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
-        provider: 'pg',
+        provider: process.env.DATABASE_DIALECT === 'turso' ? 'sqlite' : 'pg',
         schema,
     }),
     advanced: {
@@ -65,12 +65,13 @@ export const auth = betterAuth({
                 })
         }),
         after: createAuthMiddleware(async (ctx) => {
+            
             // Ensure user has a workspace after signup or signin
             if (ctx.path === '/sign-up/email' || ctx.path === '/sign-in/email') {
-                const user = ctx.context?.user
-                if (user?.id) {
+                const user = ctx.context?.newSession?.user
+                console.log('Ensure user has a workspace after signup or signin', user, ctx)
+                if (user?.id)
                     await ensureUserHasTeam(user.id)
-                }
             }
         }),
     },
@@ -78,9 +79,5 @@ export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL.replace(/\/$/, ''),
     trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(','),
 })
-console.log('wtf', {
-    secret: process.env.BETTER_AUTH_SECRET,
-    baseURL: process.env.BETTER_AUTH_URL.replace(/\/$/, ''),
-    trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(','),
-})
+
 export type Session = typeof auth.$Infer.Session

@@ -1,16 +1,17 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
-import { Task } from '@/types'
+import { Task, TaskStatus } from '@/types'
 import { KanbanCardDnd } from './KanbanCardDnd'
 
 interface KanbanColumnProps {
-    status: string
+    status: TaskStatus
     tasks: Task[]
-    onDrop: (taskId: string, newStatus: string, targetTaskId?: string) => void
+    onDrop: (taskId: string, newStatus: TaskStatus, targetTaskId?: string) => Promise<void> | void
+    teamId?: string
 }
 
-export function KanbanColumn({ status, tasks, onDrop }: KanbanColumnProps) {
+export function KanbanColumn({ status, tasks, onDrop, teamId }: KanbanColumnProps) {
     const columnRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -50,6 +51,7 @@ export function KanbanColumn({ status, tasks, onDrop }: KanbanColumnProps) {
                     key={task.id}
                     task={task}
                     onDrop={onDrop}
+                    teamId={teamId}
                 />
             ))}
             {tasks.length === 0 && (

@@ -37,6 +37,15 @@ export const mockTasks: Task[] = [
         title: 'Task 1',
         userId: 'user-1',
         projectId: 'project-1',
+        content: '',
+        status: 'backlog',
+        priority: 'medium',
+        dueDate: null,
+        assigneeId: null,
+        order: 1000,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        deletedAt: null,
     },
 ]
 

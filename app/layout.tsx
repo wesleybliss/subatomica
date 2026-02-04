@@ -6,6 +6,7 @@ import type { Metadata } from 'next'
 import * as reactWirePersisted from 'react-wire-persisted'
 import DebugTools from '@/components/debug/DebugTools'
 import { NS } from '@/lib/constants'
+import DebugClient from '@/components/DebugClient'
 
 reactWirePersisted.setNamespace(NS)
 
@@ -25,13 +26,14 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode
 }>) {
+    
     return (
         <html lang="en" data-arp="" className="dark">
             <head>
                 <title>Sub Atomica</title>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
+                
                 <link
                     href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap"
                     rel="stylesheet"
@@ -39,11 +41,13 @@ export default function RootLayout({
             </head>
             <body className={`font-sans antialiased`}>
                 {children}
-
+                
                 {VERCEL_ANALYTICS_ENABLED && <Analytics />}
                 
+                <DebugClient />
                 <DebugTools />
             </body>
         </html>
     )
+    
 }

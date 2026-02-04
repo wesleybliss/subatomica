@@ -16,9 +16,8 @@ export default async function TeamPage({ params }: TeamPageProps) {
         getProjects(teamId),
     ])
 
-    if (!team) {
+    if (!team)
         return <div className="p-6">Team not found</div>
-    }
 
     return (
         <KanbanView

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Task } from '@/types'
+import { Task, TaskStatus } from '@/types'
 import { KanbanColumn } from './KanbanColumnDnd'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
@@ -14,7 +14,7 @@ export interface KanbanBoardProps {
     onRefresh?: () => void
 }
 
-const STATUSES = [
+const STATUSES: Array<{ id: TaskStatus; label: string; color: string }> = [
     { id: 'backlog', label: 'Backlog', color: 'bg-muted' },
     { id: 'todo', label: 'Todo', color: 'bg-blue-500/20' },
     { id: 'in-progress', label: 'In Progress', color: 'bg-primary/20' },
@@ -29,7 +29,7 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
         setLocalTasks(tasks)
     }, [tasks])
 
-    const handleDrop = async (taskId: string, newStatus: string, targetTaskId?: string) => {
+    const handleDrop = async (taskId: string, newStatus: TaskStatus, targetTaskId?: string) => {
         console.log('[v0] Drag drop:', { taskId, newStatus, targetTaskId })
 
         const task = localTasks.find(t => t.id === taskId)
@@ -83,7 +83,7 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
         }
     }
 
-    const handleCreateTask = async (status: string) => {
+    const handleCreateTask = async (status: TaskStatus) => {
         if (!projectId) return
 
         setIsCreating(status)
@@ -136,6 +136,7 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
                             status={status.id}
                             tasks={statusTasks}
                             onDrop={handleDrop}
+                            teamId={teamId}
                         />
                     </div>
                 )

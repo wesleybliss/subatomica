@@ -1,7 +1,10 @@
-import { mockTeams } from '@/lib/constants'
 import Link from 'next/link'
+import { getCurrentUser } from '@/lib/db/actions/shared'
+import { getUserTeams } from '@/lib/db/actions/teams'
 
-export default function TeamsPage() {
+export default async function TeamsPage() {
+    const user = await getCurrentUser()
+    const teams = await getUserTeams(user.id)
     
     return (
         
@@ -13,7 +16,7 @@ export default function TeamsPage() {
             
             <div className="mt-8">
                 <ul>
-                    {mockTeams.map(team => (
+                    {teams.map(team => (
                         <li key={team.id}>
                             <Link href={`/t/${team.id}`}>
                                 {team.name}
