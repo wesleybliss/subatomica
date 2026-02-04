@@ -26,7 +26,7 @@ export default function RootLayout({
     children: React.ReactNode
 }>) {
     return (
-        <html lang="en" data-arp="">
+        <html lang="en" data-arp="" className="dark">
             <head>
                 <title>Sub Atomica</title>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
