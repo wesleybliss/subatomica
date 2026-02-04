@@ -13,6 +13,7 @@ import {
     Settings,
     LayoutGrid,
 } from 'lucide-react'
+import TeamsAccountMenu from '@/components/PrimarySidebar/TeamsAccountMenu'
 
 const PrimarySidebar = ({ teamId }: { teamId: string }) => {
     const pathname = usePathname()
@@ -31,25 +32,7 @@ const PrimarySidebar = ({ teamId }: { teamId: string }) => {
     return (
         <div className="w-60 h-screen bg-sidebar border-r border-sidebar-border flex flex-col">
             {/* Header */}
-            <div className="p-4">
-                <button
-                    type="button"
-                    className="flex items-center gap-2 w-full text-left hover:bg-sidebar-accent rounded-lg p-2 transition-colors"
-                >
-                    <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-                        <span className="text-xs font-bold text-primary-foreground">A</span>
-                    </div>
-                    <span className="text-sm font-medium text-sidebar-foreground">Acme Projects</span>
-                    <svg
-                        className="w-4 h-4 ml-auto text-muted-foreground"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-            </div>
+            <TeamsAccountMenu />
 
             {/* Navigation */}
             <nav className="flex-1 overflow-y-auto p-3">

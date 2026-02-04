@@ -45,3 +45,22 @@
 - Use the best drag & drop framework (maybe @atlaskit/pragmatic-drag-and-drop)
 - Theme support for light, dark, and system (auto)
 - Derive colors from the provided mockup. You can use some creative liberty, doesn't need to match exactly
+
+---
+
+## Remaining Work Checklist
+- [ ] ]
+- [ ] Verify Next.js App Router route structure `/t/:teamId/p/:projectId/s/:taskId`
+- [ ] Add ThemeProvider with Light, Dark, System modes
+- [ ] Define Drizzle schema in `lib/db/` with uuid primary keys for Teams, Projects, Tasks, Comments
+- [ ] Implement BetterAuth login hook to auto-create Personal team
+- [ ] Build Kanban view with @atlaskit/pragmatic-drag-and-drop columns
+- [ ] Add midpoint order calculation for between-task drops
+- [ ] Implement Timeline/Gantt view (abui.io or equivalent)
+- [ ] Create Task Detail modal/slide-over with TipTap editor
+- [ ] Add assignee dropdown filtered by team members
+- [ ] Set up TanStack Query for optimistic drag-and-drop updates
+- [ ] Create /api/v1/bot REST endpoints with X-API-KEY or session auth
+- [ ] Auto-generate openapi.json for the bot API
+- [ ] Stub Vercel storage integration
+- [ ] Add team role permissions (owner delete project, members edit tasks)
