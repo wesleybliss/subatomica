@@ -32,6 +32,11 @@ const STATUSES: Array<{ id: TaskStatus; label: string; color: string }> = [
 export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBoardProps) {
     const [localTasks, setLocalTasks] = useState<Task[]>(tasks)
     const [isCreating, setIsCreating] = useState<string | null>(null)
+    const [dropIndicator, setDropIndicator] = useState<{
+        status: TaskStatus
+        taskId?: string
+    } | null>(null)
+    const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null)
     useEffect(() => {
         setLocalTasks(tasks)
     }, [tasks])
@@ -86,7 +91,51 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
         }
     }, [localTasks, onRefresh, tasks])
     useEffect(() => {
-        return monitorForElements({
+        const monitor = monitorForElements as unknown as (args: {
+            onDragStart?: (args: { source: { data: Record<string, unknown> } }) => void
+            onDrag?: (args: {
+                location: { current: { dropTargets: Array<{ data: unknown }> } }
+            }) => void
+            onDrop?: (args: {
+                source: { data: Record<string, unknown> }
+                location: { current: { dropTargets: Array<{ data: unknown }> } }
+            }) => void
+            onDragEnd?: () => void
+        }) => () => void
+        return monitor({
+            onDragStart: (args: { source: { data: Record<string, unknown> } }) => {
+                if (isTaskDragData(args.source.data))
+                    setDraggingTaskId(args.source.data.taskId)
+            },
+            onDrag: (args: {
+                location: { current: { dropTargets: Array<{ data: unknown }> } }
+            }) => {
+                const dropTargets = args.location.current.dropTargets
+                if (!dropTargets.length) {
+                    setDropIndicator(null)
+                    return
+                }
+                const taskTarget = dropTargets.find((target: { data: unknown }) =>
+                    isTaskDropData(target.data as Record<string, unknown>),
+                )
+                if (taskTarget?.data && isTaskDropData(taskTarget.data as Record<string, unknown>)) {
+                    const taskTargetData = taskTarget.data as TaskDropData
+                    setDropIndicator({
+                        status: taskTargetData.status,
+                        taskId: taskTargetData.taskId,
+                    })
+                    return
+                }
+                const columnTarget = dropTargets.find((target: { data: unknown }) =>
+                    isColumnDropData(target.data as Record<string, unknown>),
+                )
+                if (columnTarget?.data && isColumnDropData(columnTarget.data as Record<string, unknown>)) {
+                    const columnTargetData = columnTarget.data as ColumnDropData
+                    setDropIndicator({ status: columnTargetData.status })
+                    return
+                }
+                setDropIndicator(null)
+            },
             onDrop: (args: {
                 source: { data: Record<string, unknown> }
                 location: { current: { dropTargets: Array<{ data: unknown }> } }
@@ -119,6 +168,12 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
                         columnData.status,
                     )
                 }
+                setDropIndicator(null)
+                setDraggingTaskId(null)
+            },
+            onDragEnd: () => {
+                setDropIndicator(null)
+                setDraggingTaskId(null)
             },
         })
     }, [handleDrop])
@@ -169,7 +224,9 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
                         <KanbanColumn
                             status={status.id}
                             tasks={statusTasks}
-                            teamId={teamId}/>
+                            teamId={teamId}
+                            dropIndicator={dropIndicator}
+                            draggingTaskId={draggingTaskId}/>
                     </div>
                 )
             })}
