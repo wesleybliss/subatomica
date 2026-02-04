@@ -23,6 +23,12 @@ Agent guidelines for automated agents in this repo.
 - **Environment:** Node.js environment for tooling/SSR, Browser for the client-side app.
 - **Files:** Use kebab-case for filenames generally, but match existing conventions (e.g., `page.tsx`, `layout.tsx`, `PrimarySidebar.tsx`).
 
+## Memory and Learnings
+
+- When making decisions, you can grep the `task/progress.txt` file for specific things (do not load it all into context).
+- When a task is complete, if there's something unique, interesting, or helpful you figured out, you can add or update it in the `task/progress.txt` file for future reference and assistance.
+- Keep the `task/progress.txt` file brief - these learnings are for you, not me.
+
 ## Commands
 
 - **Development:** `pnpm dev` (Runs Next.js dev server)
