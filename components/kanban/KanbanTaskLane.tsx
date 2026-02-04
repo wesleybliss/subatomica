@@ -58,7 +58,7 @@ const KanbanTaskLane = ({
     
     return (
         
-        <div className="shrink-0 w-[320px]">
+        <div className="shrink-0 w-[320px] flex flex-col h-full min-h-0">
             
             <div className="flex items-center justify-between mb-3">
                 
@@ -121,13 +121,15 @@ const KanbanTaskLane = ({
             
             </div>
             
-            <KanbanColumn
-                status={lane.key}
-                tasks={statusTasks}
-                teamId={teamId}
-                teamMembers={teamMembers}
-                dropIndicator={dropIndicator}
-                draggingTaskId={draggingTaskId} />
+            <div className="flex-1 min-h-0 overflow-y-auto">
+                <KanbanColumn
+                    status={lane.key}
+                    tasks={statusTasks}
+                    teamId={teamId}
+                    teamMembers={teamMembers}
+                    dropIndicator={dropIndicator}
+                    draggingTaskId={draggingTaskId} />
+            </div>
         
         </div>
         
