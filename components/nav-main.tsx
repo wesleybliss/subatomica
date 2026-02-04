@@ -4,7 +4,6 @@ import type { LucideIcon } from 'lucide-react'
 
 import {
     SidebarGroup,
-    SidebarGroupLabel,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
@@ -24,7 +23,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
                 {items.map(item => (
                     <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton
-                            className="px-4 py-4"
+                            className="px-3 py-3"
                             asChild
                             isActive={item.isActive}
                             tooltip={item.title}>
