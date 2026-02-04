@@ -1,8 +1,9 @@
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import SettingsAccountHeader from '@/components/settings/SettingsAccountHeader'
+import { MembersSection } from '@/components/settings/MembersSection'
 import { auth } from '@/lib/auth'
-import { getTeamById } from '@/lib/constants'
+import { getTeamById, getTeamMembers, canManageTeamMembers } from '@/lib/db/actions/teams'
 
 const avatarUrlFor = (name: string, email: string) =>
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
@@ -16,9 +17,14 @@ export default async function WorkspaceSettingsPage({ params }: { params: Promis
     if (!session) redirect('/sign-in')
     
     const { teamId } = await params
-    const team = getTeamById(teamId)
+    const team = await getTeamById(teamId)
     
     if (!team) redirect('/')
+    
+    const [members, canManage] = await Promise.all([
+        getTeamMembers(teamId),
+        canManageTeamMembers(teamId),
+    ])
     
     const name = session.user?.name || session.user?.email || 'User'
     const email = session.user?.email || ''
@@ -55,7 +61,7 @@ export default async function WorkspaceSettingsPage({ params }: { params: Promis
                     <SettingsAccountHeader name={name} email={email} avatarUrl={avatarUrl} />
                 </section>
                 
-                <section>TODO</section>
+                <MembersSection teamId={teamId} members={members} canManage={canManage} />
             
             </div>
         
