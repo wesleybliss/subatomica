@@ -53,6 +53,34 @@ export async function deleteProject(projectId: string): Promise<void> {
         .where(eq(projects.id, projectId))
 }
 
+export async function renameProject(projectId: string, name: string): Promise<void> {
+    const trimmedName = name.trim()
+    if (!trimmedName)
+        throw new Error('Project name is required')
+    const user = await getCurrentUser()
+    const memberTeamIds = db
+        .select({ teamId: teamMembers.teamId })
+        .from(teamMembers)
+        .where(eq(teamMembers.userId, user.id))
+    const accessibleTeamIds = db
+        .select({ id: teams.id })
+        .from(teams)
+        .where(or(
+            eq(teams.ownerId, user.id),
+            inArray(teams.id, memberTeamIds),
+        ))
+    const updated = await db
+        .update(projects)
+        .set({ name: trimmedName })
+        .where(and(
+            eq(projects.id, projectId),
+            inArray(projects.teamId, accessibleTeamIds),
+        ))
+        .returning({ id: projects.id })
+    if (updated.length === 0)
+        throw new Error('Unauthorized')
+}
+
 export async function getProjects(teamId?: string): Promise<Project[]> {
     const user = await getCurrentUser()
     const memberTeamIds = db

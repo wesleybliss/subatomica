@@ -4,9 +4,12 @@ import {
     Folder,
     Forward,
     MoreHorizontal,
+    Pencil,
     Trash2,
     type LucideIcon,
 } from 'lucide-react'
+
+import { useRouter } from 'next/navigation'
 
 import {
     DropdownMenu,
@@ -19,26 +22,47 @@ import {
     SidebarGroup,
     SidebarGroupLabel,
     SidebarMenu,
+    SidebarMenuAction,
     SidebarMenuButton,
     SidebarMenuItem,
     useSidebar,
 } from '@/components/ui/sidebar'
 
 type ProjectItem = {
+    id: string
     name: string
     url: string
     icon: LucideIcon
 }
 
-export function NavProjects({ projects }: { projects: ProjectItem[] }) {
+type NavProjectsProps = {
+    projects: ProjectItem[]
+    onRenameProject?: (projectId: string, name: string) => Promise<void>
+}
+
+export function NavProjects({ projects, onRenameProject }: NavProjectsProps) {
     const { isMobile } = useSidebar()
+    const router = useRouter()
+    const onRename = async (project: ProjectItem) => {
+        if (!onRenameProject) return
+        const nextName = window.prompt('Rename project', project.name)
+        if (!nextName) return
+        const trimmedName = nextName.trim()
+        if (!trimmedName || trimmedName === project.name) return
+        try {
+            await onRenameProject(project.id, trimmedName)
+            router.refresh()
+        } catch (error) {
+            console.error('Unable to rename project', error)
+        }
+    }
     return (
         <SidebarGroup className="group-data-[state=collapsed]/sidebar:hidden">
             <SidebarGroupLabel>Projects</SidebarGroupLabel>
             <SidebarMenu>
                 {projects.map(item => (
-                    <SidebarMenuItem key={item.name}>
-                        <SidebarMenuButton asChild>
+                    <SidebarMenuItem key={item.id} className="flex items-center">
+                        <SidebarMenuButton asChild className="flex-1">
                             <a href={item.url}>
                                 <item.icon />
                                 <span>{item.name}</span>
@@ -46,14 +70,12 @@ export function NavProjects({ projects }: { projects: ProjectItem[] }) {
                         </SidebarMenuButton>
                         <DropdownMenu>
                             <DropdownMenuTrigger
-                                className={[
-                                    'text-sidebar-foreground/60 hover:text-sidebar-foreground',
-                                    'ml-auto inline-flex size-7 items-center justify-center rounded-md',
-                                    'opacity-0 transition-opacity group-hover/sidebar-menu-item:opacity-100',
-                                ].join(' ')}>
-                                <MoreHorizontal />
-                                <span className="sr-only">More</span>
-                            </DropdownMenuTrigger>
+                                render={(
+                                    <SidebarMenuAction showOnHover aria-label="Project options">
+                                        <MoreHorizontal />
+                                        <span className="sr-only">Project options</span>
+                                    </SidebarMenuAction>
+                                )} />
                             <DropdownMenuContent
                                 className="w-48 rounded-lg"
                                 side={isMobile ? 'bottom' : 'right'}
@@ -65,6 +87,10 @@ export function NavProjects({ projects }: { projects: ProjectItem[] }) {
                                 <DropdownMenuItem>
                                     <Forward className="text-muted-foreground" />
                                     <span>Share Project</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => onRename(item)}>
+                                    <Pencil className="text-muted-foreground" />
+                                    <span>Rename Project</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem>

@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "build": "next build",
-        "dev": "next dev",
+        "dev": "PORT=3001 next dev",
         "start": "next start",
         "check": "tsc",
         "db:push": "drizzle-kit push",

@@ -22,6 +22,7 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
     teamName: string
     teams: Team[]
     projects: Project[]
+    onRenameProject?: (projectId: string, name: string) => Promise<void>
     user: {
         name: string
         email: string
@@ -34,6 +35,7 @@ export function AppSidebar({
     teamName,
     teams,
     projects,
+    onRenameProject,
     user,
     ...props
 }: AppSidebarProps) {
@@ -65,6 +67,7 @@ export function AppSidebar({
         },
     ]
     const projectItems = projects.map(project => ({
+        id: project.id,
         name: project.name,
         url: `/t/${teamId}/p/${project.id}`,
         icon: Shapes,
@@ -80,7 +83,9 @@ export function AppSidebar({
             <SidebarContent>
                 <NavMain items={navMain} />
                 {projectItems.length > 0 && (
-                    <NavProjects projects={projectItems} />
+                    <NavProjects
+                        projects={projectItems}
+                        onRenameProject={onRenameProject} />
                 )}
             </SidebarContent>
             <SidebarFooter>

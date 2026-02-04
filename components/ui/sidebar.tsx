@@ -57,7 +57,7 @@ function SidebarProvider({
     return (
         <SidebarContext.Provider value={{ open, setOpen, isMobile }}>
             <div
-                className={cn('group/sidebar-wrapper flex min-h-svh w-full', className)}
+                className={cn('group/sidebar-wrapper flex h-svh w-full', className)}
                 {...props}/>
         </SidebarContext.Provider>
     )
