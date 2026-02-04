@@ -60,7 +60,7 @@ export default function RootLayout({
                 <link href={fonts} rel="stylesheet" />
             </head>
             <body className={'font-sans antialiased'}>
-                <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem>
                     {children}
                     <ThemeToggle />
                     {VERCEL_ANALYTICS_ENABLED && <Analytics />}

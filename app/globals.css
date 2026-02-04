@@ -2,51 +2,51 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is([data-theme='dark'] *));
 
 :root {
-    --background: #1a1d2e;
-    --foreground: #e4e5f1;
-    --card: #252837;
-    --card-foreground: #e4e5f1;
-    --popover: #252837;
-    --popover-foreground: #e4e5f1;
-    --primary: #4dd4c7;
-    --primary-foreground: #1a1d2e;
-    --secondary: #30354a;
-    --secondary-foreground: #e4e5f1;
-    --muted: #30354a;
-    --muted-foreground: #9395a9;
-    --accent: #4dd4c7;
-    --accent-foreground: #1a1d2e;
-    --destructive: #ef4444;
-    --destructive-foreground: #f5f5f5;
-    --border: #30354a;
-    --input: #30354a;
-    --ring: #4dd4c7;
-    --chart-1: #4dd4c7;
-    --chart-2: #8b5cf6;
-    --chart-3: #ec4899;
+    --background: #f7f8fb;
+    --foreground: #121625;
+    --card: #ffffff;
+    --card-foreground: #121625;
+    --popover: #ffffff;
+    --popover-foreground: #121625;
+    --primary: #1bb6aa;
+    --primary-foreground: #ffffff;
+    --secondary: #eef0f6;
+    --secondary-foreground: #1f2433;
+    --muted: #eef0f6;
+    --muted-foreground: #5b6378;
+    --accent: #1bb6aa;
+    --accent-foreground: #ffffff;
+    --destructive: #dc2626;
+    --destructive-foreground: #ffffff;
+    --border: #dde1eb;
+    --input: #dde1eb;
+    --ring: #1bb6aa;
+    --chart-1: #1bb6aa;
+    --chart-2: #7c5cff;
+    --chart-3: #e94d8f;
     --chart-4: #f59e0b;
     --chart-5: #10b981;
     --radius: 0.5rem;
-    --sidebar: #1a1d2e;
-    --sidebar-foreground: #e4e5f1;
-    --sidebar-primary: #4dd4c7;
-    --sidebar-primary-foreground: #1a1d2e;
-    --sidebar-accent: #252837;
-    --sidebar-accent-foreground: #e4e5f1;
-    --sidebar-border: #30354a;
-    --sidebar-ring: #4dd4c7;
+    --sidebar: #f1f3f8;
+    --sidebar-foreground: #1f2433;
+    --sidebar-primary: #1bb6aa;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #ffffff;
+    --sidebar-accent-foreground: #1f2433;
+    --sidebar-border: #dde1eb;
+    --sidebar-ring: #1bb6aa;
     --shadow-x: 0px;
-    --shadow-y: 1px;
-    --shadow-blur: 3px;
-    --shadow-spread: 0px;
-    --shadow-opacity: 0.2;
-    --shadow-color: #000;
+    --shadow-y: 6px;
+    --shadow-blur: 20px;
+    --shadow-spread: -8px;
+    --shadow-opacity: 0.18;
+    --shadow-color: #0f172a;
 }
 
-.dark {
+[data-theme='dark'] {
     --background: #1a1d2e;
     --foreground: #e4e5f1;
     --card: #252837;
