@@ -21,7 +21,7 @@ export async function createProject(name: string, teamId: string): Promise<Proje
         .where(and(
             eq(teams.id, teamId),
             or(
-                eq(teams.userId, user.id),
+                eq(teams.ownerId, user.id),
                 inArray(teams.id, memberTeamIds),
             ),
         ))
@@ -34,7 +34,7 @@ export async function createProject(name: string, teamId: string): Promise<Proje
         .insert(projects)
         .values({
             name,
-            userId: user.id,
+            ownerId: user.id,
             teamId,
         })
         .returning()
@@ -56,7 +56,7 @@ export async function getProjects(teamId?: string): Promise<Project[]> {
         .select({ id: teams.id })
         .from(teams)
         .where(or(
-            eq(teams.userId, user.id),
+            eq(teams.ownerId, user.id),
             inArray(teams.id, memberTeamIds),
         ))
     

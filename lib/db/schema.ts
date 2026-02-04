@@ -25,6 +25,7 @@ export const teams = schema.teams
 export const teamMembers = schema.teamMembers
 export const projects = schema.projects
 export const tasks = schema.tasks
+export const comments = schema.comments
 
 export type UsersInsert = ActiveSchema['users']['$inferInsert']
 
@@ -34,3 +35,4 @@ export type Team = ActiveSchema['teams']['$inferSelect']
 export type TeamMember = ActiveSchema['teamMembers']['$inferSelect']
 export type Project = ActiveSchema['projects']['$inferSelect']
 export type Task = ActiveSchema['tasks']['$inferSelect']
+export type Comment = ActiveSchema['comments']['$inferSelect']

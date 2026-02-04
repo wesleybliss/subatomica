@@ -1,5 +1,5 @@
 export type Team = {
     id: string
-    userId: string
+    ownerId: string
     name: string
 }

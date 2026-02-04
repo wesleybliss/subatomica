@@ -49,7 +49,7 @@ export const verifications = table('verifications', {
 // Teams table
 export const teams = table('teams', {
     name: text('name').notNull(),
-    userId: uuid('userId')
+    ownerId: uuid('ownerId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
 })
@@ -68,13 +68,13 @@ export const teamMembers = table('team_members', {
 // Projects table
 export const projects = table('projects', {
     name: text('name').notNull(),
+    description: text('description').notNull().default(''),
     teamId: uuid('teamId')
         .notNull()
         .references(() => teams.id, { onDelete: 'cascade' }),
-    userId: uuid('userId')
+    ownerId: uuid('ownerId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
-    parentId: uuid('parentId'), // Self-reference for nesting
 })
 
 // Tasks table
@@ -86,13 +86,24 @@ export const tasks = table('tasks', {
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
-    content: text('content').notNull().default(''),
+    description: text('description').notNull().default(''),
     status: text('status').notNull().default('backlog'), // 'backlog', 'todo', 'in-progress', 'done'
     priority: text('priority').default('medium'), // 'low', 'medium', 'high', 'urgent'
     dueDate: text('dueDate'), // ISO date string
     assigneeId: uuid('assigneeId').references(() => users.id, { onDelete: 'set null' }),
     order: integer('order').notNull().default(0), // for lexicographical sorting in Kanban
     isStarred: boolean('isStarred').notNull().default(false),
+})
+
+// Comments table
+export const comments = table('comments', {
+    taskId: uuid('taskId')
+        .notNull()
+        .references(() => tasks.id, { onDelete: 'cascade' }),
+    userId: uuid('userId')
+        .notNull()
+        .references(() => users.id, { onDelete: 'cascade' }),
+    content: text('content').notNull().default(''),
 })
 
 // Type exports
@@ -104,3 +115,4 @@ export type Workspace = typeof teams.$inferSelect
 export type WorkspaceMember = typeof teamMembers.$inferSelect
 export type Project = typeof projects.$inferSelect
 export type Task = typeof tasks.$inferSelect
+export type Comment = typeof comments.$inferSelect

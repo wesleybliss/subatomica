@@ -17,7 +17,7 @@ const getAccessibleTeamIds = (userId: string) => {
         .select({ id: teams.id })
         .from(teams)
         .where(or(
-            eq(teams.userId, userId),
+            eq(teams.ownerId, userId),
             inArray(teams.id, memberTeamIds),
         ))
 }
@@ -33,7 +33,7 @@ const getAccessibleProjectIds = (userId: string) => {
 
 export async function createTask(data: { 
     title: string
-    content?: string
+    description?: string
     projectId: string
     status?: string
     priority?: string
@@ -75,7 +75,7 @@ export async function createTask(data: {
             projectId: data.projectId,
             userId: user.id,
             title: data.title,
-            content: data.content || '',
+            description: data.description || '',
             status: data.status || 'backlog',
             priority: data.priority,
             dueDate: data.dueDate,
@@ -90,7 +90,7 @@ export async function createTask(data: {
 
 export async function updateTask(taskId: string, data: { 
     title?: string
-    content?: string
+    description?: string
     status?: string
     priority?: string
     dueDate?: string
@@ -236,7 +236,7 @@ export async function searchTasks(query: string): Promise<Task[]> {
             inArray(tasks.projectId, accessibleProjectIds),
             or(
                 like(tasks.title, `%${query}%`),
-                like(tasks.content, `%${query}%`),
+                like(tasks.description, `%${query}%`),
             ),
         ))
         .orderBy(desc(tasks.updatedAt))

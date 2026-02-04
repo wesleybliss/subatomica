@@ -90,7 +90,7 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
         try {
             await createTask({
                 title: 'New Task',
-                content: '',
+                description: '',
                 projectId,
                 status,
             })

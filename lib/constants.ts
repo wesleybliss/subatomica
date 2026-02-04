@@ -17,7 +17,7 @@ export { prefixedKeys as keys }
 export const mockTeams: Team[] = [
     {
         id: 'personal',
-        userId: 'user-1',
+        ownerId: 'user-1',
         name: 'Personal',
     },
 ]
@@ -25,9 +25,10 @@ export const mockTeams: Team[] = [
 export const mockProjects: Project[] = [
     {
         id: 'project-1',
-        userId: 'user-1',
+        ownerId: 'user-1',
         teamId: 'personal',
         name: 'Project 1',
+        description: '',
     },
 ]
 
@@ -37,7 +38,7 @@ export const mockTasks: Task[] = [
         title: 'Task 1',
         userId: 'user-1',
         projectId: 'project-1',
-        content: '',
+        description: '',
         status: 'backlog',
         priority: 'medium',
         dueDate: null,

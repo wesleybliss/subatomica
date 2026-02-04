@@ -7,7 +7,7 @@ export interface Task {
     userId: string
     projectId: string
     title: string
-    content: string
+    description: string
     status: TaskStatus
     priority: TaskPriority | null
     dueDate: string | null

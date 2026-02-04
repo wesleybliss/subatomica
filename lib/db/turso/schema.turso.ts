@@ -49,7 +49,7 @@ export const verifications = table('verifications', {
 // Teams table
 export const teams = table('teams', {
     name: text('name').notNull(),
-    userId: text('userId')
+    ownerId: text('ownerId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
 })
@@ -68,7 +68,8 @@ export const teamMembers = table('team_members', {
 // Projects table
 export const projects = table('projects', {
     name: text('name').notNull(),
-    userId: text('userId')
+    description: text('description').notNull().default(''),
+    ownerId: text('ownerId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
     teamId: text('teamId')
@@ -85,12 +86,23 @@ export const tasks = table('tasks', {
         .notNull()
         .references(() => projects.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
-    content: text('content').notNull().default(''),
+    description: text('description').notNull().default(''),
     status: text('status').notNull().default('backlog'), // 'backlog', 'todo', 'in-progress', 'done'
     priority: text('priority').default('medium'), // 'low', 'medium', 'high', 'urgent'
     dueDate: text('dueDate'), // ISO date string
     assigneeId: text('assigneeId').references(() => users.id, { onDelete: 'set null' }),
     order: integer('order').notNull().default(0), // for lexicographical sorting in Kanban
+})
+
+// Comments table
+export const comments = table('comments', {
+    taskId: text('taskId')
+        .notNull()
+        .references(() => tasks.id, { onDelete: 'cascade' }),
+    userId: text('userId')
+        .notNull()
+        .references(() => users.id, { onDelete: 'cascade' }),
+    content: text('content').notNull().default(''),
 })
 
 // Type exports
@@ -102,3 +114,4 @@ export type Team = typeof teams.$inferSelect
 export type TeamMember = typeof teamMembers.$inferSelect
 export type Project = typeof projects.$inferSelect
 export type Task = typeof tasks.$inferSelect
+export type Comment = typeof comments.$inferSelect

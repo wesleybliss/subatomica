@@ -8,25 +8,24 @@ import { User } from 'better-auth'
 
 const db: any = client.db!
 
-export async function createTeam(name: string, userId: string, tempUser?: User): Promise<Team> {
+export async function createTeam(name: string, ownerId: string, tempUser?: User): Promise<Team> {
     const user = tempUser || await getCurrentUser()
 
-    if (userId !== user.id)
+    if (ownerId !== user.id)
         throw new Error('Unauthorized')
-
-    console.log('wtf', createTeam, name, userId)
+    
     const [team] = await db
         .insert(teams)
         .values({
             name,
-            userId,
+            ownerId,
         })
         .returning()
 
     await db
         .insert(teamMembers)
         .values({
-            userId,
+            userId: ownerId,
             teamId: team.id,
             role: 'owner',
         })
@@ -49,7 +48,7 @@ export async function getUserTeams(userId: string, tempUser?: User): Promise<Tea
     return db.select()
         .from(teams)
         .where(or(
-            eq(teams.userId, user.id),
+            eq(teams.ownerId, user.id),
             inArray(teams.id, memberTeamIds),
         ))
         .orderBy(teams.name)
@@ -68,7 +67,7 @@ export async function getTeamById(teamId: string): Promise<Team> {
         .where(and(
             eq(teams.id, teamId),
             or(
-                eq(teams.userId, user.id),
+                eq(teams.ownerId, user.id),
                 inArray(teams.id, memberTeamIds),
             ),
         ))
@@ -88,7 +87,7 @@ export async function getTeamByLastUpdated(): Promise<Team> {
     const [team] = await db.select()
         .from(teams)
         .where(or(
-            eq(teams.userId, user.id),
+            eq(teams.ownerId, user.id),
             inArray(teams.id, memberTeamIds),
         ))
         .orderBy(desc(teams.updatedAt))
