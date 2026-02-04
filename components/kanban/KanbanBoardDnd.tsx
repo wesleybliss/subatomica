@@ -1,11 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Task, TaskStatus } from '@/types'
 import { KanbanColumn } from './KanbanColumnDnd'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { createTask, updateTaskOrder } from '@/lib/db/actions/tasks'
+import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import {
+    type ColumnDropData,
+    type TaskDropData,
+    isColumnDropData,
+    isTaskDragData,
+    isTaskDropData,
+} from './dragTypes'
 
 export interface KanbanBoardProps {
     tasks: Task[]
@@ -24,24 +32,22 @@ const STATUSES: Array<{ id: TaskStatus; label: string; color: string }> = [
 export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBoardProps) {
     const [localTasks, setLocalTasks] = useState<Task[]>(tasks)
     const [isCreating, setIsCreating] = useState<string | null>(null)
-    
     useEffect(() => {
         setLocalTasks(tasks)
     }, [tasks])
-    
-    const handleDrop = async (taskId: string, newStatus: TaskStatus, targetTaskId?: string) => {
+    const handleDrop = useCallback(async (
+        taskId: string,
+        newStatus: TaskStatus,
+        targetTaskId?: string,
+    ) => {
         console.log('[v0] Drag drop:', { taskId, newStatus, targetTaskId })
-        
         const task = localTasks.find(t => t.id === taskId)
         if (!task) return
-        
         // Optimistic update
         const tasksInNewStatus = localTasks
             .filter(t => t.status === newStatus && t.id !== taskId)
             .sort((a, b) => a.order - b.order)
-        
         let newOrder: number
-        
         if (!targetTaskId) {
             // Drop at end
             const maxOrder = tasksInNewStatus.length > 0
@@ -53,7 +59,6 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
             const targetIndex = tasksInNewStatus.findIndex(t => t.id === targetTaskId)
             const prevTask = targetIndex > 0 ? tasksInNewStatus[targetIndex - 1] : null
             const nextTask = tasksInNewStatus[targetIndex]
-            
             if (prevTask && nextTask) {
                 // Calculate midpoint
                 newOrder = (prevTask.order + nextTask.order) / 2
@@ -65,13 +70,11 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
                 newOrder = 1000
             }
         }
-        
         setLocalTasks(prev =>
             prev.map(t =>
                 t.id === taskId ? { ...t, status: newStatus, order: newOrder } : t,
             ),
         )
-        
         // Update in database
         try {
             await updateTaskOrder(taskId, newStatus, newOrder)
@@ -81,11 +84,46 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
             // Revert optimistic update
             setLocalTasks(tasks)
         }
-    }
-    
+    }, [localTasks, onRefresh, tasks])
+    useEffect(() => {
+        return monitorForElements({
+            onDrop: (args: {
+                source: { data: Record<string, unknown> }
+                location: { current: { dropTargets: Array<{ data: unknown }> } }
+            }) => {
+                const { source, location } = args
+                if (!isTaskDragData(source.data)) return
+                const dropTargets = location.current.dropTargets
+                if (!dropTargets.length) return
+                const taskTarget = dropTargets.find((target: { data: unknown }) =>
+                    isTaskDropData(target.data as Record<string, unknown>),
+                )
+                const taskTargetData = taskTarget?.data
+                if (taskTargetData && isTaskDropData(taskTargetData as Record<string, unknown>)) {
+                    const taskData = taskTargetData as TaskDropData
+                    void handleDrop(
+                        source.data.taskId,
+                        taskData.status,
+                        taskData.taskId,
+                    )
+                    return
+                }
+                const columnTarget = dropTargets.find((target: { data: unknown }) =>
+                    isColumnDropData(target.data as Record<string, unknown>),
+                )
+                const columnTargetData = columnTarget?.data
+                if (columnTargetData && isColumnDropData(columnTargetData as Record<string, unknown>)) {
+                    const columnData = columnTargetData as ColumnDropData
+                    void handleDrop(
+                        source.data.taskId,
+                        columnData.status,
+                    )
+                }
+            },
+        })
+    }, [handleDrop])
     const handleCreateTask = async (status: TaskStatus) => {
         if (!projectId) return
-        
         setIsCreating(status)
         try {
             await createTask({
@@ -101,14 +139,12 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
             setIsCreating(null)
         }
     }
-    
     return (
         <div className="flex gap-4 h-full overflow-x-auto pb-4">
             {STATUSES.map(status => {
                 const statusTasks = localTasks
                     .filter(t => t.status === status.id)
                     .sort((a, b) => a.order - b.order)
-                
                 return (
                     <div key={status.id} className="flex-shrink-0 w-[320px]">
                         <div className="flex items-center justify-between mb-3">
@@ -130,11 +166,9 @@ export function KanbanBoardDnd({ tasks, projectId, teamId, onRefresh }: KanbanBo
                                 <Plus className="w-3 h-3" />
                             </Button>
                         </div>
-                        
                         <KanbanColumn
                             status={status.id}
                             tasks={statusTasks}
-                            onDrop={handleDrop}
                             teamId={teamId}/>
                     </div>
                 )

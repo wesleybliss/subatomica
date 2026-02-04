@@ -1,47 +1,51 @@
 'use client'
-import { useRef, useState } from 'react'
-import { Task, TaskStatus } from '@/types'
+import { useEffect, useRef, useState } from 'react'
+import { Task } from '@/types'
 import { Flag, Calendar } from 'lucide-react'
 import Link from 'next/link'
 import { updateTask } from '@/lib/db/actions/tasks'
 import { cn } from '@/lib/utils'
+import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
+import { isTaskDragData } from './dragTypes'
 
 interface KanbanCardDndProps {
     task: Task
-    onDrop: (taskId: string, newStatus: TaskStatus, targetTaskId?: string) => Promise<void> | void
     teamId?: string
 }
 
-export function KanbanCardDnd({ task, onDrop, teamId }: KanbanCardDndProps) {
+export function KanbanCardDnd({ task, teamId }: KanbanCardDndProps) {
     const cardRef = useRef<HTMLDivElement>(null)
     const [isDragging, setIsDragging] = useState(false)
     const [isEditing, setIsEditing] = useState(false)
     const [title, setTitle] = useState(task.title)
-    
-    const handleDragStart = (e: React.DragEvent) => {
-        e.dataTransfer.effectAllowed = 'move'
-        e.dataTransfer.setData('taskId', task.id)
-        setIsDragging(true)
-    }
-    
-    const handleDragEnd = () => {
-        setIsDragging(false)
-    }
-    
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-    }
-    
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-        const draggedTaskId = e.dataTransfer.getData('taskId')
-        if (draggedTaskId && draggedTaskId !== task.id) {
-            onDrop(draggedTaskId, task.status, task.id)
-        }
-    }
-    
+    useEffect(() => {
+        const element = cardRef.current
+        if (!element) return
+        return combine(
+            draggable({
+                element,
+                getInitialData: () => ({
+                    type: 'task',
+                    taskId: task.id,
+                    status: task.status,
+                }),
+                onDragStart: () => setIsDragging(true),
+                onDrop: () => setIsDragging(false),
+            }),
+            dropTargetForElements({
+                element,
+                getData: () => ({
+                    type: 'task',
+                    taskId: task.id,
+                    status: task.status,
+                }),
+                canDrop: (args: { source: { data: Record<string, unknown> } }) =>
+                    isTaskDragData(args.source.data)
+                    && args.source.data.taskId !== task.id,
+            }),
+        )
+    }, [task.id, task.status])
     const handleTitleBlur = async () => {
         setIsEditing(false)
         if (title !== task.title && title.trim()) {
@@ -53,7 +57,6 @@ export function KanbanCardDnd({ task, onDrop, teamId }: KanbanCardDndProps) {
             }
         }
     }
-    
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault()
@@ -63,20 +66,13 @@ export function KanbanCardDnd({ task, onDrop, teamId }: KanbanCardDndProps) {
             setIsEditing(false)
         }
     }
-    
     // Format project ID display
     const projectDisplay = task.projectId?.slice(0, 8).toUpperCase() || 'TASK'
     const teamSegment = teamId ?? task.projectId
     const taskHref = `/t/${teamSegment}/p/${task.projectId}/s/${task.id}`
-    
     return (
         <div
             ref={cardRef}
-            draggable
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
             className={cn(
                 'bg-card border border-border rounded-lg p-3 cursor-move',
                 'transition-all hover:shadow-md hover:border-primary/50', {
@@ -95,7 +91,6 @@ export function KanbanCardDnd({ task, onDrop, teamId }: KanbanCardDndProps) {
                     <Flag className="w-3 h-3 text-destructive" />
                 ) : null}
             </div>
-            
             {isEditing ? (
                 <input
                     type="text"
@@ -117,7 +112,6 @@ export function KanbanCardDnd({ task, onDrop, teamId }: KanbanCardDndProps) {
                     {task.title}
                 </h4>
             )}
-            
             <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center gap-2">
                     {task.assigneeId && (

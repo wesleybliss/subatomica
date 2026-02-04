@@ -22,6 +22,7 @@ Agent guidelines for automated agents in this repo.
 - **Package Manager:** `pnpm` (do not use npm or yarn).
 - **Environment:** Node.js environment for tooling/SSR, Browser for the client-side app.
 - **Files:** Use camelCase for filenames generally, but match existing conventions (e.g., `page.tsx`, `layout.tsx`, `PrimarySidebar.tsx`).
+- **Types:** Place any new TypeScript types in `@/types`.
 - **Progress:** Prefer keeping checklists for larger tasks. If a task has a checklist, be sure to check it done after completion.
 
 ## Memory and Learnings

@@ -1,46 +1,31 @@
 'use client'
-
 import { useRef, useEffect } from 'react'
 import { Task, TaskStatus } from '@/types'
 import { KanbanCardDnd } from './KanbanCardDnd'
+import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { isTaskDragData } from './dragTypes'
 
 interface KanbanColumnProps {
     status: TaskStatus
     tasks: Task[]
-    onDrop: (taskId: string, newStatus: TaskStatus, targetTaskId?: string) => Promise<void> | void
     teamId?: string
 }
 
-export function KanbanColumn({ status, tasks, onDrop, teamId }: KanbanColumnProps) {
+export function KanbanColumn({ status, tasks, teamId }: KanbanColumnProps) {
     const columnRef = useRef<HTMLDivElement>(null)
-    
     useEffect(() => {
         const column = columnRef.current
         if (!column) return
-        
-        // Setup drop zone for the column
-        const handleDragOver = (e: DragEvent) => {
-            e.preventDefault()
-            e.dataTransfer!.dropEffect = 'move'
-        }
-        
-        const handleDrop = (e: DragEvent) => {
-            e.preventDefault()
-            const taskId = e.dataTransfer?.getData('taskId')
-            if (taskId) {
-                onDrop(taskId, status)
-            }
-        }
-        
-        column.addEventListener('dragover', handleDragOver)
-        column.addEventListener('drop', handleDrop)
-        
-        return () => {
-            column.removeEventListener('dragover', handleDragOver)
-            column.removeEventListener('drop', handleDrop)
-        }
-    }, [status, onDrop])
-    
+        return dropTargetForElements({
+            element: column,
+            getData: () => ({
+                type: 'column',
+                status,
+            }),
+            canDrop: (args: { source: { data: Record<string, unknown> } }) =>
+                isTaskDragData(args.source.data),
+        })
+    }, [status])
     return (
         <div
             ref={columnRef}
@@ -49,7 +34,6 @@ export function KanbanColumn({ status, tasks, onDrop, teamId }: KanbanColumnProp
                 <KanbanCardDnd
                     key={task.id}
                     task={task}
-                    onDrop={onDrop}
                     teamId={teamId}/>
             ))}
             {tasks.length === 0 && (
