@@ -52,7 +52,7 @@
 - [ ] The `TeamsAccountMenu` component should show the current team as the trigger, and show a dropdown with all teams, a divider, and a "create team" option
 - [ ] Verify Next.js App Router route structure `/t/:teamId/p/:projectId/s/:taskId`
 - [ ] Add ThemeProvider with Light, Dark, System modes. The toggle should appear in the top right corner of the page.
-- [ ] Define Drizzle schema in `lib/db/` with uuid primary keys for Teams, Projects, Tasks, Comments
+- [x] Define Drizzle schema in `lib/db/` with uuid primary keys for Teams, Projects, Tasks, Comments
 - [x] Implement BetterAuth login hook to auto-create Personal team
 - [ ] Build Kanban view with @atlaskit/pragmatic-drag-and-drop columns
 - [ ] Add midpoint order calculation for between-task drops
