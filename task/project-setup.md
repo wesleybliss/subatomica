@@ -56,12 +56,12 @@
 - [x] Implement BetterAuth login hook to auto-create Personal team
 - [x] Build Kanban view with @atlaskit/pragmatic-drag-and-drop columns
 - [x] Add midpoint order calculation for between-task drops
-- [ ] Implement Timeline/Gantt view (abui.io or equivalent)
-- [ ] Create Task Detail modal/slide-over with TipTap editor
-- [ ] Add assignee dropdown filtered by team members
-- [ ] Set up TanStack Query for optimistic drag-and-drop updates
-- [ ] Create /api/v1/bot REST endpoints with X-API-KEY or session auth
-- [ ] Auto-generate openapi.json for the bot API
-- [ ] Stub Vercel storage integration
-- [ ] Add team role permissions (owner delete project, members edit tasks)
-- [ ] Instead of task lanes being hard-coded, they should be defined in the database. When a user creates or opens a project, if it doesn't have any task lanes defined, it should create the default ones. The UI should allow the user to add, edit, rename, delete, etc. any lanes they want.
+- [x] Implement Timeline/Gantt view (abui.io or equivalent)
+- [x] Create Task Detail modal/slide-over with TipTap editor
+- [x] Add assignee dropdown filtered by team members
+- [x] Set up TanStack Query for optimistic drag-and-drop updates
+- [x] Create /api/v1/bot REST endpoints with X-API-KEY or session auth
+- [x] Auto-generate openapi.json for the bot API
+- [x] Stub Vercel storage integration
+- [x] Add team role permissions (owner delete project, members edit tasks)
+- [x] Instead of task lanes being hard-coded, they should be defined in the database. When a user creates or opens a project, if it doesn't have any task lanes defined, it should create the default ones. The UI should allow the user to add, edit, rename, delete, etc. any lanes they want.
