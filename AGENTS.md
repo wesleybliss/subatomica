@@ -21,7 +21,8 @@ Agent guidelines for automated agents in this repo.
 - Use modern ES7+ syntax.
 - **Package Manager:** `pnpm` (do not use npm or yarn).
 - **Environment:** Node.js environment for tooling/SSR, Browser for the client-side app.
-- **Files:** Use kebab-case for filenames generally, but match existing conventions (e.g., `page.tsx`, `layout.tsx`, `PrimarySidebar.tsx`).
+- **Files:** Use camelCase for filenames generally, but match existing conventions (e.g., `page.tsx`, `layout.tsx`, `PrimarySidebar.tsx`).
+- **Progress:** Prefer keeping checklists for larger tasks. If a task has a checklist, be sure to check it done after completion.
 
 ## Memory and Learnings
 

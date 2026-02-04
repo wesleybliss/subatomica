@@ -7,6 +7,8 @@ import * as reactWirePersisted from 'react-wire-persisted'
 import DebugTools from '@/components/debug/DebugTools'
 import { NS } from '@/lib/constants'
 import DebugClient from '@/components/DebugClient'
+import ThemeProvider from '@/components/ThemeProvider'
+import ThemeToggle from '@/components/ThemeToggle'
 
 reactWirePersisted.setNamespace(NS)
 
@@ -49,7 +51,7 @@ export default function RootLayout({
 }>) {
     
     return (
-        <html lang="en" data-arp="" className="dark">
+        <html lang="en" data-arp="" suppressHydrationWarning>
             <head>
                 <title>Sub Atomica</title>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -58,12 +60,13 @@ export default function RootLayout({
                 <link href={fonts} rel="stylesheet" />
             </head>
             <body className={'font-sans antialiased'}>
-                {children}
-                
-                {VERCEL_ANALYTICS_ENABLED && <Analytics />}
-                
-                <DebugClient />
-                <DebugTools />
+                <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                    {children}
+                    <ThemeToggle />
+                    {VERCEL_ANALYTICS_ENABLED && <Analytics />}
+                    <DebugClient />
+                    <DebugTools />
+                </ThemeProvider>
             </body>
         </html>
     )
