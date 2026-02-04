@@ -71,7 +71,7 @@ export const auth = betterAuth({
                 const user = ctx.context?.newSession?.user
                 console.log('Ensure user has a workspace after signup or signin', user, ctx)
                 if (user?.id)
-                    await ensureUserHasTeam(user.id)
+                    await ensureUserHasTeam(user.id, user)
             }
         }),
     },

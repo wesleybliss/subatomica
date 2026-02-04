@@ -1,8 +1,8 @@
 'use server'
 import * as client from '@/lib/db/client'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, inArray, or } from 'drizzle-orm'
 import { getCurrentUser } from '@/lib/db/actions/shared'
-import { projects } from '../schema'
+import { projects, teamMembers, teams } from '@/lib/db/schema'
 import { Project } from '@/types'
 
 const db: any = client.db!
@@ -10,6 +10,25 @@ const db: any = client.db!
 export async function createProject(name: string, teamId: string): Promise<Project> {
     
     const user = await getCurrentUser()
+
+    const memberTeamIds = db
+        .select({ teamId: teamMembers.teamId })
+        .from(teamMembers)
+        .where(eq(teamMembers.userId, user.id))
+
+    const [team] = await db.select({ id: teams.id })
+        .from(teams)
+        .where(and(
+            eq(teams.id, teamId),
+            or(
+                eq(teams.userId, user.id),
+                inArray(teams.id, memberTeamIds),
+            ),
+        ))
+        .limit(1)
+
+    if (!team)
+        throw new Error('Unauthorized')
     
     const [project] = await db
         .insert(projects)
@@ -27,10 +46,26 @@ export async function createProject(name: string, teamId: string): Promise<Proje
 export async function getProjects(teamId?: string): Promise<Project[]> {
     
     const user = await getCurrentUser()
+
+    const memberTeamIds = db
+        .select({ teamId: teamMembers.teamId })
+        .from(teamMembers)
+        .where(eq(teamMembers.userId, user.id))
+
+    const accessibleTeamIds = db
+        .select({ id: teams.id })
+        .from(teams)
+        .where(or(
+            eq(teams.userId, user.id),
+            inArray(teams.id, memberTeamIds),
+        ))
     
     const query = teamId
-        ? and(eq(projects.userId, user.id), eq(projects.teamId, teamId))
-        : eq(projects.userId, user.id)
+        ? and(
+            eq(projects.teamId, teamId),
+            inArray(projects.teamId, accessibleTeamIds),
+        )
+        : inArray(projects.teamId, accessibleTeamIds)
     
     return db.select()
         .from(projects)

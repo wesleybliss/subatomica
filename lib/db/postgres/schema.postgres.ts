@@ -1,5 +1,5 @@
 import { postgresTable as table, postgresTimestamp as timestamp } from '@/lib/db/shared'
-import { boolean, text, uuid, varchar } from 'drizzle-orm/pg-core'
+import { boolean, integer, text, uuid, varchar } from 'drizzle-orm/pg-core'
 
 // Users table (managed by BetterAuth)
 export const users = table('users', {
@@ -87,6 +87,11 @@ export const tasks = table('tasks', {
         .references(() => users.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
     content: text('content').notNull().default(''),
+    status: text('status').notNull().default('backlog'), // 'backlog', 'todo', 'in-progress', 'done'
+    priority: text('priority').default('medium'), // 'low', 'medium', 'high', 'urgent'
+    dueDate: text('dueDate'), // ISO date string
+    assigneeId: uuid('assigneeId').references(() => users.id, { onDelete: 'set null' }),
+    order: integer('order').notNull().default(0), // for lexicographical sorting in Kanban
     isStarred: boolean('isStarred').notNull().default(false),
 })
 

@@ -14,7 +14,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
         getTeamById(teamId),
         getTasksByTeam(teamId),
         getProjects(teamId),
-    ])
+    ]).catch(e => console.error('TeamPage', e))
 
     if (!team)
         return <div className="p-6">Team not found</div>

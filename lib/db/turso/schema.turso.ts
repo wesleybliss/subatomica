@@ -59,7 +59,7 @@ export const teamMembers = table('team_members', {
     userId: text('userId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
-    projectId: text('projectId')
+    teamId: text('teamId')
         .notNull()
         .references(() => teams.id, { onDelete: 'cascade' }),
     role: text('role').notNull().default('member'), // 'owner', 'admin', 'member'
