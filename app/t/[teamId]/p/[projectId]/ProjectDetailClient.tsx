@@ -1,0 +1,50 @@
+'use client'
+import { useState } from 'react'
+import type { Project, Task, TaskLane, TeamMemberProfile } from '@/types'
+import { KanbanView } from '@/components/kanban/KanbanView'
+import { TimelineView } from '@/components/timeline/TimelineView'
+import ProjectDetailNavbar from '@/components/ProjectDetailNavbar'
+
+interface ProjectDetailClientProps {
+    teamId: string
+    project: Project
+    initialTasks: Task[]
+    initialLanes: TaskLane[]
+    teamMembers: TeamMemberProfile[]
+    projects: Project[]
+}
+
+export function ProjectDetailClient({
+    teamId,
+    project,
+    initialTasks,
+    initialLanes,
+    teamMembers,
+    projects,
+}: ProjectDetailClientProps) {
+    const [activeView, setActiveView] = useState<'kanban' | 'timeline'>('kanban')
+    
+    return (
+        <div className="flex h-full flex-col">
+            <ProjectDetailNavbar
+                teamId={teamId}
+                project={project}
+                projects={projects}
+                activeView={activeView}
+                onViewChange={setActiveView} />
+            
+            {activeView === 'kanban' ? (
+                <KanbanView
+                    teamId={teamId}
+                    project={project}
+                    initialTasks={initialTasks}
+                    initialLanes={initialLanes}
+                    teamMembers={teamMembers} />
+            ) : (
+                <div className="flex-1 overflow-hidden">
+                    <TimelineView projects={[project]} tasks={initialTasks} />
+                </div>
+            )}
+        </div>
+    )
+}

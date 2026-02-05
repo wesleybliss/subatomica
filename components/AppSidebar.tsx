@@ -1,6 +1,6 @@
 'use client'
 import * as React from 'react'
-import { FolderKanban, LayoutGrid, Settings2, Shapes } from 'lucide-react'
+import { FolderKanban, Settings2, Shapes } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 import type { Team } from '@/types'
@@ -36,16 +36,10 @@ export function AppSidebar({
     const pathname = usePathname()
     const navMain = [
         {
-            title: 'Kanban',
+            title: 'Overview',
             url: `/t/${teamId}`,
             icon: FolderKanban,
             isActive: pathname === `/t/${teamId}`,
-        },
-        {
-            title: 'Views',
-            url: `/t/${teamId}/views`,
-            icon: LayoutGrid,
-            isActive: pathname.startsWith(`/t/${teamId}/views`),
         },
         {
             title: 'All Projects',

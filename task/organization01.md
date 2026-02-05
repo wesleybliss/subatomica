@@ -42,4 +42,9 @@ Some files like `app-sidebar.tsx` should be named proper-case like the rest of t
 
 ## Checklist
 
-- [] TODO
+- [x] Correct the URL scheme - kanban now at `/t/<teamId>/p/<projectId>`, team overview at `/t/<teamId>`, projects list at `/t/<teamId>/p`
+- [x] Improve UI for dialogs - dialogs already using Shadcn/ui BaseUI components
+- [x] Organize project detail navbar - moved from KanbanView to page level with view switching
+- [x] Fix secondary navigation - removed Views from sidebar, added tabs in ProjectDetailNavbar
+- [x] Fix inconsistent file naming - renamed app-sidebar.tsx to AppSidebar.tsx
+- [x] Run lint and typecheck - all passing

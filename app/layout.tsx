@@ -8,7 +8,7 @@ import DebugTools from '@/components/debug/DebugTools'
 import { NS } from '@/lib/constants'
 import DebugClient from '@/components/DebugClient'
 import ThemeProvider from '@/components/ThemeProvider'
-import ThemeToggle from '@/components/ThemeToggle'
+
 import QueryProvider from '@/components/QueryProvider'
 
 reactWirePersisted.setNamespace(NS)
@@ -64,7 +64,6 @@ export default function RootLayout({
                 <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem>
                     <QueryProvider>
                         {children}
-                        <ThemeToggle />
                         {VERCEL_ANALYTICS_ENABLED && <Analytics />}
                         <DebugClient />
                         <DebugTools />

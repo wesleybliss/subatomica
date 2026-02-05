@@ -1,10 +1,9 @@
-import { getTasksByTeam } from '@/lib/db/actions/tasks'
+import Link from 'next/link'
 import { getTeamById, getTeamMembers } from '@/lib/db/actions/teams'
-import { createProject, getProjects } from '@/lib/db/actions/projects'
-import { getProjectLanes } from '@/lib/db/actions/lanes'
-import { KanbanView } from '@/components/kanban/KanbanView'
-import { CreateProjectResult } from '@/types/kanban.types'
-import type { TaskLane, TeamMemberProfile } from '@/types'
+import { getProjects } from '@/lib/db/actions/projects'
+import { getTasksByTeam } from '@/lib/db/actions/tasks'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { FolderKanban, LayoutGrid, Users } from 'lucide-react'
 
 interface TeamPageProps {
     params: Promise<{ teamId: string }>
@@ -12,41 +11,19 @@ interface TeamPageProps {
 
 export default async function TeamPage({ params }: TeamPageProps) {
     const { teamId } = await params
-    const createProjectAction = async (
-        _prevState: CreateProjectResult,
-        formData: FormData,
-    ): Promise<CreateProjectResult> => {
-        'use server'
-        try {
-            const rawName = formData.get('name')
-            const name = typeof rawName === 'string' && rawName.trim()
-                ? rawName.trim()
-                : 'New Project'
-            await createProject(name, teamId)
-            return { error: null }
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unable to create project.'
-            if (message.includes('UNIQUE constraint failed'))
-                return { error: 'A project with this name already exists.' }
-            return { error: 'Unable to create project. Please try again.' }
-        }
-    }
+    
     let team
-    let tasks
     let projects
-    let lanes: TaskLane[] = []
-    let teamMembers: TeamMemberProfile[] = []
+    let tasks
+    let teamMembers
     
     try {
-        ;[team, tasks, projects, teamMembers] = await Promise.all([
+        ;[team, projects, tasks, teamMembers] = await Promise.all([
             getTeamById(teamId),
-            getTasksByTeam(teamId),
             getProjects(teamId),
+            getTasksByTeam(teamId),
             getTeamMembers(teamId),
         ])
-        lanes = projects.length > 0
-            ? await getProjectLanes(projects[0].id)
-            : []
     } catch (error) {
         console.error('TeamPage', error)
         return <div className="p-6">Unable to load team</div>
@@ -56,12 +33,73 @@ export default async function TeamPage({ params }: TeamPageProps) {
         return <div className="p-6">Team not found</div>
     
     return (
-        <KanbanView
-            teamId={teamId}
-            initialTasks={tasks}
-            projects={projects}
-            initialLanes={lanes}
-            teamMembers={teamMembers}
-            onCreateProject={createProjectAction}/>
+        <div className="flex flex-1 flex-col p-6">
+            <div className="mb-8">
+                <h1 className="text-2xl font-semibold text-foreground">{team.name}</h1>
+                <p className="text-sm text-muted-foreground mt-1">Team Overview</p>
+            </div>
+            
+            <div className="grid gap-4 md:grid-cols-3">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Projects</CardTitle>
+                        <FolderKanban className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{projects.length}</div>
+                        <p className="text-xs text-muted-foreground">
+                            {projects.length === 1 ? 'Project' : 'Projects'} in this team
+                        </p>
+                    </CardContent>
+                </Card>
+                
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Tasks</CardTitle>
+                        <LayoutGrid className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{tasks.length}</div>
+                        <p className="text-xs text-muted-foreground">
+                            {tasks.length === 1 ? 'Task' : 'Tasks'} across all projects
+                        </p>
+                    </CardContent>
+                </Card>
+                
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Members</CardTitle>
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{teamMembers.length}</div>
+                        <p className="text-xs text-muted-foreground">
+                            {teamMembers.length === 1 ? 'Member' : 'Members'} in team
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
+            
+            <div className="mt-8 space-y-4">
+                <h2 className="text-lg font-semibold">Quick Links</h2>
+                <div className="flex gap-4">
+                    <Link
+                        href={`/t/${teamId}/p`}
+                        className="inline-flex items-center justify-center rounded-md bg-primary
+                            px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+                        View All Projects
+                    </Link>
+                    {projects.length > 0 && (
+                        <Link
+                            href={`/t/${teamId}/p/${projects[0].id}`}
+                            className="inline-flex items-center justify-center rounded-md border
+                                border-input bg-background px-4 py-2 text-sm font-medium
+                                hover:bg-accent hover:text-accent-foreground">
+                            Open First Project
+                        </Link>
+                    )}
+                </div>
+            </div>
+        </div>
     )
 }

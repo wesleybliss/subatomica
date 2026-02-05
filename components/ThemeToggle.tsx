@@ -32,7 +32,7 @@ const ThemeToggle = ({ className }: { className?: string }) => {
     const onThemeChange = (value: ThemeName) => setTheme(value)
     
     return (
-        <div className={className ?? 'fixed right-4 top-4 z-50'}>
+        <div className={className}>
             <DropdownMenu>
                 <DropdownMenuTrigger
                     render={(

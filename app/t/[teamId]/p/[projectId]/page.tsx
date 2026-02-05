@@ -1,46 +1,45 @@
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import { getProjectById } from '@/lib/db/actions/projects'
+import { getProjectById, getProjects } from '@/lib/db/actions/projects'
 import { getTasks } from '@/lib/db/actions/tasks'
+import { getTeamMembers } from '@/lib/db/actions/teams'
+import { getProjectLanes } from '@/lib/db/actions/lanes'
+import { ProjectDetailClient } from './ProjectDetailClient'
 
-export default async function NotebookPage({
-    params,
-}: {
+interface ProjectDetailPageProps {
     params: Promise<{ teamId: string; projectId: string }>
-}) {
-    
+}
+
+export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
     const { teamId, projectId } = await params
+    
     const project = await getProjectById(projectId)
+    if (!project || project.teamId !== teamId)
+        redirect(`/t/${teamId}/p`)
     
-    if (!project)
-        redirect(`/t/${teamId}`)
+    let tasks
+    let lanes
+    let teamMembers
+    let projects
     
-    const tasks = await getTasks(projectId)
+    try {
+        ;[tasks, lanes, teamMembers, projects] = await Promise.all([
+            getTasks(projectId),
+            getProjectLanes(projectId),
+            getTeamMembers(teamId),
+            getProjects(teamId),
+        ])
+    } catch (error) {
+        console.error('ProjectDetailPage', error)
+        return <div className="p-6">Unable to load project</div>
+    }
     
     return (
-        
-        <div className="flex flex-1 overflow-hidden">
-            <div className="flex-1 overflow-hidden bg-white">
-                <div className="h-full flex items-center justify-center text-neutral-400">
-                    <p>Select or create a task</p>
-                </div>
-            </div>
-            <div className="w-64 border-l border-border bg-background p-4">
-                <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                    Tasks
-                </h2>
-                <ul className="mt-3 space-y-2">
-                    {tasks.map(task => (
-                        <li key={task.id}>
-                            <Link
-                                href={`/t/${teamId}/p/${projectId}/s/${task.id}`}
-                                className="text-sm text-foreground hover:text-primary">
-                                {task.title}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </div>
+        <ProjectDetailClient
+            teamId={teamId}
+            project={project}
+            initialTasks={tasks}
+            initialLanes={lanes}
+            teamMembers={teamMembers}
+            projects={projects} />
     )
 }
