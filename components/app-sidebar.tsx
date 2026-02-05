@@ -1,12 +1,10 @@
 'use client'
-
 import * as React from 'react'
 import { FolderKanban, LayoutGrid, Settings2, Shapes } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
-import type { Project, Team } from '@/types'
+import type { Team } from '@/types'
 import { NavMain } from '@/components/nav-main'
-import { NavProjects } from '@/components/nav-projects'
 import { NavUser } from '@/components/nav-user'
 import { TeamSwitcher } from '@/components/team-switcher'
 import {
@@ -21,8 +19,6 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
     teamId: string
     teamName: string
     teams: Team[]
-    projects: Project[]
-    onRenameProject?: (projectId: string, name: string) => Promise<void>
     user: {
         name: string
         email: string
@@ -34,8 +30,6 @@ export function AppSidebar({
     teamId,
     teamName,
     teams,
-    projects,
-    onRenameProject,
     user,
     ...props
 }: AppSidebarProps) {
@@ -66,12 +60,6 @@ export function AppSidebar({
             isActive: pathname.startsWith(`/t/${teamId}/settings`),
         },
     ]
-    const projectItems = projects.map(project => ({
-        id: project.id,
-        name: project.name,
-        url: `/t/${teamId}/p/${project.id}`,
-        icon: Shapes,
-    }))
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
@@ -82,11 +70,6 @@ export function AppSidebar({
             </SidebarHeader>
             <SidebarContent>
                 <NavMain items={navMain} />
-                {projectItems.length > 0 && (
-                    <NavProjects
-                        projects={projectItems}
-                        onRenameProject={onRenameProject} />
-                )}
             </SidebarContent>
             <SidebarFooter>
                 <NavUser user={user} />

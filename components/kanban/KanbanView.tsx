@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@/types'
 import type { CreateProjectResult } from '@/types/kanban.types'
 import { KanbanBoardDnd } from './KanbanBoardDnd'
-import { ChevronDown, FolderPlus } from 'lucide-react'
+import { ChevronDown, FolderPlus, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { useQuery } from '@tanstack/react-query'
@@ -14,8 +14,8 @@ import {
     DropdownMenuContent,
     DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
+    DropdownMenuLabel, DropdownMenuPortal,
+    DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
@@ -69,6 +69,8 @@ export function KanbanView({
         },
         initialData: filteredTasks,
     })
+    
+    
     const [lanes, setLanes] = useState<TaskLane[]>(initialLanes)
     useEffect(() => {
         setLanes(initialLanes)
@@ -98,7 +100,7 @@ export function KanbanView({
                                 <DropdownMenuGroup>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuLabel>Projects</DropdownMenuLabel>
-                                    {projects?.map(it => (
+                                    {projects?.map(it => it.id !== selectedProjectId ? (
                                         <DropdownMenuItem
                                             key={`projects-menu-${it.id}`}
                                             className="flex justify-between items-center gap-2"
@@ -108,6 +110,36 @@ export function KanbanView({
                                                 <span className="block size-2 rounded-full bg-green-700/40" />
                                             )}
                                         </DropdownMenuItem>
+                                    ) : (
+                                        <DropdownMenuSub key={`projects-menu-${it.id}`}>
+                                            <DropdownMenuSubTrigger>
+                                                <div className="w-full flex-1 flex justify-between items-center gap-2">
+                                                    <span>{it.name}</span>
+                                                    {it.id === selectedProjectId && (
+                                                        <span className="block size-2 rounded-full bg-green-700/40" />
+                                                    )}
+                                                </div>
+                                            </DropdownMenuSubTrigger>
+                                            <DropdownMenuPortal>
+                                                <DropdownMenuSubContent>
+                                                    <DropdownMenuGroup>
+                                                        <DropdownMenuItem
+                                                            onClick={() => console.log('@todo rename project', it)}>
+                                                            <Pencil className="text-muted-foreground" />
+                                                            <span>Rename</span>
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuGroup>
+                                                    <DropdownMenuGroup>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem
+                                                            onClick={() => console.log('@todo delete project')}>
+                                                            <Trash2 className="text-destructive-foreground" />
+                                                            <span>Delete</span>
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuGroup>
+                                                </DropdownMenuSubContent>
+                                            </DropdownMenuPortal>
+                                        </DropdownMenuSub>
                                     ))}
                                 </DropdownMenuGroup>
                             </DropdownMenuContent>

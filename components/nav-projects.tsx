@@ -40,6 +40,7 @@ type NavProjectsProps = {
     onRenameProject?: (projectId: string, name: string) => Promise<void>
 }
 
+// @todo @deprecated - save for now to re-use the rename functionality
 export function NavProjects({ projects, onRenameProject }: NavProjectsProps) {
     const { isMobile } = useSidebar()
     const router = useRouter()
