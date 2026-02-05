@@ -10,6 +10,9 @@ const nextConfig = {
     images: {
         unoptimized: true,
     },
+    
+    transpilePackages: ['react-wire-persisted'],
+    experimental: { externalDir: true },
 }
 
 export default nextConfig

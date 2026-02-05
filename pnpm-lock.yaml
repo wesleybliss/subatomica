@@ -96,8 +96,8 @@ importers:
         specifier: ^4.5.3
         version: 4.5.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-wire-persisted:
-        specifier: ^2.0.1
-        version: 2.0.1(@forminator/react-wire@0.7.0(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: file:../react-wire-persisted
+        version: file:../react-wire-persisted(@forminator/react-wire@0.7.0(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       recharts:
         specifier: 3.7.0
         version: 3.7.0(@types/react@19.2.10)(react-dom@19.2.4(react@19.2.4))(react-is@16.13.1)(react@19.2.4)(redux@5.0.1)
@@ -4482,8 +4482,8 @@ packages:
       '@types/react':
         optional: true
 
-  react-wire-persisted@2.0.1:
-    resolution: {integrity: sha512-uN8zX/1iOWUlAeiRPTHdqzdOxutT1TfLvLUncoR5d8WsUdYW6ueq2ov9VsR12RgOi/KtZ0t667jk0mKrJ49PIg==}
+  react-wire-persisted@file:../react-wire-persisted:
+    resolution: {directory: ../react-wire-persisted, type: directory}
     peerDependencies:
       '@forminator/react-wire': ^0.7.0
       react: ^18.3.1 || ^19.0.0
@@ -9320,7 +9320,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.10
 
-  react-wire-persisted@2.0.1(@forminator/react-wire@0.7.0(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-wire-persisted@file:../react-wire-persisted(@forminator/react-wire@0.7.0(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@forminator/react-wire': 0.7.0(react@19.2.4)
       react: 19.2.4

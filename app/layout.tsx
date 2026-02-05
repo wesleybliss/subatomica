@@ -1,5 +1,7 @@
 // @ts-expect-error @todo add types
 import * as reactWirePersisted from 'react-wire-persisted'
+// import { NextJSHydrationProvider } from 'react-wire-persisted/nextjs'
+import { NextJSHydrationProvider } from 'react-wire-persisted/nextjs'
 import './globals.css'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
@@ -56,15 +58,19 @@ export default function RootLayout({
                     
                     <QueryProvider>
                         
-                        {children}
+                        <NextJSHydrationProvider>
+                            
+                            {children}
+                            
+                            <GlobalClient />
+                            <GlobalCommand />
+                            
+                            {VERCEL_ANALYTICS_ENABLED && <Analytics />}
+                            
+                            <DebugClient />
+                            <DebugTools />
                         
-                        <GlobalClient />
-                        <GlobalCommand />
-                        
-                        {VERCEL_ANALYTICS_ENABLED && <Analytics />}
-                        
-                        <DebugClient />
-                        <DebugTools />
+                        </NextJSHydrationProvider>
                     
                     </QueryProvider>
                 

@@ -1,10 +1,7 @@
 'use client'
-import logger from '@/lib/logger'
 import { useEffect } from 'react'
 import { Defined, useWire, type Wire } from '@forminator/react-wire'
 import * as store from '@/store'
-
-const log = logger('StoreWriterClient')
 
 interface StoreWriterClientProps<T> {
     storeKey: string
@@ -18,16 +15,13 @@ const StoreWriterClient = <T,>({
     allowFalsey = false,
 }: StoreWriterClientProps<T>) => {
     
-    log.d('Initialized with', { storeKey, data })
-    
     // @ts-expect-error Wire is looked up dynamically
     const storeWire = useWire<T>(store[storeKey] as Wire<T>)
     
     useEffect(() => {
         
-        if (!data && !allowFalsey) return log.w('invoked with falsey data')
+        if (!data && !allowFalsey) return
         
-        log.d('invoked with data', data)
         storeWire.setValue(data as Defined<T>)
         
     }, [storeKey, data])
