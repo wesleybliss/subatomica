@@ -25,12 +25,6 @@ const GlobalCommand = () => {
     const selectedProject = useWireValue(store.selectedProject)
     const selectedTask = useWireValue(store.selectedTask)
     
-    console.log('wtf', {
-        selectedTask,
-        selectedTeam,
-        selectedProject,
-    })
-    
     return (
         
         <CommandDialog open={globalCommandOpen} onOpenChange={setGlobalCommandOpen}>

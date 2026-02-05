@@ -171,20 +171,6 @@
     }
 }
 
-.geist {
-    font-family: Geist, sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-}
-
-.geist-mono {
-    font-family: "Geist Mono", monospace;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-}
-
 :root {
     --font-sans: "Geist", serif;
     --font-mono: "Geist Mono", monospace;
