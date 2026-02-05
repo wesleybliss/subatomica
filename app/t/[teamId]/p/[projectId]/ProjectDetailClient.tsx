@@ -28,8 +28,8 @@ export function ProjectDetailClient({
         <div className="flex h-full flex-col">
             <ProjectDetailNavbar
                 teamId={teamId}
-                project={project}
                 projects={projects}
+                selectedProjectId={project.id}
                 activeView={activeView}
                 onViewChange={setActiveView} />
             
