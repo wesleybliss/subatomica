@@ -6,10 +6,12 @@ import type { Metadata } from 'next'
 import * as reactWirePersisted from 'react-wire-persisted'
 import DebugTools from '@/components/debug/DebugTools'
 import { NS } from '@/lib/constants'
-import DebugClient from '@/components/DebugClient'
+import DebugClient from '@/components/debug/DebugClient'
 import ThemeProvider from '@/components/ThemeProvider'
 
 import QueryProvider from '@/components/QueryProvider'
+import GlobalCommand from '@/components/dialogs/GlobalCommand'
+import GlobalHotkeysClient from '@/components/GlobalHotkeysClient'
 
 reactWirePersisted.setNamespace(NS)
 
@@ -52,7 +54,9 @@ export default function RootLayout({
 }>) {
     
     return (
+        
         <html lang="en" data-arp="" suppressHydrationWarning>
+            
             <head>
                 <title>Sub Atomica</title>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -60,17 +64,31 @@ export default function RootLayout({
                 
                 <link href={fonts} rel="stylesheet" />
             </head>
+            
             <body className={'font-sans antialiased'}>
+                
                 <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem>
+                    
                     <QueryProvider>
+                        
                         {children}
+                        
+                        <GlobalHotkeysClient />
+                        <GlobalCommand />
+                        
                         {VERCEL_ANALYTICS_ENABLED && <Analytics />}
+                        
                         <DebugClient />
                         <DebugTools />
+                    
                     </QueryProvider>
+                
                 </ThemeProvider>
+            
             </body>
+        
         </html>
+        
     )
     
 }
