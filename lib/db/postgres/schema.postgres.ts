@@ -65,7 +65,7 @@ export const teams = table('teams', {
 }))
 
 // Team Members table (for collaboration)
-export const teamMembers = table('team_members', {
+export const teamMembers = table('teamMembers', {
     userId: uuid('userId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
@@ -97,7 +97,7 @@ export const projects = table('projects', {
 }))
 
 // Task Lanes table
-export const taskLanes = table('task_lanes', {
+export const taskLanes = table('taskLanes', {
     projectId: uuid('projectId')
         .notNull()
         .references(() => projects.id, { onDelete: 'cascade' }),

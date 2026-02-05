@@ -13,13 +13,14 @@ interface KanbanViewProps {
     teamMembers: TeamMemberProfile[]
 }
 
-export function KanbanView({
+const KanbanView = ({
     teamId,
     project,
     initialTasks,
     initialLanes,
     teamMembers,
-}: KanbanViewProps) {
+}: KanbanViewProps) => {
+    
     const router = useRouter()
     const projectId = project.id
     
@@ -40,12 +41,15 @@ export function KanbanView({
     })
     
     const [lanes, setLanes] = useState<TaskLane[]>(initialLanes)
+    
     useEffect(() => {
         setLanes(initialLanes)
     }, [initialLanes])
     
     return (
+        
         <div className="flex-1 overflow-hidden px-6 py-5">
+            
             <KanbanBoardDnd
                 tasks={tasks}
                 lanes={lanes}
@@ -55,6 +59,11 @@ export function KanbanView({
                 queryKey={tasksQueryKey}
                 onLanesChange={setLanes}
                 onRefresh={() => router.refresh()} />
+        
         </div>
+        
     )
+    
 }
+
+export default KanbanView

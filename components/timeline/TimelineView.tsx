@@ -9,7 +9,8 @@ type TimelineViewProps = {
     tasks: Task[]
 }
 
-export function TimelineView({ projects, tasks }: TimelineViewProps) {
+const TimelineView = ({ projects, tasks }: TimelineViewProps) => {
+    
     const {
         tasksByProject,
         timelineDays,
@@ -21,11 +22,12 @@ export function TimelineView({ projects, tasks }: TimelineViewProps) {
     const dateRange = formatDateRange()
     
     return (
-        <div
-            className={cn(
-                'flex h-full flex-col gap-6 overflow-hidden p-6',
-                'bg-[radial-gradient(circle_at_top,_var(--color-border),_transparent_60%)]',
-            )}>
+        
+        <div className={cn(
+            'flex h-full flex-col gap-6 overflow-hidden p-6',
+            'bg-[radial-gradient(circle_at_top,var(--color-border),transparent_60%)]',
+        )}>
+            
             <div className="flex items-center justify-between">
                 <div>
                     <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Timeline</p>
@@ -35,6 +37,7 @@ export function TimelineView({ projects, tasks }: TimelineViewProps) {
                     {dateRange.start} – {dateRange.end}
                 </div>
             </div>
+            
             <div
                 className={cn(
                     'flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border',
@@ -99,6 +102,11 @@ export function TimelineView({ projects, tasks }: TimelineViewProps) {
                     })}
                 </div>
             </div>
+        
         </div>
+        
     )
+    
 }
+
+export default TimelineView

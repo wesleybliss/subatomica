@@ -1,8 +1,8 @@
 'use client'
 import { useState } from 'react'
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@/types'
-import { KanbanView } from '@/components/kanban/KanbanView'
-import { TimelineView } from '@/components/timeline/TimelineView'
+import KanbanView from '@/components/kanban/KanbanView'
+import TimelineView from '@/components/timeline/TimelineView'
 import ProjectDetailNavbar from '@/components/ProjectDetailNavbar'
 
 interface ProjectDetailClientProps {
