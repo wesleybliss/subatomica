@@ -39,7 +39,7 @@ const ProjectDetailNavbar = ({
     const router = useRouter()
     
     return (
-        <header className="flex items-center justify-between border-b border-border px-6 py-4">
+        <header className="flex items-center justify-between border-b border-border px-6 py-3">
             <div className="flex items-center gap-3">
                 <SidebarTrigger className="-ml-1" />
                 <div className="flex flex-col gap-1">

@@ -16,27 +16,38 @@ type NavItem = {
     isActive?: boolean
 }
 
-export function NavMain({ items }: { items: NavItem[] }) {
+export function NavMain({
+    items,
+}: { items: NavItem[] }) {
+    
     return (
+        
         <SidebarGroup>
             <SidebarMenu>
+                
                 {items.map(item => (
                     <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton
-                            className="px-3 py-3"
-                            asChild
-                            isActive={item.isActive}
-                            tooltip={item.title}>
-                            <a href={item.url}>
-                                {item.icon && <item.icon />}
+                        <a href={item.url}>
+                            
+                            <SidebarMenuButton
+                                className="px-3 py-6"
+                                isActive={item.isActive}
+                                tooltip={item.title}>
+                                {item.icon && <item.icon className="size-12" />}
+                                
                                 <span className="group-data-[state=collapsed]/sidebar:hidden">
                                     {item.title}
                                 </span>
-                            </a>
-                        </SidebarMenuButton>
+                            
+                            </SidebarMenuButton>
+                        
+                        </a>
                     </SidebarMenuItem>
                 ))}
+            
             </SidebarMenu>
         </SidebarGroup>
+        
     )
+    
 }

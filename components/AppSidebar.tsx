@@ -4,8 +4,8 @@ import { FolderKanban, Settings2, Shapes } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 import type { Team } from '@/types'
-import { NavMain } from '@/components/nav-main'
-import { NavUser } from '@/components/nav-user'
+import { NavMain } from '@/components/NavMain'
+import { NavUser } from '@/components/NavUser'
 import { TeamSwitcher } from '@/components/team-switcher'
 import {
     Sidebar,
