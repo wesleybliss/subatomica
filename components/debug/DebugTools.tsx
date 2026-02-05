@@ -29,8 +29,7 @@ const DebugTools = () => {
                         suppressHydrationWarning
                         className={cn({
                             'text-white': vm.activeTheme === 'dark',
-                        })}
-                    />
+                        })}/>
                 </header>
             )}
             

@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Task, TaskStatus, TaskLane, DropIndicatorData, TeamMemberProfile } from '@/types'
 import { Dispatch, SetStateAction } from 'react'
 import ManageLaneDropdown from '@/components/kanban/ManageLaneDropdown'
+import { cn } from '@/lib/utils'
 
 interface TaskLaneProps {
     lane: TaskLane
@@ -64,7 +65,10 @@ const KanbanTaskLane = ({
                 
                 <div className="flex items-center gap-2">
                     
-                    <div className={`w-2 h-2 rounded-full ${lane.color || 'bg-muted'}`} />
+                    <div className={cn(
+                        'w-2 h-2 rounded-full',
+                        lane.color || 'bg-muted',
+                    )} />
                     
                     {editingLaneId === lane.id ? (
                         <Input

@@ -60,4 +60,13 @@ See `components/kanban/KanbanBoardDndViewModel.ts` as an example.
 
 ## Checklist
 
-- [] TODO
+- [x] Fixed className in PrimarySidebar.tsx - use cn utility instead of arrays/template literals
+- [x] Fixed className in TeamsAccountMenu.tsx - use cn utility
+- [x] Fixed className in NavUser.tsx - use cn utility
+- [x] Fixed className in TimelineView.tsx - use cn utility
+- [x] Fixed className in KanbanTaskLane.tsx - use cn utility
+- [x] Fixed className in KanbanCard.tsx - use cn utility
+- [x] Moved sidebar collapsed state to global store (app.ts)
+- [x] Created ViewModel for TimelineView component
+- [x] Created ViewModel for PrimarySidebar component
+- [x] Ran lint and typecheck to verify changes

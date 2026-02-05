@@ -28,6 +28,7 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from '@/components/ui/sidebar'
+import { cn } from '@/lib/utils'
 
 type NavUserProps = {
     user: {
@@ -52,19 +53,19 @@ export function NavUser({ user }: NavUserProps) {
             <SidebarMenuItem>
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        className={[
+                        className={cn(
                             'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground',
                             'flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm',
-                        ].join(' ')}>
+                        )}>
                         <Avatar className="h-8 w-8 rounded-lg">
                             <AvatarImage src={user.image ?? undefined} alt={user.name} />
                             <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                         </Avatar>
                         <div
-                            className={[
+                            className={cn(
                                 'group-data-[state=collapsed]/sidebar:hidden grid flex-1',
                                 'text-left text-sm leading-tight',
-                            ].join(' ')}>
+                            )}>
                             <span className="truncate font-medium">{user.name}</span>
                             <span className="truncate text-xs">{user.email}</span>
                         </div>

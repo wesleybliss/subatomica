@@ -11,6 +11,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { getDefaultTeamId, getTeamById, mockTeams } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 
 type TeamsAccountMenuProps = {
     collapsed?: boolean
@@ -45,11 +46,11 @@ const TeamsAccountMenu = ({ collapsed = false }: TeamsAccountMenuProps) => {
                         <button
                             type="button"
                             title={collapsed ? activeTeamName : undefined}
-                            className={[
+                            className={cn(
                                 'flex items-center w-full text-left',
                                 collapsed ? 'justify-center' : 'gap-2',
                                 'hover:bg-sidebar-accent rounded-lg p-2 transition-colors',
-                            ].join(' ')} />
+                            )} />
                     )}>
                     <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
                         <span className="text-xs font-bold text-primary-foreground">

@@ -32,13 +32,15 @@ export function KanbanCard({ task, selected, onToggle, onClick }: KanbanCardProp
                         e.stopPropagation()
                         onToggle()
                     }}
-                    className={`w-10 h-5 rounded-full transition-colors ${
-                        selected ? 'bg-primary' : 'bg-muted'
-                    }`}>
+                    className={cn(
+                        'w-10 h-5 rounded-full transition-colors',
+                        selected ? 'bg-primary' : 'bg-muted',
+                    )}>
                     <div
-                        className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
-                            selected ? 'translate-x-5' : 'translate-x-0.5'
-                        }`}/>
+                        className={cn(
+                            'w-4 h-4 rounded-full bg-white shadow-sm transition-transform',
+                            selected ? 'translate-x-5' : 'translate-x-0.5',
+                        )}/>
                 </button>
             </div>
             
