@@ -27,6 +27,18 @@ Similarly, `/t/<teamId>/p` should just show a brief list of projects, `/t/<teamI
 
 Current dialogs are very basic and don't look great. Ensure we're using Shadcn/ui BaseUI dialogs with standard styling based on Shadcn but matching the project design.
 
+## Organize project detail navbar
+
+Currently, `ProjectDetailNavbar.tsx` lives inside the `KanbanView.tsx` component. Move it up a level higher so that it can be shared across all views. I think it should probably live in the `app/t/[teamId]/p/[projectId]/page.tsx` component, but I'm not positive.
+
+## Fix secondary navigation
+
+Currently, the "Views" menu item in the sidebar goes directly to the timeline (gantt chart) view. Remove the sidebar menu item, and instead, put tabs (https://ui.shadcn.com/docs/components/base/tabs) in the `ProjectDetailNavbar.tsx` so I can easily switch between the kanban board (default) and the timeline. Just `useState` for now - it shouldn't navigate to a different URL when toggling between kanban and timeline.
+
+## Fix inconsistent file naming
+
+Some files like `app-sidebar.tsx` should be named proper-case like the rest of the components (e.g. `AppSidebar.tsx`).
+
 
 ## Checklist
 

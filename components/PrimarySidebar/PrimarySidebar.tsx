@@ -18,6 +18,7 @@ import {
 import TeamsAccountMenu from '@/components/PrimarySidebar/TeamsAccountMenu'
 import { Button } from '@/components/ui/button'
 
+// @todo @deprecated - don't delete yet, might merge some things into the AppSidebar
 const PrimarySidebar = ({ teamId }: { teamId: string }) => {
     const pathname = usePathname()
     const [isCollapsed, setIsCollapsed] = useState(false)
