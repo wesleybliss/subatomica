@@ -4,4 +4,4 @@ import type { Task } from '@/types'
 
 export const tasks = createWire<Task[]>([...mockTasks])
 
-export const selectedTask = createWire<Task | null>(null)
+export const selectedTaskId = createWire<string | null>(null)
