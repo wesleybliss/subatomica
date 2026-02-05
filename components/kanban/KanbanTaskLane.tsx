@@ -89,7 +89,7 @@ const KanbanTaskLane = ({
                             <h3 className="text-sm font-medium text-foreground">
                                 {lane.name}
                             </h3>
-                            <Badge variant="secondary">
+                            <Badge className="rounded-full" variant="secondary">
                                 {statusTasks.length}
                             </Badge>
                         </>

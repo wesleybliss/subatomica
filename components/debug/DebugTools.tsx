@@ -6,22 +6,28 @@ import { DebugToolsMode } from '@/types'
 import useDebugToolsViewModel from './DebugToolsViewModel'
 
 const DebugTools = () => {
+    
     const vm = useDebugToolsViewModel()
     
     return (
+        
         <div
-            className={cn('fixed bottom-17 bg-slate-100', {
-                'right-3 opacity-10 hover:opacity-100 overflow-hidden rounded-full':
+            className={cn('fixed bottom-17 transition-opacity duration-300 ease-in-out', {
+                'right-3 opacity-12 hover:opacity-100 overflow-hidden rounded-full':
                     vm.debugToolsMode === DebugToolsMode.minified,
-                'w-[35%] min-h-100 max-h-200 right-3 overflow-auto opacity-90 rounded':
+                'w-[35%] min-h-100 max-h-200 right-3 overflow-auto opacity-90 rounded bg-slate-100':
                     vm.debugToolsMode === DebugToolsMode.panel,
-                'max-w-[90%] max-h-[90%] inset-x-5 overflow-auto rounded': vm.debugToolsMode === DebugToolsMode.full,
+                'max-w-[90%] max-h-[90%] inset-x-5 overflow-auto rounded bg-slate-100':
+                    vm.debugToolsMode === DebugToolsMode.full,
             })}>
+            
             {vm.debugToolsMode === DebugToolsMode.minified && (
                 <header
                     className="mx-auto px-4 py-3 cursor-pointer"
                     onClick={() => vm.setDebugToolsMode(DebugToolsMode.panel)}>
-                    <Bug />
+                    <Bug className={cn({
+                        'text-white': vm.activeTheme === 'dark',
+                    })} />
                 </header>
             )}
             
@@ -57,8 +63,11 @@ const DebugTools = () => {
                     </div>
                 </>
             )}
+        
         </div>
+        
     )
+    
 }
 
 export default DebugTools
