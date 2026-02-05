@@ -1,17 +1,26 @@
 'use client'
 import { useActionState, useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@/types'
 import type { CreateProjectResult } from '@/types/kanban.types'
 import { KanbanBoardDnd } from './KanbanBoardDnd'
-import { FolderPlus } from 'lucide-react'
+import { ChevronDown, FolderPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { useQuery } from '@tanstack/react-query'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 interface KanbanViewProps {
     teamId: string
-    teamName: string
     initialTasks: Task[]
     projects: Project[]
     initialLanes: TaskLane[]
@@ -24,7 +33,6 @@ interface KanbanViewProps {
 
 export function KanbanView({
     teamId,
-    teamName,
     initialTasks,
     projects,
     initialLanes,
@@ -71,9 +79,39 @@ export function KanbanView({
                 <div className="flex items-center gap-3">
                     <SidebarTrigger className="-ml-1" />
                     <div className="flex flex-col gap-1">
-                        <h1 className="text-sm font-semibold text-foreground">
-                            {teamName}
-                        </h1>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger render={(
+                                <Button
+                                    className="flex justify-between items-center gap-2 opacity-70 hover:opacity-100"
+                                    variant="ghost">
+                                    <span className="text-sm">
+                                        {projects?.find(it => it.id === selectedProjectId)?.name}
+                                    </span>
+                                    <ChevronDown size="16px" />
+                                </Button>
+                            )} />
+                            <DropdownMenuContent className="w-40" align="start">
+                                <DropdownMenuGroup>
+                                    <DropdownMenuLabel>Starred</DropdownMenuLabel>
+                                    <DropdownMenuItem disabled>No starred projects.</DropdownMenuItem>
+                                </DropdownMenuGroup>
+                                <DropdownMenuGroup>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuLabel>Projects</DropdownMenuLabel>
+                                    {projects?.map(it => (
+                                        <DropdownMenuItem
+                                            key={`projects-menu-${it.id}`}
+                                            className="flex justify-between items-center gap-2"
+                                            onClick={() => router.push(`/t/${teamId}/p/${it.id}`)}>
+                                            <span>{it.name}</span>
+                                            {it.id === selectedProjectId && (
+                                                <span className="block size-2 rounded-full bg-green-700/40" />
+                                            )}
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </div>
             </header>

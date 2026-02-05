@@ -58,7 +58,6 @@ export default async function TeamPage({ params }: TeamPageProps) {
     return (
         <KanbanView
             teamId={teamId}
-            teamName={team.name}
             initialTasks={tasks}
             projects={projects}
             initialLanes={lanes}
