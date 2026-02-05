@@ -1,10 +1,10 @@
+import { useWireValue } from '@forminator/react-wire'
+import { teams as storeTeams } from '@/store/teams'
 import Link from 'next/link'
-import { getCurrentUser } from '@/lib/db/actions/shared'
-import { getUserTeams } from '@/lib/db/actions/teams'
 
-export default async function TeamsPage() {
-    const user = await getCurrentUser()
-    const teams = await getUserTeams(user.id)
+export default function TeamsPage() {
+    
+    const teams = useWireValue(storeTeams)
     
     return (
         

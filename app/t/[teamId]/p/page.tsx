@@ -1,33 +1,25 @@
+import { useWireValue } from '@forminator/react-wire'
+import * as store from '@/store'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { getTeamById } from '@/lib/db/actions/teams'
-import { getProjects } from '@/lib/db/actions/projects'
-import { getTasksByTeam } from '@/lib/db/actions/tasks'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FolderKanban, LayoutGrid } from 'lucide-react'
 
-interface TeamProjectsPageProps {
-    params: Promise<{ teamId: string }>
-}
-
-export default async function TeamProjectsPage({ params }: TeamProjectsPageProps) {
-    const { teamId } = await params
+export default function TeamProjectsPage() {
     
-    const team = await getTeamById(teamId)
-    if (!team)
-        redirect('/')
+    const team = useWireValue(store.selectedTeam)
     
-    const [projects, tasks] = await Promise.all([
-        getProjects(teamId),
-        getTasksByTeam(teamId),
-    ])
+    const projects = useWireValue(store.projects)
+    const tasks = useWireValue(store.tasks)
     
-    const getTaskCountForProject = (projectId: string) => {
-        return tasks.filter(task => task.projectId === projectId).length
-    }
+    const getTaskCountForProject = (projectId: string) =>
+        tasks.filter(task => task.projectId === projectId).length
+    
+    if (!team) return <div className="p-6">Loading...</div>
     
     return (
+        
         <div className="flex flex-1 flex-col p-6">
+            
             <div className="mb-8">
                 <h1 className="text-2xl font-semibold text-foreground">Projects</h1>
                 <p className="text-sm text-muted-foreground mt-1">
@@ -45,7 +37,7 @@ export default async function TeamProjectsPage({ params }: TeamProjectsPageProps
                         Get started by creating a project from the team overview page.
                     </p>
                     <Link
-                        href={`/t/${teamId}`}
+                        href={`/t/${team.id}`}
                         className="mt-4 inline-flex items-center justify-center rounded-md border border-input
                             bg-background px-4 py-2 text-sm font-medium hover:bg-accent
                             hover:text-accent-foreground">
@@ -57,13 +49,13 @@ export default async function TeamProjectsPage({ params }: TeamProjectsPageProps
                     {projects.map(project => {
                         const taskCount = getTaskCountForProject(project.id)
                         return (
-                            <Link key={project.id} href={`/t/${teamId}/p/${project.id}`}>
+                            <Link key={project.id} href={`/t/${team.id}/p/${project.id}`}>
                                 <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                         <CardTitle className="text-sm font-medium line-clamp-1">
                                             {project.name}
                                         </CardTitle>
-                                        <FolderKanban className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                        <FolderKanban className="h-4 w-4 text-muted-foreground shrink-0" />
                                     </CardHeader>
                                     <CardContent>
                                         <div className="flex items-center gap-4">
@@ -86,6 +78,9 @@ export default async function TeamProjectsPage({ params }: TeamProjectsPageProps
                     })}
                 </div>
             )}
+        
         </div>
+        
     )
+    
 }

@@ -14,24 +14,34 @@ export default async function TeamLayout({
     children: React.ReactNode
     params: Promise<{ teamId: string }>
 }) {
+    
     const { teamId } = await params
     const [team, user] = await Promise.all([
         getTeamById(teamId),
         getCurrentUser(),
     ])
+    
     if (!team) redirect('/')
+    
     const avatarUrl = getGravatarUrl(user.email ?? '')
     const teams = await getUserTeams(user.id, user)
+    
     return (
+        
         <SidebarProvider>
+            
             <AppSidebar
                 teamId={teamId}
                 teamName={team.name}
                 teams={teams}
                 user={{ ...user, image: avatarUrl }} />
+            
             <SidebarInset className="flex-1 overflow-hidden flex flex-col">
                 {children}
             </SidebarInset>
+        
         </SidebarProvider>
+        
     )
+    
 }

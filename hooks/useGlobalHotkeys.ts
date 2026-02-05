@@ -24,7 +24,7 @@ const useGlobalHotkeys = () => {
         globalCommandOpen.setValue(!globalCommandOpen.getValue())
         
     })
-
+    
 }
 
 export default useGlobalHotkeys

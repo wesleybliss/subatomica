@@ -1,5 +1,5 @@
 'use client'
-import { useWireState } from '@forminator/react-wire'
+import { useWireState, useWireValue } from '@forminator/react-wire'
 import * as store from '@/store'
 import {
     Command,
@@ -12,18 +12,24 @@ import {
     CommandSeparator,
     CommandShortcut,
 } from '@/components/ui/command'
-import {
-    CalculatorIcon,
-    CalendarIcon,
-    CreditCardIcon,
-    SettingsIcon,
-    SmileIcon,
-    UserIcon,
-} from 'lucide-react'
+import { CalculatorIcon, CalendarIcon, CreditCardIcon, SettingsIcon, SmileIcon, UserIcon } from 'lucide-react'
+import GlobalCommandTask from '@/components/dialogs/GlobalCommand/GlobalCommandTask'
+import GlobalCommandTeam from '@/components/dialogs/GlobalCommand/GlobalCommandTeam'
+import GlobalCommandProject from '@/components/dialogs/GlobalCommand/GlobalCommandProject'
 
 const GlobalCommand = () => {
     
     const [globalCommandOpen, setGlobalCommandOpen] = useWireState(store.globalCommandOpen)
+    
+    const selectedTeam = useWireValue(store.selectedTeam)
+    const selectedProject = useWireValue(store.selectedProject)
+    const selectedTask = useWireValue(store.selectedTask)
+    
+    console.log('wtf', {
+        selectedTask,
+        selectedTeam,
+        selectedProject,
+    })
     
     return (
         
@@ -53,6 +59,10 @@ const GlobalCommand = () => {
                     </CommandGroup>
                     
                     <CommandSeparator />
+                    
+                    {selectedTask && <GlobalCommandTask selectedTask={selectedTask}/>}
+                    {selectedTeam && <GlobalCommandTeam selectedTeam={selectedTeam} />}
+                    {selectedProject && <GlobalCommandProject selectedProject={selectedProject} />}
                     
                     <CommandGroup heading="Settings">
                         <CommandItem>
