@@ -65,17 +65,29 @@ export function KanbanBoardDnd({
                     handleCancelRenameLane={vm.handleCancelRenameLane}
                     handleDeleteLane={vm.handleDeleteLane} />
             ))}
+            
             {vm.canManageLanes && (
-                <div className="shrink-0 flex items-start">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 px-2 text-xs"
-                        onClick={vm.handleAddLane}
-                        disabled={vm.isAddingLane}>
-                        <Plus className="h-4 w-4" />
-                        Add lane
-                    </Button>
+                <div className="shrink-0 flex flex-col h-full min-h-0 rounded w-10 overflow-hidden pt-8">
+                    
+                    <div className="flex items-center mb-3 shrink-0 justify-center">
+                        
+                        <div className="flex items-center gap-2
+                            rotate-180 [writing-mode:vertical-rl]
+                            [text-orientation:mixed] whitespace-nowrap">
+                            
+                            <Button
+                                className="w-full shrink-0 px-2 text-xs border! border-red-500!"
+                                variant="outline"
+                                onClick={vm.handleAddLane}
+                                disabled={vm.isAddingLane}>
+                                <Plus className="size-4" />
+                                Add lane
+                            </Button>
+                        
+                        </div>
+                    
+                    </div>
+                
                 </div>
             )}
         </div>

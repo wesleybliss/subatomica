@@ -63,9 +63,10 @@ const KanbanTaskLane = ({
     
     return (
         
-        <div className={cn('shrink-0 w-[320px] flex flex-col h-full min-h-0 rounded', {
-            'w-10 overflow-hidden': isCollapsed,
-            'bg-linear-to-b from-accent-900 to-accent-500': isCollapsed,
+        <div className={cn('shrink-0 flex flex-col h-full min-h-0 rounded', {
+            'w-[320px]': !isCollapsed,
+            'w-10 overflow-hidden pt-4': isCollapsed,
+            'bg-linear-to-b from-accent/10 to-transparent': isCollapsed,
         })}>
             
             <div className={cn('flex items-center mb-3', {
