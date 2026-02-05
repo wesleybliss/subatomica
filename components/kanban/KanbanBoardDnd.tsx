@@ -37,7 +37,9 @@ export function KanbanBoardDnd({
     )
     
     return (
+        
         <div className="flex gap-4 h-full overflow-x-auto overflow-y-hidden pb-4">
+            
             {lanes.map(it => (
                 <KanbanTaskLane
                     key={it.id}
@@ -45,6 +47,8 @@ export function KanbanBoardDnd({
                     tasks={tasks}
                     teamId={teamId}
                     teamMembers={teamMembers}
+                    isCollapsed={vm.collapsedLanes.includes(it.id)}
+                    onToggleCollapsed={vm.handleToggleCollapsed}
                     dropIndicator={vm.dropIndicator}
                     draggingTaskId={vm.draggingTaskId}
                     editingLaneId={vm.editingLaneId}

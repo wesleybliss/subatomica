@@ -13,7 +13,9 @@ interface TaskLaneProps {
     lane: TaskLane
     tasks: Task[]
     teamId: string | undefined
-    teamMembers: TeamMemberProfile[],
+    teamMembers: TeamMemberProfile[]
+    isCollapsed: boolean
+    onToggleCollapsed: (laneId: string) => void
     dropIndicator: DropIndicatorData | null
     draggingTaskId: string | null
     editingLaneId: string | null
@@ -36,6 +38,8 @@ const KanbanTaskLane = ({
     tasks = [],
     teamId,
     teamMembers,
+    isCollapsed,
+    onToggleCollapsed,
     dropIndicator,
     draggingTaskId,
     editingLaneId,
@@ -59,18 +63,27 @@ const KanbanTaskLane = ({
     
     return (
         
-        <div className="shrink-0 w-[320px] flex flex-col h-full min-h-0">
+        <div className={cn('shrink-0 w-[320px] flex flex-col h-full min-h-0 rounded', {
+            'w-10 overflow-hidden': isCollapsed,
+            'bg-linear-to-b from-accent-900 to-accent-500': isCollapsed,
+        })}>
             
-            <div className="flex items-center justify-between mb-3">
+            <div className={cn('flex items-center mb-3', {
+                'justify-center': isCollapsed,
+                'justify-between': !isCollapsed,
+            })}>
                 
-                <div className="flex items-center gap-2">
+                <div className={cn('flex items-center gap-2', {
+                    'rotate-180 [writing-mode:vertical-rl]': isCollapsed,
+                    '[text-orientation:mixed] whitespace-nowrap': isCollapsed,
+                })}>
                     
                     <div className={cn(
                         'w-2 h-2 rounded-full',
-                        lane.color || 'bg-muted',
+                        lane.color || 'bg-black/20',
                     )} />
                     
-                    {editingLaneId === lane.id ? (
+                    {(!isCollapsed && editingLaneId === lane.id) ? (
                         <Input
                             autoFocus
                             value={editingLaneName || ''}
@@ -90,10 +103,14 @@ const KanbanTaskLane = ({
                             className="h-7 w-36 text-xs" />
                     ) : (
                         <>
-                            <h3 className="text-sm font-medium text-foreground">
+                            <h3
+                                className="text-sm font-medium text-foreground cursor-pointer"
+                                onClick={() => onToggleCollapsed(lane.id)}>
                                 {lane.name}
                             </h3>
-                            <Badge className="rounded-full" variant="secondary">
+                            <Badge
+                                className={cn('rounded-full', { 'hidden': isCollapsed })}
+                                variant="secondary">
                                 {statusTasks.length}
                             </Badge>
                         </>
@@ -101,7 +118,9 @@ const KanbanTaskLane = ({
                 
                 </div>
                 
-                <div className="flex items-center gap-1">
+                <div className={cn('flex items-center gap-1', {
+                    'hidden': isCollapsed,
+                })}>
                     
                     <Button
                         variant="ghost"
@@ -125,7 +144,9 @@ const KanbanTaskLane = ({
             
             </div>
             
-            <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className={cn('flex-1 min-h-0 overflow-y-auto', {
+                'hidden': isCollapsed,
+            })}>
                 <KanbanColumn
                     status={lane.key}
                     tasks={statusTasks}

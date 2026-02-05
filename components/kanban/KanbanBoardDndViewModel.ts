@@ -1,6 +1,8 @@
 'use client'
 import logger from '@/lib/logger'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useWireState } from '@forminator/react-wire'
+import * as store from '@/store'
 import { Task, TaskLane, TaskStatus, UpdateTaskOrderInput } from '@/types'
 import { updateTaskOrder } from '@/lib/db/actions/tasks'
 import { createTaskLane, deleteTaskLane, updateTaskLane } from '@/lib/db/actions/lanes'
@@ -30,9 +32,14 @@ const KanbanBoardDndViewModel = (
     const [editingLaneName, setEditingLaneName] = useState('')
     const [savingLaneId, setSavingLaneId] = useState<string | null>(null)
     const [deletingLaneId, setDeletingLaneId] = useState<string | null>(null)
+    
+    const [collapsedLanes, setCollapsedLanes] = useWireState<string[]>(store.collapsedLanes)
+    
     const canManageLanes = Boolean(projectId && onLanesChange)
     const canDeleteLane = lanes.length > 1
+    
     const queryClient = useQueryClient()
+    
     const activeQueryKey = useMemo(() => queryKey || ['tasks'], [queryKey])
     
     useEffect(() => {
@@ -88,6 +95,23 @@ const KanbanBoardDndViewModel = (
         } finally {
             setIsAddingLane(false)
         }
+    }
+    
+    const handleToggleCollapsed = (laneId: string) => {
+        
+        setCollapsedLanes((prev: string[]) => {
+            
+            const next = new Set(prev)
+            
+            if (next.has(laneId))
+                next.delete(laneId)
+            else
+                next.add(laneId)
+            
+            return Array.from(next)
+            
+        })
+        
     }
     
     const handleCreateTask = async (status: TaskStatus) => {
@@ -295,6 +319,8 @@ const KanbanBoardDndViewModel = (
         deletingLaneId,
         setDeletingLaneId,
         
+        collapsedLanes,
+        
         // @todo
         canManageLanes,
         canDeleteLane,
@@ -309,6 +335,7 @@ const KanbanBoardDndViewModel = (
         
         // Methods
         handleAddLane,
+        handleToggleCollapsed,
         handleStartRenameLane,
         handleCancelRenameLane,
         handleRenameLane,
