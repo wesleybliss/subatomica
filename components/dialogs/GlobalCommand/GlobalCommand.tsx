@@ -61,8 +61,8 @@ const GlobalCommand = () => {
                     <CommandSeparator />
                     
                     {selectedTask && <GlobalCommandTask selectedTask={selectedTask}/>}
-                    {selectedTeam && <GlobalCommandTeam selectedTeam={selectedTeam} />}
                     {selectedProject && <GlobalCommandProject selectedProject={selectedProject} />}
+                    {selectedTeam && <GlobalCommandTeam selectedTeam={selectedTeam} />}
                     
                     <CommandGroup heading="Settings">
                         <CommandItem>

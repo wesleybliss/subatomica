@@ -22,7 +22,7 @@ export async function GET(
             return NextResponse.json({ error: 'Not found.' }, { status: 404 })
         return NextResponse.json(task)
     } catch (error) {
-        console.error('[v0] bot/tasks GET failed:', error)
+        console.error('bot/tasks GET failed:', error)
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 }
@@ -49,7 +49,7 @@ export async function PUT(
             .returning()
         return NextResponse.json(updated)
     } catch (error) {
-        console.error('[v0] bot/tasks PUT failed:', error)
+        console.error('bot/tasks PUT failed:', error)
         return NextResponse.json({ error: 'Unable to update task.' }, { status: 500 })
     }
 }
@@ -68,7 +68,7 @@ export async function DELETE(
         await db.delete(tasks).where(eq(tasks.id, taskId))
         return new NextResponse(null, { status: 204 })
     } catch (error) {
-        console.error('[v0] bot/tasks DELETE failed:', error)
+        console.error('bot/tasks DELETE failed:', error)
         return NextResponse.json({ error: 'Unable to delete task.' }, { status: 500 })
     }
 }

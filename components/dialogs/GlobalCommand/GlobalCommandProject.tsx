@@ -6,6 +6,7 @@ import {
 } from '@/components/ui/command'
 import { CreditCardIcon, SettingsIcon, UserIcon } from 'lucide-react'
 import { Project } from '@/types'
+import GlobalCommandProjectViewModel from '@/components/dialogs/GlobalCommand/GlobalCommandProjectViewModel'
 
 interface GlobalCommandProjectParams {
     selectedProject: Project | null
@@ -14,6 +15,8 @@ interface GlobalCommandProjectParams {
 const GlobalCommandProject = ({
     selectedProject,
 }: GlobalCommandProjectParams) => {
+    
+    const vm = GlobalCommandProjectViewModel()
     
     return (
         
@@ -26,10 +29,10 @@ const GlobalCommandProject = ({
                 <span>Edit Project</span>
                 <CommandShortcut>⌘E</CommandShortcut>
             </CommandItem>
-            <CommandItem>
+            <CommandItem onSelect={vm.handleCreateTask}>
                 <CreditCardIcon />
-                <span>Billing</span>
-                <CommandShortcut>⌘B</CommandShortcut>
+                <span>Create Task</span>
+                <CommandShortcut>⌘N</CommandShortcut>
             </CommandItem>
             <CommandItem>
                 <SettingsIcon />

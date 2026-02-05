@@ -1,23 +1,16 @@
 'use client'
+import logger from '@/lib/logger'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Task, TaskLane, TaskStatus } from '@/types'
-import { createTask, updateTaskOrder } from '@/lib/db/actions/tasks'
+import { Task, TaskLane, TaskStatus, UpdateTaskOrderInput } from '@/types'
+import { updateTaskOrder } from '@/lib/db/actions/tasks'
 import { createTaskLane, deleteTaskLane, updateTaskLane } from '@/lib/db/actions/lanes'
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type ColumnDropData, type TaskDropData, isColumnDropData, isTaskDragData, isTaskDropData } from './dragTypes'
 import { DropIndicatorData } from '@/types/kanban.types'
+import useCreateTaskMutation from '@/lib/mutations/createTaskMutation'
 
-type UpdateTaskOrderInput = {
-    taskId: string
-    status: TaskStatus
-    order: number
-}
-
-type CreateTaskInput = {
-    status: TaskStatus
-    tempId: string
-}
+const log = logger('KanbanBoardDndViewModel')
 
 const KanbanBoardDndViewModel = (
     lanes: TaskLane[],
@@ -46,65 +39,13 @@ const KanbanBoardDndViewModel = (
         setLocalTasks(tasks)
     }, [tasks])
     
-    const createTaskMutation = useMutation<
-        { created: Task; tempId: string },
-        Error,
-        CreateTaskInput,
-        { previousTasks?: Task[] }
-    >({
-        mutationFn: async ({ status, tempId }: CreateTaskInput) => {
-            const created = await createTask({
-                title: 'New Task',
-                description: '',
-                projectId: projectId as string,
-                status,
-            })
-            return { created, tempId }
-        },
-        onMutate: async ({ status, tempId }: CreateTaskInput) => {
-            if (!projectId)
-                return { previousTasks: undefined }
-            await queryClient.cancelQueries({ queryKey: activeQueryKey })
-            const previousTasks = queryClient.getQueryData<Task[]>(activeQueryKey)
-            const nextOrder = Math.max(
-                0,
-                ...localTasks
-                    .filter(task => task.status === status)
-                    .map(task => task.order),
-            ) + 1000
-            const optimisticTask: Task = {
-                id: tempId,
-                title: 'New Task',
-                description: '',
-                projectId,
-                userId: 'pending',
-                status,
-                priority: null,
-                dueDate: null,
-                assigneeId: null,
-                order: nextOrder,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                deletedAt: null,
-            }
-            const nextTasks = [...(previousTasks || localTasks), optimisticTask]
-            queryClient.setQueryData(activeQueryKey, nextTasks)
-            setLocalTasks(nextTasks)
-            return { previousTasks }
-        },
-        onError: (_error: Error, _vars: CreateTaskInput, context: { previousTasks?: Task[] } | undefined) => {
-            if (context?.previousTasks)
-                queryClient.setQueryData(activeQueryKey, context.previousTasks)
-        },
-        onSuccess: ({ created, tempId }: { created: Task; tempId: string }) => {
-            queryClient.setQueryData(activeQueryKey, (current?: Task[]) =>
-                (current || []).map((task: Task) => (task.id === tempId ? created : task)),
-            )
-        },
-        onSettled: () => {
-            onRefresh?.()
-        },
-    })
+    const createTaskMutation = useCreateTaskMutation(
+        localTasks,
+        setLocalTasks,
+        activeQueryKey,
+        projectId,
+        onRefresh,
+    )
     
     const updateTaskOrderMutation = useMutation<Task, Error, UpdateTaskOrderInput, { previousTasks?: Task[] }>({
         mutationFn: async ({ taskId, status, order }: UpdateTaskOrderInput) => updateTaskOrder(taskId, status, order),
@@ -143,7 +84,7 @@ const KanbanBoardDndViewModel = (
             const next = [...lanes, created].sort((a, b) => a.order - b.order)
             onLanesChange(next)
         } catch (error) {
-            console.error('[v0] Failed to create lane:', error)
+            log.e('Failed to create lane:', error)
         } finally {
             setIsAddingLane(false)
         }
@@ -156,7 +97,7 @@ const KanbanBoardDndViewModel = (
             const tempId = `temp-${Date.now()}`
             await createTaskMutation.mutateAsync({ status, tempId })
         } catch (error) {
-            console.error('[v0] Failed to create task:', error)
+            log.e('Failed to create task:', error)
         } finally {
             setIsCreating(null)
         }
@@ -167,7 +108,7 @@ const KanbanBoardDndViewModel = (
         newStatus: TaskStatus,
         targetTaskId?: string,
     ) => {
-        console.log('[v0] Drag drop:', { taskId, newStatus, targetTaskId })
+        log.d('Drag drop:', { taskId, newStatus, targetTaskId })
         const task = localTasks.find(t => t.id === taskId)
         if (!task) return
         // Optimistic update
@@ -311,7 +252,7 @@ const KanbanBoardDndViewModel = (
             const next = lanes.map(lane => (lane.id === laneId ? updated : lane))
             onLanesChange(next)
         } catch (error) {
-            console.error('[v0] Failed to update lane:', error)
+            log.e('Failed to update lane:', error)
         } finally {
             setSavingLaneId(null)
             handleCancelRenameLane()
@@ -326,7 +267,7 @@ const KanbanBoardDndViewModel = (
             const next = lanes.filter(lane => lane.id !== laneId)
             onLanesChange(next)
         } catch (error) {
-            console.error('[v0] Failed to delete lane:', error)
+            log.e('Failed to delete lane:', error)
         } finally {
             setDeletingLaneId(null)
         }

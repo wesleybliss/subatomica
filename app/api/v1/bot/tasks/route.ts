@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
             : await db.select().from(tasks).orderBy(tasks.order)
         return NextResponse.json(result)
     } catch (error) {
-        console.error('[v0] bot/tasks GET failed:', error)
+        console.error('bot/tasks GET failed:', error)
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 }
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
             .returning()
         return NextResponse.json(task, { status: 201 })
     } catch (error) {
-        console.error('[v0] bot/tasks POST failed:', error)
+        console.error('bot/tasks POST failed:', error)
         return NextResponse.json({ error: 'Unable to create task.' }, { status: 500 })
     }
 }

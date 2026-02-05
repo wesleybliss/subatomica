@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
         const tasks = await getTasks(projectId, teamId)
         return NextResponse.json(tasks)
     } catch (error) {
-        console.error('[v0] Failed to fetch tasks:', error)
+        console.error('Failed to fetch tasks:', error)
         return NextResponse.json({ error: 'Failed to fetch tasks.' }, { status: 500 })
     }
 }

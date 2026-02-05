@@ -1,3 +1,4 @@
+
 export type TaskStatus = string
 
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent'
@@ -16,4 +17,15 @@ export interface Task {
     createdAt: string
     updatedAt: string
     deletedAt: string | null
+}
+
+export type CreateTaskInput = {
+    status: TaskStatus
+    tempId: string
+}
+
+export type UpdateTaskOrderInput = {
+    taskId: string
+    status: TaskStatus
+    order: number
 }

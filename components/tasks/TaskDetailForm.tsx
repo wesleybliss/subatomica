@@ -59,7 +59,7 @@ export function TaskDetailForm({ task, teamMembers, onSaved, onClose }: TaskDeta
             onSaved?.(updated)
             onClose?.()
         } catch (error) {
-            console.error('[v0] Failed to update task:', error)
+            console.error('Failed to update task:', error)
         } finally {
             setIsSaving(false)
         }
