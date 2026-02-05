@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@/types'
-import { KanbanBoardDnd } from './KanbanBoardDnd'
+import KanbanBoardDnd from './KanbanBoardDnd'
 import { useQuery } from '@tanstack/react-query'
 
 interface KanbanViewProps {

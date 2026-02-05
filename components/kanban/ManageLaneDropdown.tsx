@@ -41,7 +41,7 @@ const ManageLaneDropdown = ({
                     Rename
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                    onSelect={() => handleDeleteLane(lane.id)}
+                    onClick={() => handleDeleteLane(lane.id)}
                     disabled={!canDeleteLane || deletingLaneId === lane.id}>
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete

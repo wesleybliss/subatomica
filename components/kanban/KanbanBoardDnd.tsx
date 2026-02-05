@@ -16,7 +16,7 @@ export interface KanbanBoardProps {
     onLanesChange?: (lanes: TaskLane[]) => void
 }
 
-export function KanbanBoardDnd({
+const KanbanBoardDnd = ({
     tasks,
     lanes,
     projectId,
@@ -25,7 +25,7 @@ export function KanbanBoardDnd({
     onRefresh,
     queryKey,
     onLanesChange,
-}: KanbanBoardProps) {
+}: KanbanBoardProps) => {
     
     const vm = useKanbanBoardDndViewModel(
         lanes,
@@ -67,16 +67,16 @@ export function KanbanBoardDnd({
             ))}
             
             {vm.canManageLanes && (
-                <div className="shrink-0 flex flex-col h-full min-h-0 rounded w-10 overflow-hidden pt-8">
+                <div className="shrink-0 flex flex-col w-8 h-full min-h-0 rounded overflow-hidden pt-8">
                     
-                    <div className="flex items-center mb-3 shrink-0 justify-center">
+                    <div className="flex items-center w-full mb-3 justify-center">
                         
-                        <div className="flex items-center gap-2
+                        <div className="flex items-center gap-2 w-full
                             rotate-180 [writing-mode:vertical-rl]
                             [text-orientation:mixed] whitespace-nowrap">
                             
                             <Button
-                                className="w-full shrink-0 px-2 text-xs border! border-red-500!"
+                                className="w-full h-full text-xs"
                                 variant="outline"
                                 onClick={vm.handleAddLane}
                                 disabled={vm.isAddingLane}>
@@ -91,5 +91,9 @@ export function KanbanBoardDnd({
                 </div>
             )}
         </div>
+        
     )
+    
 }
+
+export default KanbanBoardDnd

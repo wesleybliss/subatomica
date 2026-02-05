@@ -284,9 +284,10 @@ const KanbanBoardDndViewModel = (
     }
     
     const handleDeleteLane = async (laneId: string) => {
-        if (!onLanesChange || !canDeleteLane) return
+        if (!onLanesChange || !canDeleteLane) return log.d('Cannot delete lane:', laneId)
         setDeletingLaneId(laneId)
         try {
+            log.d('Deleting lane:', laneId)
             await deleteTaskLane(laneId)
             const next = lanes.filter(lane => lane.id !== laneId)
             onLanesChange(next)
