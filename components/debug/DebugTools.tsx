@@ -25,9 +25,12 @@ const DebugTools = () => {
                 <header
                     className="mx-auto px-4 py-3 cursor-pointer"
                     onClick={() => vm.setDebugToolsMode(DebugToolsMode.panel)}>
-                    <Bug className={cn({
-                        'text-white': vm.activeTheme === 'dark',
-                    })} />
+                    <Bug
+                        suppressHydrationWarning
+                        className={cn({
+                            'text-white': vm.activeTheme === 'dark',
+                        })}
+                    />
                 </header>
             )}
             
