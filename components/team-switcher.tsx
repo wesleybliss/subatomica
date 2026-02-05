@@ -45,9 +45,12 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                             flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm">
                         <div
                             className="bg-sidebar-primary text-sidebar-primary-foreground
-                                flex aspect-square size-7 items-center justify-center rounded-lg">
-                            <div className="size-7 bg-primary rounded flex items-center justify-center">
-                                <span className="text-xs font-bold text-primary-foreground">
+                                flex aspect-square size-7 items-center justify-center rounded-lg
+                                group-data-[state=collapsed]/sidebar:size-9">
+                            <div className="size-7 bg-primary rounded flex items-center justify-center
+                                group-data-[state=collapsed]/sidebar:size-9">
+                                <span className="text-xs font-bold text-primary-foreground
+                                    group-data-[state=collapsed]/sidebar:text-sm">
                                     {activeTeamInitial}
                                 </span>
                             </div>
