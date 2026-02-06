@@ -1,11 +1,10 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@/types'
 import KanbanView from '@/components/kanban/KanbanView'
 import TimelineView from '@/components/timeline/TimelineView'
 import ListView from '@/components/list/ListView'
 import ProjectDetailNavbar from '@/components/ProjectDetailNavbar'
-import useDebounce from '@/hooks/useDebounce'
 import useTasksQuery from '@/lib/queries/useTasksQuery'
 
 interface ProjectDetailClientProps {
@@ -32,20 +31,22 @@ export function ProjectDetailClient({
     
     const { tasksQueryKey, data: tasks = initialTasks } = useTasksQuery(teamId, project.id, initialTasks)
     
-    const tasksQueryDebounced = useDebounce(tasksQuery, 1200)
-    
-    const filteredTasks = useMemo(() => {
-        
-        if (!tasksQueryDebounced.length) {
+    useEffect(() => {
+        if (!tasksQuery.length) {
             setSelectedTasks(new Set())
+        }
+    }, [tasksQuery])
+
+    const filteredTasks = useMemo(() => {
+        if (!tasksQuery.length) {
             return tasks
         }
-        
+
+        const query = tasksQuery.toLowerCase()
         return tasks.filter(it => it.title
             .toLowerCase()
-            .includes(tasksQueryDebounced.toLowerCase()))
-        
-    }, [tasks, tasksQueryDebounced])
+            .includes(query))
+    }, [tasks, tasksQuery])
     
     return (
         

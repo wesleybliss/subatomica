@@ -1,5 +1,8 @@
+"use client"
+import { useEffect, useRef, useState } from 'react'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { FileSearchCorner } from 'lucide-react'
+import useDebounce from '@/hooks/useDebounce'
 
 interface ListViewSearchInputProps {
     tasksQuery: string
@@ -10,7 +13,22 @@ const TasksSearchInput = ({
     tasksQuery,
     setTasksQuery,
 }: ListViewSearchInputProps) => {
-    
+    const [inputValue, setInputValue] = useState(tasksQuery)
+    const debouncedValue = useDebounce(inputValue, 250)
+    const lastEmittedValue = useRef(tasksQuery)
+
+    useEffect(() => {
+        lastEmittedValue.current = tasksQuery
+        setInputValue(tasksQuery)
+    }, [tasksQuery])
+
+    useEffect(() => {
+        if (debouncedValue !== lastEmittedValue.current) {
+            lastEmittedValue.current = debouncedValue
+            setTasksQuery(debouncedValue)
+        }
+    }, [debouncedValue, setTasksQuery])
+
     return (
         
         <InputGroup>
@@ -21,10 +39,15 @@ const TasksSearchInput = ({
             
             <InputGroupInput
                 id="list-view-search-input"
-                value={tasksQuery}
+                value={inputValue}
                 placeholder="Search tasks..."
-                onChange={e => setTasksQuery(e.target.value)}
-                onKeyDown={e => e.key === 'Escape' && setTasksQuery('')} />
+                onChange={e => setInputValue(e.target.value)}
+                onKeyDown={e => {
+                    if (e.key === 'Escape') {
+                        setInputValue('')
+                        setTasksQuery('')
+                    }
+                }} />
         
         </InputGroup>
         
