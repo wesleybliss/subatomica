@@ -96,8 +96,8 @@ importers:
         specifier: ^4.5.3
         version: 4.5.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-wire-persisted:
-        specifier: file:../react-wire-persisted
-        version: file:../react-wire-persisted(@forminator/react-wire@0.7.0(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^2.1.0
+        version: 2.1.0(@forminator/react-wire@0.7.0(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       recharts:
         specifier: 3.7.0
         version: 3.7.0(@types/react@19.2.10)(react-dom@19.2.4(react@19.2.4))(react-is@16.13.1)(react@19.2.4)(redux@5.0.1)
@@ -2468,8 +2468,8 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
-  bson@7.1.1:
-    resolution: {integrity: sha512-TtJgBB+QyOlWjrbM+8bRgH84VM/xrDjyBFgSgGrfZF4xvt6gbEDtcswm27Tn9F9TWsjQybxT8b8VpCP/oJK4Dw==}
+  bson@7.2.0:
+    resolution: {integrity: sha512-YCEo7KjMlbNlyHhz7zAZNDpIpQbd+wOEHJYezv0nMYTn4x31eIUM2yomNNubclAt63dObUzKHWsBLJ9QcZNSnQ==}
     engines: {node: '>=20.19.0'}
 
   buffer-from@1.1.2:
@@ -4067,8 +4067,8 @@ packages:
     resolution: {integrity: sha512-9qny7Z9DsQU8Ou39ERsPU4OZQlSTP47ShQzuKZ6PRXpYLtIFgl/DEBYEXKlvcEa+9tHVcK8CF81Y2V72qaZhWA==}
     engines: {node: '>=18'}
 
-  nypm@0.6.4:
-    resolution: {integrity: sha512-1TvCKjZyyklN+JJj2TS3P4uSQEInrM/HkkuSXsEzm1ApPgBffOn8gFguNnZf07r/1X6vlryfIqMUkJKQMzlZiw==}
+  nypm@0.6.5:
+    resolution: {integrity: sha512-K6AJy1GMVyfyMXRVB88700BJqNUkByijGJM8kEHpLdcAt+vSQAVfkWWHYzuRXHSY6xA2sNc5RjTj0p9rE2izVQ==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -4482,8 +4482,8 @@ packages:
       '@types/react':
         optional: true
 
-  react-wire-persisted@file:../react-wire-persisted:
-    resolution: {directory: ../react-wire-persisted, type: directory}
+  react-wire-persisted@2.1.0:
+    resolution: {integrity: sha512-R0qe/zMnNPImsJyecoAbKpyeE3JM8YosPddLKRipLsNSk3gwzIZeVrMHFpUm31RdwbXPZrqZVF7VkgxnwUE1HA==}
     peerDependencies:
       '@forminator/react-wire': ^0.7.0
       react: ^18.3.1 || ^19.0.0
@@ -7267,7 +7267,7 @@ snapshots:
       node-releases: 2.0.27
       update-browserslist-db: 1.2.3(browserslist@4.28.1)
 
-  bson@7.1.1: {}
+  bson@7.2.0: {}
 
   buffer-from@1.1.2: {}
 
@@ -8249,7 +8249,7 @@ snapshots:
       consola: 3.4.2
       defu: 6.1.4
       node-fetch-native: 1.6.7
-      nypm: 0.6.4
+      nypm: 0.6.5
       pathe: 2.0.3
 
   glob-parent@5.1.2:
@@ -8755,7 +8755,7 @@ snapshots:
   mongodb@7.0.0:
     dependencies:
       '@mongodb-js/saslprep': 1.4.5
-      bson: 7.1.1
+      bson: 7.2.0
       mongodb-connection-string-url: 7.0.1
 
   ms@2.1.3: {}
@@ -8865,7 +8865,7 @@ snapshots:
       path-key: 4.0.0
       unicorn-magic: 0.3.0
 
-  nypm@0.6.4:
+  nypm@0.6.5:
     dependencies:
       citty: 0.2.0
       pathe: 2.0.3
@@ -9320,7 +9320,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.10
 
-  react-wire-persisted@file:../react-wire-persisted(@forminator/react-wire@0.7.0(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-wire-persisted@2.1.0(@forminator/react-wire@0.7.0(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@forminator/react-wire': 0.7.0(react@19.2.4)
       react: 19.2.4

@@ -1,6 +1,6 @@
 // @ts-expect-error @todo add types
 import * as reactWirePersisted from 'react-wire-persisted'
-// import { NextJSHydrationProvider } from 'react-wire-persisted/nextjs'
+// @ts-expect-error @todo add types
 import { NextJSHydrationProvider } from 'react-wire-persisted/nextjs'
 import './globals.css'
 import { Geist, Geist_Mono } from 'next/font/google'

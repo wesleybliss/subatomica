@@ -1,13 +1,10 @@
 'use client'
-import logger from '@/lib/logger'
 import { useEffect } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import { useWire } from '@forminator/react-wire'
 import { selectedProjectId as storeSelectedProjectId } from '@/store/projects'
 import { selectedTaskId as storeSelectedTaskId } from '@/store/tasks'
 import { selectedTeamId as storeSelectedTeamId } from '@/store/teams'
-
-const log = logger('hooks/useMonitorNavigation')
 
 const normalizeParam = (value: string | string[] | undefined) => {
     
@@ -36,12 +33,6 @@ const useMonitorNavigation = () => {
         selectedTeamId.setValue(teamId)
         selectedProjectId.setValue(projectId)
         selectedTaskId.setValue(taskId)
-        
-        log.d('Navigation changed', pathname, {
-            teamId,
-            projectId,
-            taskId,
-        })
         
     }, [params, pathname])
     

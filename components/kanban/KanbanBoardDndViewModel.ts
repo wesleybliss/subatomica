@@ -22,7 +22,7 @@ const KanbanBoardDndViewModel = (
     onRefresh?: () => void,
     onLanesChange?: (lanes: TaskLane[]) => void,
 ) => {
-    
+
     const [localTasks, setLocalTasks] = useState<Task[]>(tasks)
     const [isCreating, setIsCreating] = useState<string | null>(null)
     const [isAddingLane, setIsAddingLane] = useState(false)
@@ -32,7 +32,7 @@ const KanbanBoardDndViewModel = (
     const [editingLaneName, setEditingLaneName] = useState('')
     const [savingLaneId, setSavingLaneId] = useState<string | null>(null)
     const [deletingLaneId, setDeletingLaneId] = useState<string | null>(null)
-    
+
     const [collapsedLanes, setCollapsedLanes] = useWireState<string[]>(store.collapsedLanes)
     
     const canManageLanes = Boolean(projectId && onLanesChange)
