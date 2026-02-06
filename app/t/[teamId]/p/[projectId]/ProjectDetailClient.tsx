@@ -28,6 +28,7 @@ export function ProjectDetailClient({
     
     const [activeView, setActiveView] = useState<'kanban' | 'timeline' | 'list'>('kanban')
     const [tasksQuery, setTasksQuery] = useState<string>('')
+    const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set())
     
     const { tasksQueryKey, data: tasks = initialTasks } = useTasksQuery(teamId, project.id, initialTasks)
     
@@ -35,8 +36,10 @@ export function ProjectDetailClient({
     
     const filteredTasks = useMemo(() => {
         
-        if (!tasksQuery.length)
+        if (!tasksQueryDebounced.length) {
+            setSelectedTasks(new Set())
             return tasks
+        }
         
         return tasks.filter(it => it.title
             .toLowerCase()
@@ -63,7 +66,9 @@ export function ProjectDetailClient({
                     project={project}
                     tasks={filteredTasks}
                     initialLanes={initialLanes}
-                    teamMembers={teamMembers} />
+                    teamMembers={teamMembers}
+                    selectedTasks={selectedTasks}
+                    setSelectedTasks={setSelectedTasks} />
             ) : activeView === 'kanban' ? (
                 <KanbanView
                     teamId={teamId}

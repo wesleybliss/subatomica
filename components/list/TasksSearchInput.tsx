@@ -24,7 +24,7 @@ const TasksSearchInput = ({
                 value={tasksQuery}
                 placeholder="Search tasks..."
                 onChange={e => setTasksQuery(e.target.value)}
-                onKeyUp={e => e.key === 'Escape' && setTasksQuery('')} />
+                onKeyDown={e => e.key === 'Escape' && setTasksQuery('')} />
         
         </InputGroup>
         

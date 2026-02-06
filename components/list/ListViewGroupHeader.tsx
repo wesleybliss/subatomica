@@ -11,6 +11,7 @@ interface ListViewGroupHeaderParams {
     selectedTasks: Set<string>
     onToggleTask: (taskId: string) => void
     onSelectAll: (taskIds: string[]) => void
+    onDeselectAll: (taskIds: string[]) => void
 }
 
 const ListViewGroupHeader = ({
@@ -20,6 +21,7 @@ const ListViewGroupHeader = ({
     selectedTasks,
     onToggleTask,
     onSelectAll,
+    onDeselectAll,
 }: ListViewGroupHeaderParams) => {
     
     return (
@@ -76,15 +78,11 @@ const ListViewGroupHeader = ({
                             )
                         }
                     }}
-                    onChange={() => {
-                        if (vm.allSelected) {
-                            tasks.forEach(t => {
-                                if (selectedTasks.has(t.id)) {
-                                    onToggleTask(t.id)
-                                }
-                            })
-                        } else {
+                    onChange={(e) => {
+                        if (e.currentTarget.checked) {
                             onSelectAll(tasks.map(t => t.id))
+                        } else {
+                            onDeselectAll(tasks.map(t => t.id))
                         }
                     }}
                     className="w-4 h-4 rounded border-border cursor-pointer"/>

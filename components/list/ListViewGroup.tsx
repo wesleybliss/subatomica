@@ -10,6 +10,7 @@ interface ListViewGroupProps {
     selectedTasks: Set<string>
     onToggleTask: (taskId: string) => void
     onSelectAll: (taskIds: string[]) => void
+    onDeselectAll: (taskIds: string[]) => void
     teamMembers: TeamMemberProfile[]
     onTaskDelete?: (taskId: string) => void
     onTasksReorder?: (taskIds: string[], status: string) => void
@@ -21,6 +22,7 @@ const ListViewGroup = ({
     selectedTasks,
     onToggleTask,
     onSelectAll,
+    onDeselectAll,
     teamMembers,
     onTaskDelete,
     onTasksReorder,
@@ -39,7 +41,8 @@ const ListViewGroup = ({
                 tasks={tasks}
                 selectedTasks={selectedTasks}
                 onToggleTask={onToggleTask}
-                onSelectAll={onSelectAll} />
+                onSelectAll={onSelectAll}
+                onDeselectAll={onDeselectAll} />
             
             {/* Group Content */}
             {vm.isExpanded && (

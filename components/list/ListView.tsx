@@ -10,6 +10,8 @@ interface ListViewProps {
     tasks: Task[]
     initialLanes: TaskLane[]
     teamMembers: TeamMemberProfile[]
+    selectedTasks?: Set<string>
+    setSelectedTasks?: (tasks: Set<string>) => void
 }
 
 const ListView = ({
@@ -18,10 +20,11 @@ const ListView = ({
     tasks,
     initialLanes,
     teamMembers,
-    
+    selectedTasks: parentSelectedTasks,
+    setSelectedTasks: setParentSelectedTasks,
 }: ListViewProps) => {
     
-    const vm = useListViewViewModel(teamId, project, tasks, initialLanes)
+    const vm = useListViewViewModel(teamId, project, tasks, initialLanes, parentSelectedTasks, setParentSelectedTasks)
     
     return (
         
@@ -50,6 +53,7 @@ const ListView = ({
                             selectedTasks={vm.selectedTasks}
                             onToggleTask={vm.handleToggleTask}
                             onSelectAll={vm.handleSelectAll}
+                            onDeselectAll={vm.handleDeselectAll}
                             teamMembers={teamMembers}
                             onTaskDelete={vm.handleDeleteTask}
                             onTasksReorder={vm.handleTasksReorder}/>

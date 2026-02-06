@@ -8,13 +8,19 @@ const ListViewViewModel = (
     project: Project,
     tasks: Task[],
     initialLanes: TaskLane[],
+    parentSelectedTasks?: Set<string>,
+    setParentSelectedTasks?: (tasks: Set<string>) => void,
 ) => {
     
     const router = useRouter()
     const projectId = project.id
     
     const [lanes, setLanes] = useState<TaskLane[]>(initialLanes)
-    const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set())
+    const [selectedTasks, setSelectedTasks] = useState<Set<string>>(parentSelectedTasks ?? new Set())
+
+    useEffect(() => {
+        setParentSelectedTasks?.(selectedTasks)
+    }, [selectedTasks, setParentSelectedTasks])
     
     useEffect(() => {
         setLanes(initialLanes)
@@ -29,19 +35,31 @@ const ListViewViewModel = (
     }, [lanes, tasks])
     
     const handleToggleTask = (taskId: string) => {
-        const newSelected = new Set(selectedTasks)
-        if (newSelected.has(taskId)) {
-            newSelected.delete(taskId)
-        } else {
-            newSelected.add(taskId)
-        }
-        setSelectedTasks(newSelected)
+        setSelectedTasks(prev => {
+            const newSelected = new Set(prev)
+            if (newSelected.has(taskId)) {
+                newSelected.delete(taskId)
+            } else {
+                newSelected.add(taskId)
+            }
+            return newSelected
+        })
     }
-    
+
     const handleSelectAll = (taskIds: string[]) => {
-        const newSelected = new Set(selectedTasks)
-        taskIds.forEach(id => newSelected.add(id))
-        setSelectedTasks(newSelected)
+        setSelectedTasks(prev => {
+            const newSelected = new Set(prev)
+            taskIds.forEach(id => newSelected.add(id))
+            return newSelected
+        })
+    }
+
+    const handleDeselectAll = (taskIds: string[]) => {
+        setSelectedTasks(prev => {
+            const newSelected = new Set(prev)
+            taskIds.forEach(id => newSelected.delete(id))
+            return newSelected
+        })
     }
     
     const handleDeleteTask = async (taskId: string) => {
@@ -134,6 +152,7 @@ const ListViewViewModel = (
         handleDeleteSelected,
         handleChangeStatus,
         handleTasksReorder,
+        handleDeselectAll,
         
     }
     
