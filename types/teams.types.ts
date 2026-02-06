@@ -1,5 +1,7 @@
 export type Team = {
     id: string
+    createdAt: string
+    updatedAt: string
     ownerId: string
     name: string
 }

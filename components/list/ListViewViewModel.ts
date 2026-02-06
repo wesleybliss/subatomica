@@ -1,8 +1,9 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
 import type { Project, Task, TaskLane } from '@/types'
+import useDebounce from '@/hooks/useDebounce'
+import useTasksQuery from '@/lib/queries/useTasksQuery'
 
 const ListViewViewModel = (
     teamId: string,
@@ -14,24 +15,24 @@ const ListViewViewModel = (
     const router = useRouter()
     const projectId = project.id
     
-    const tasksQueryKey = useMemo(() => (
-        ['tasks', { teamId, projectId }] as const
-    ), [teamId, projectId])
-    
-    const { data: tasks = initialTasks } = useQuery({
-        queryKey: tasksQueryKey,
-        queryFn: async () => {
-            const params = new URLSearchParams({ teamId, projectId })
-            const response = await fetch(`/api/tasks?${params.toString()}`)
-            if (!response.ok)
-                throw new Error('Failed to fetch tasks')
-            return await response.json() as Promise<Task[]>
-        },
-        initialData: initialTasks,
-    })
-    
     const [lanes, setLanes] = useState<TaskLane[]>(initialLanes)
+    const [query, setQuery] = useState<string>('')
     const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set())
+    
+    const queryDebounced = useDebounce(query, 1200)
+    
+    const { data: tasks = initialTasks } = useTasksQuery(teamId, projectId, initialTasks)
+    
+    const filteredTasks = useMemo(() => {
+        
+        if (!query.length)
+            return tasks
+        
+        return tasks.filter(it => it.title
+            .toLowerCase()
+            .includes(queryDebounced.toLowerCase()))
+        
+    }, [tasks, queryDebounced])
     
     useEffect(() => {
         setLanes(initialLanes)
@@ -41,9 +42,9 @@ const ListViewViewModel = (
     const groupedTasks = useMemo(() => {
         return lanes.map(lane => ({
             lane,
-            tasks: tasks.filter(t => t.status === lane.key),
+            tasks: filteredTasks.filter(t => t.status === lane.key),
         }))
-    }, [lanes, tasks])
+    }, [lanes, filteredTasks])
     
     const handleToggleTask = (taskId: string) => {
         const newSelected = new Set(selectedTasks)
@@ -137,14 +138,13 @@ const ListViewViewModel = (
         projectId,
         lanes,
         setLanes,
+        query,
+        setQuery,
         selectedTasks,
         setSelectedTasks,
         
         // Memos
         hasSelection,
-        
-        // Queries
-        tasksQueryKey,
         
         // Methods
         groupedTasks,

@@ -1,9 +1,9 @@
 'use client'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@/types'
 import KanbanBoardDnd from './KanbanBoardDnd'
-import { useQuery } from '@tanstack/react-query'
+import useTasksQuery from '@/lib/queries/useTasksQuery'
 
 interface KanbanViewProps {
     teamId: string
@@ -24,21 +24,7 @@ const KanbanView = ({
     const router = useRouter()
     const projectId = project.id
     
-    const tasksQueryKey = useMemo(() => (
-        ['tasks', { teamId, projectId }] as const
-    ), [teamId, projectId])
-    
-    const { data: tasks = initialTasks } = useQuery({
-        queryKey: tasksQueryKey,
-        queryFn: async () => {
-            const params = new URLSearchParams({ teamId, projectId })
-            const response = await fetch(`/api/tasks?${params.toString()}`)
-            if (!response.ok)
-                throw new Error('Failed to fetch tasks')
-            return await response.json() as Promise<Task[]>
-        },
-        initialData: initialTasks,
-    })
+    const { tasksQueryKey, data: tasks = initialTasks } = useTasksQuery(teamId, projectId, initialTasks)
     
     const [lanes, setLanes] = useState<TaskLane[]>(initialLanes)
     

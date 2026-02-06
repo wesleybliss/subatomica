@@ -56,6 +56,7 @@ export async function getUserTeams(userId: string, tempUser?: User): Promise<Tea
 }
 
 export async function getTeamById(teamId: string): Promise<Team> {
+    
     const user = await getCurrentUser()
     
     const memberTeamIds = db
@@ -75,6 +76,7 @@ export async function getTeamById(teamId: string): Promise<Team> {
         .limit(1)
     
     return team
+    
 }
 
 export async function getTeamByLastUpdated(): Promise<Team> {

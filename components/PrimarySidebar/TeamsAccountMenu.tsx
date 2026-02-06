@@ -1,6 +1,7 @@
 'use client'
-
 import { useMemo } from 'react'
+import { useWireValue } from '@forminator/react-wire'
+import { teams as storeTeams } from '@/store/teams'
 import { usePathname, useRouter } from 'next/navigation'
 import { ChevronDown, Plus } from 'lucide-react'
 import {
@@ -10,7 +11,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { getDefaultTeamId, getTeamById, mockTeams } from '@/lib/constants'
+import { getUnixTime } from 'date-fns'
 import { cn } from '@/lib/utils'
 
 type TeamsAccountMenuProps = {
@@ -18,15 +19,18 @@ type TeamsAccountMenuProps = {
 }
 
 const TeamsAccountMenu = ({ collapsed = false }: TeamsAccountMenuProps) => {
+    
     const pathname = usePathname()
     const router = useRouter()
     
+    const teams = useWireValue(storeTeams)
+    
     const activeTeamId = useMemo(() => {
         const match = pathname?.match(/\/t\/([^/]+)/)
-        return match?.[1] ?? getDefaultTeamId()
-    }, [pathname])
+        return match?.[1] ?? teams.sort((a, b) => getUnixTime(a.updatedAt) - getUnixTime(b.updatedAt))[0].id
+    }, [pathname, teams])
     
-    const activeTeam = useMemo(() => getTeamById(activeTeamId), [activeTeamId])
+    const activeTeam = useMemo(() => teams.find(it => it.id === activeTeamId), [activeTeamId])
     const activeTeamName = activeTeam?.name ?? 'Personal'
     const activeTeamInitial = activeTeamName.slice(0, 1).toUpperCase()
     
@@ -67,7 +71,7 @@ const TeamsAccountMenu = ({ collapsed = false }: TeamsAccountMenuProps) => {
                     )}
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-56">
-                    {mockTeams.map(team => (
+                    {teams.map(team => (
                         <DropdownMenuItem
                             key={team.id}
                             onClick={() => onTeamSelect(team.id)}

@@ -1,6 +1,8 @@
 'use client'
-import { usePathname, useRouter } from 'next/navigation'
 import { memo, useMemo } from 'react'
+import { useWireValue } from '@forminator/react-wire'
+import { teams as storeTeams } from '@/store/teams'
+import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
@@ -12,7 +14,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { signOut, useSession } from '@/lib/auth-client'
-import { getDefaultTeamId, mockTeams } from '@/lib/constants'
+import { getUnixTime } from 'date-fns'
 
 const avatarUrlFor = (name: string, email: string) =>
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
@@ -21,6 +23,8 @@ const UserAccountMenu = () => {
     const { data: session } = useSession()
     const router = useRouter()
     const pathname = usePathname()
+    
+    const teams = useWireValue(storeTeams)
     
     const { user, name, avatarUrl } = useMemo(() => {
         const user = session?.user
@@ -33,7 +37,7 @@ const UserAccountMenu = () => {
     
     const activeTeamId = useMemo(() => {
         const match = pathname?.match(/\/t\/([^/]+)/)
-        return match?.[1] ?? getDefaultTeamId()
+        return match?.[1] ?? teams.sort((a, b) => getUnixTime(a.updatedAt) - getUnixTime(b.updatedAt))[0].id
     }, [pathname])
     
     const onSignOutClick = () => {
@@ -67,7 +71,7 @@ const UserAccountMenu = () => {
                 <DropdownMenuContent align="end" className="w-64">
                     <DropdownMenuGroup>
                         <DropdownMenuLabel>Teams</DropdownMenuLabel>
-                        {mockTeams.map(team => (
+                        {teams.map(team => (
                             <DropdownMenuItem
                                 key={team.id}
                                 onClick={() => onTeamSelect(team.id)}
