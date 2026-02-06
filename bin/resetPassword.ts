@@ -7,15 +7,15 @@ import { auth } from '../lib/auth'
 async function resetPassword(email: string, newPassword: string) {
     const ctx = await auth.$context
     const userResult = await ctx.internalAdapter.findUserByEmail(email, { includeAccounts: true })
-
+    
     if (!userResult?.user) {
         throw new Error(`No user found for email: ${email}`)
     }
-
+    
     const hashedPassword = await ctx.password.hash(newPassword)
     const accounts = await ctx.internalAdapter.findAccounts(userResult.user.id)
     const credentialAccount = accounts.find(account => account.providerId === 'credential')
-
+    
     if (!credentialAccount) {
         await ctx.internalAdapter.createAccount({
             userId: userResult.user.id,

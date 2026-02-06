@@ -3,6 +3,7 @@ import { useState } from 'react'
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@/types'
 import KanbanView from '@/components/kanban/KanbanView'
 import TimelineView from '@/components/timeline/TimelineView'
+import ListView from '@/components/list/ListView'
 import ProjectDetailNavbar from '@/components/ProjectDetailNavbar'
 
 interface ProjectDetailClientProps {
@@ -22,10 +23,13 @@ export function ProjectDetailClient({
     teamMembers,
     projects,
 }: ProjectDetailClientProps) {
-    const [activeView, setActiveView] = useState<'kanban' | 'timeline'>('kanban')
+    
+    const [activeView, setActiveView] = useState<'kanban' | 'timeline' | 'list'>('kanban')
     
     return (
+        
         <div className="flex h-full flex-col">
+            
             <ProjectDetailNavbar
                 teamId={teamId}
                 projects={projects}
@@ -33,7 +37,14 @@ export function ProjectDetailClient({
                 activeView={activeView}
                 onViewChange={setActiveView} />
             
-            {activeView === 'kanban' ? (
+            {activeView === 'list' ? (
+                <ListView
+                    teamId={teamId}
+                    project={project}
+                    initialTasks={initialTasks}
+                    initialLanes={initialLanes}
+                    teamMembers={teamMembers} />
+            ) : activeView === 'kanban' ? (
                 <KanbanView
                     teamId={teamId}
                     project={project}
@@ -45,6 +56,9 @@ export function ProjectDetailClient({
                     <TimelineView projects={[project]} tasks={initialTasks} />
                 </div>
             )}
+        
         </div>
+        
     )
+    
 }

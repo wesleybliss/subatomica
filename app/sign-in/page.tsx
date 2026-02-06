@@ -74,11 +74,11 @@ export default function SignInPage() {
                                     required
                                     className="pr-10"/>
                                 <button
+                                    className="absolute right-2.5 top-1/2 -translate-y-1/2
+                                        text-neutral-500 hover:text-neutral-900"
                                     type="button"
                                     onClick={() => setShowPassword(prev => !prev)}
-                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-900"
-                                >
+                                    aria-label={showPassword ? 'Hide password' : 'Show password'}>
                                     {showPassword ? (
                                         <EyeOff className="h-4 w-4" aria-hidden="true"/>
                                     ) : (

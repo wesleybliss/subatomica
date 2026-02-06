@@ -62,7 +62,7 @@ const KanbanTaskLane = ({
         .sort((a, b) => a.order - b.order)
     
     return (
-
+        
         <div
             suppressHydrationWarning
             className={cn('shrink-0 flex flex-col h-full min-h-0 rounded', {

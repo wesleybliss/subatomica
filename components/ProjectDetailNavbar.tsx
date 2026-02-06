@@ -25,8 +25,8 @@ interface ProjectDetailNavbarProps {
     teamId: string
     projects: Project[]
     selectedProjectId: string
-    activeView: 'kanban' | 'timeline'
-    onViewChange: (view: 'kanban' | 'timeline') => void
+    activeView: 'kanban' | 'timeline' | 'list'
+    onViewChange: (view: 'kanban' | 'timeline' | 'list') => void
 }
 
 const ProjectDetailNavbar = ({
@@ -114,9 +114,10 @@ const ProjectDetailNavbar = ({
             
             <Tabs
                 value={activeView}
-                onValueChange={value => onViewChange(value as 'kanban' | 'timeline')}
+                onValueChange={value => onViewChange(value as 'kanban' | 'timeline' | 'list')}
                 className="w-auto">
                 <TabsList>
+                    <TabsTrigger value="list">List</TabsTrigger>
                     <TabsTrigger value="kanban">Kanban</TabsTrigger>
                     <TabsTrigger value="timeline">Timeline</TabsTrigger>
                 </TabsList>
