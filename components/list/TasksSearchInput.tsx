@@ -2,13 +2,13 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/in
 import { FileSearchCorner } from 'lucide-react'
 
 interface ListViewSearchInputProps {
-    query: string
-    setQuery: (value: string) => void
+    tasksQuery: string
+    setTasksQuery: (value: string) => void
 }
 
-const ListViewSearchInput = ({
-    query,
-    setQuery,
+const TasksSearchInput = ({
+    tasksQuery,
+    setTasksQuery,
 }: ListViewSearchInputProps) => {
     
     return (
@@ -21,10 +21,10 @@ const ListViewSearchInput = ({
             
             <InputGroupInput
                 id="list-view-search-input"
-                value={query}
+                value={tasksQuery}
                 placeholder="Search tasks..."
-                onChange={e => setQuery(e.target.value)}
-                onKeyUp={e => e.key === 'Escape' && setQuery('')} />
+                onChange={e => setTasksQuery(e.target.value)}
+                onKeyUp={e => e.key === 'Escape' && setTasksQuery('')} />
         
         </InputGroup>
         
@@ -32,4 +32,4 @@ const ListViewSearchInput = ({
     
 }
 
-export default ListViewSearchInput
+export default TasksSearchInput

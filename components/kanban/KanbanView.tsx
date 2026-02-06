@@ -3,28 +3,30 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@/types'
 import KanbanBoardDnd from './KanbanBoardDnd'
-import useTasksQuery from '@/lib/queries/useTasksQuery'
 
 interface KanbanViewProps {
     teamId: string
     project: Project
-    initialTasks: Task[]
+    tasks: Task[]
     initialLanes: TaskLane[]
     teamMembers: TeamMemberProfile[]
+    tasksQueryKey: readonly ['tasks', {
+        readonly teamId: string;
+        readonly projectId: string;
+    }]
 }
 
 const KanbanView = ({
     teamId,
     project,
-    initialTasks,
+    tasks,
     initialLanes,
     teamMembers,
+    tasksQueryKey,
 }: KanbanViewProps) => {
     
     const router = useRouter()
     const projectId = project.id
-    
-    const { tasksQueryKey, data: tasks = initialTasks } = useTasksQuery(teamId, projectId, initialTasks)
     
     const [lanes, setLanes] = useState<TaskLane[]>(initialLanes)
     

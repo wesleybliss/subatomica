@@ -1,8 +1,21 @@
+import logger from '@/lib/logger'
 import { useWire } from '@forminator/react-wire'
 import * as store from '@/store'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-const useHotkey = (key: string, callback: (e: KeyboardEvent) => void) => {
+const log = logger('hooks/useGlobalHotkeys')
+
+interface HotkeyOptions {
+    useKey?: boolean            // Matches event.key === '/' regardless of shift/code
+    enableOnFormTags?: boolean // Allows trigger in inputs/textareas
+    preventDefault?: boolean   // Blocks browser defaults like search
+}
+
+const useHotkey = (
+    key: string,
+    callback: (e: KeyboardEvent) => void,
+    options: HotkeyOptions | undefined = {},
+) => {
     
     useHotkeys(key, (e: KeyboardEvent) => {
         
@@ -11,7 +24,7 @@ const useHotkey = (key: string, callback: (e: KeyboardEvent) => void) => {
         callback(e)
         
         
-    })
+    }, options || {})
     
 }
 
@@ -23,6 +36,23 @@ const useGlobalHotkeys = () => {
         
         globalCommandOpen.setValue(!globalCommandOpen.getValue())
         
+    })
+    
+    useHotkey('ctrl+/', () => {
+        log.d('ctrl/')
+        try {
+            // @ts-expect-error expected
+            // eslint-disable-next-line no-restricted-globals
+            document
+                .getElementById('list-view-search-input')
+                .focus()
+        } catch (e) {
+            log.e('Failed to focus search input', e)
+        }
+        
+    }, {
+        useKey: true,
+        enableOnFormTags: true,
     })
     
 }

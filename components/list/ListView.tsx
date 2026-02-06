@@ -7,7 +7,7 @@ import ListViewGroup from './ListViewGroup'
 interface ListViewProps {
     teamId: string
     project: Project
-    initialTasks: Task[]
+    tasks: Task[]
     initialLanes: TaskLane[]
     teamMembers: TeamMemberProfile[]
 }
@@ -15,12 +15,13 @@ interface ListViewProps {
 const ListView = ({
     teamId,
     project,
+    tasks,
     initialLanes,
-    initialTasks,
     teamMembers,
+    
 }: ListViewProps) => {
     
-    const vm = useListViewViewModel(teamId, project, initialLanes, initialTasks)
+    const vm = useListViewViewModel(teamId, project, tasks, initialLanes)
     
     return (
         
@@ -29,8 +30,6 @@ const ListView = ({
             {/* Toolbar */}
             <ListViewToolbar
                 lanes={vm.lanes}
-                query={vm.query}
-                setQuery={vm.setQuery}
                 selectedTasks={vm.selectedTasks}
                 hasSelection={vm.hasSelection}
                 handleChangeStatus={vm.handleChangeStatus}

@@ -9,12 +9,9 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import ListViewSearchInput from '@/components/list/ListViewSearchInput'
 
 interface ListViewToolbarProps {
     lanes: TaskLane[]
-    query: string
-    setQuery: (value: string) => void
     selectedTasks: Set<string>
     hasSelection: boolean
     handleChangeStatus: (laneKey: string) => void
@@ -23,8 +20,6 @@ interface ListViewToolbarProps {
 
 const ListViewToolbar = ({
     lanes,
-    query,
-    setQuery,
     selectedTasks,
     hasSelection,
     handleChangeStatus,
@@ -33,21 +28,17 @@ const ListViewToolbar = ({
     
     return (
         
-        <div className="flex items-center justify-between gap-8 px-6 py-3 bg-muted/20 border-b border-border">
-            
-            <span className={cn('text-sm font-medium text-foreground', {
+        <div className={cn(
+            'flex items-center justify-between',
+            'gap-8 px-6 py-3 bg-muted/20 border-b border-border', {
                 'hidden': !hasSelection,
             })}>
+            
+            <span className="text-sm font-medium text-foreground">
                 {selectedTasks.size} selected
             </span>
             
-            <div className="flex-1 max-w-[50%] mx-auto">
-                <ListViewSearchInput query={query} setQuery={setQuery} />
-            </div>
-            
-            <div className={cn('flex items-center gap-2', {
-                'hidden': !hasSelection,
-            })}>
+            <div className="flex items-center gap-2">
                 
                 <DropdownMenu>
                     
