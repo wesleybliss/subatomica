@@ -1,5 +1,5 @@
 'use client'
-import type { Project } from '@/types'
+import type { Project, ProjectDetailView } from '@/types'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import ThemeToggle from '@/components/ThemeToggle'
@@ -10,8 +10,8 @@ interface ProjectDetailNavbarProps {
     teamId: string
     projects: Project[]
     selectedProjectId: string
-    activeView: 'kanban' | 'timeline' | 'list'
-    onViewChange: (view: 'kanban' | 'timeline' | 'list') => void
+    activeView: ProjectDetailView
+    onViewChange: (view: ProjectDetailView) => void
     tasksQuery: string
     setTasksQuery: (value: string) => void
 }
@@ -45,7 +45,7 @@ const ProjectDetailNavbar = ({
             
             <Tabs
                 value={activeView}
-                onValueChange={value => onViewChange(value as 'kanban' | 'timeline' | 'list')}
+                onValueChange={value => onViewChange(value as ProjectDetailView)}
                 className="w-auto">
                 <TabsList>
                     <TabsTrigger value="list">List</TabsTrigger>

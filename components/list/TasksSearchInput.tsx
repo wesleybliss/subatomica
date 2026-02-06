@@ -1,4 +1,4 @@
-"use client"
+'use client'
 import { useEffect, useRef, useState } from 'react'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { FileSearchCorner } from 'lucide-react'
@@ -13,22 +13,23 @@ const TasksSearchInput = ({
     tasksQuery,
     setTasksQuery,
 }: ListViewSearchInputProps) => {
+    
     const [inputValue, setInputValue] = useState(tasksQuery)
     const debouncedValue = useDebounce(inputValue, 250)
     const lastEmittedValue = useRef(tasksQuery)
-
+    
     useEffect(() => {
         lastEmittedValue.current = tasksQuery
         setInputValue(tasksQuery)
     }, [tasksQuery])
-
+    
     useEffect(() => {
         if (debouncedValue !== lastEmittedValue.current) {
             lastEmittedValue.current = debouncedValue
             setTasksQuery(debouncedValue)
         }
     }, [debouncedValue, setTasksQuery])
-
+    
     return (
         
         <InputGroup>

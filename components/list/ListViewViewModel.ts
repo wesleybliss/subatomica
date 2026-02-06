@@ -17,7 +17,7 @@ const ListViewViewModel = (
     
     const [lanes, setLanes] = useState<TaskLane[]>(initialLanes)
     const [selectedTasks, setSelectedTasks] = useState<Set<string>>(parentSelectedTasks ?? new Set())
-
+    
     useEffect(() => {
         setParentSelectedTasks?.(selectedTasks)
     }, [selectedTasks, setParentSelectedTasks])
@@ -45,7 +45,7 @@ const ListViewViewModel = (
             return newSelected
         })
     }
-
+    
     const handleSelectAll = (taskIds: string[]) => {
         setSelectedTasks(prev => {
             const newSelected = new Set(prev)
@@ -53,7 +53,7 @@ const ListViewViewModel = (
             return newSelected
         })
     }
-
+    
     const handleDeselectAll = (taskIds: string[]) => {
         setSelectedTasks(prev => {
             const newSelected = new Set(prev)

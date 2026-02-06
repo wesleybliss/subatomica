@@ -1,5 +1,8 @@
+
 export interface Project {
     id: string
+    createdAt: string
+    updatedAt: string
     ownerId: string
     teamId: string
     name: string

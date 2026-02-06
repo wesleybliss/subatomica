@@ -18,7 +18,7 @@ Agent guidelines for automated agents in this repo.
 ## General Rules
 
 - **Do not make any Git commits** unless explicitly asked.
-- Use modern ES7+ syntax.
+- **Style:** Use modern ES7+ syntax. No semicolons or unnecessary parentheses or brackets. Clean code, with decent spacing for readability. 
 - **Package Manager:** `pnpm` (do not use npm or yarn).
 - **Environment:** Node.js environment for tooling/SSR, Browser for the client-side app.
 - **Files:** Use camelCase for filenames generally, but match existing conventions (e.g., `page.tsx`, `layout.tsx`, `PrimarySidebar.tsx`).

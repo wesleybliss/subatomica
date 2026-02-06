@@ -36,12 +36,12 @@ export function ProjectDetailClient({
             setSelectedTasks(new Set())
         }
     }, [tasksQuery])
-
+    
     const filteredTasks = useMemo(() => {
         if (!tasksQuery.length) {
             return tasks
         }
-
+        
         const query = tasksQuery.toLowerCase()
         return tasks.filter(it => it.title
             .toLowerCase()

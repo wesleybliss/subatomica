@@ -4,16 +4,19 @@ import { getProjects } from '@/lib/db/actions/projects'
 import { getTasksByTeam } from '@/lib/db/actions/tasks'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FolderKanban, LayoutGrid, Users } from 'lucide-react'
+import { Project } from '@/types'
+import RecentProjectsTable from '@/components/projects/RecentProjectsTable'
 
 interface TeamPageProps {
     params: Promise<{ teamId: string }>
 }
 
 export default async function TeamPage({ params }: TeamPageProps) {
+    
     const { teamId } = await params
     
     let team
-    let projects
+    let projects: Project[]
     let tasks
     let teamMembers
     
@@ -80,25 +83,24 @@ export default async function TeamPage({ params }: TeamPageProps) {
                 </Card>
             </div>
             
-            <div className="mt-8 space-y-4">
-                <h2 className="text-lg font-semibold">Quick Links</h2>
-                <div className="flex gap-4">
-                    <Link
-                        href={`/t/${teamId}/p`}
-                        className="inline-flex items-center justify-center rounded-md bg-primary
-                            px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-                        View All Projects
-                    </Link>
-                    {projects.length > 0 && (
-                        <Link
-                            href={`/t/${teamId}/p/${projects[0].id}`}
-                            className="inline-flex items-center justify-center rounded-md border
-                                border-input bg-background px-4 py-2 text-sm font-medium
-                                hover:bg-accent hover:text-accent-foreground">
-                            Open First Project
+            <div className="mt-8 max-w-1/3 space-y-4">
+                
+                <header className="flex justify-between items-center gap-4">
+                    <h2 className="text-lg font-semibold">
+                        Recent Projects
+                    </h2>
+                    <div className="flex justify-end items-center">
+                        <Link className="text-sm" href={`/t/${teamId}/p`}>
+                            View All Projects
                         </Link>
-                    )}
-                </div>
+                    </div>
+                </header>
+                
+                <RecentProjectsTable
+                    teamId={teamId}
+                    projects={projects}
+                    tasks={tasks} />
+            
             </div>
         </div>
     )

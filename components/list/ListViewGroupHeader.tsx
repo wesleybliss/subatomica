@@ -18,8 +18,6 @@ const ListViewGroupHeader = ({
     vm,
     lane,
     tasks,
-    selectedTasks,
-    onToggleTask,
     onSelectAll,
     onDeselectAll,
 }: ListViewGroupHeaderParams) => {
@@ -78,12 +76,11 @@ const ListViewGroupHeader = ({
                             )
                         }
                     }}
-                    onChange={(e) => {
-                        if (e.currentTarget.checked) {
+                    onChange={e => {
+                        if (e.currentTarget.checked)
                             onSelectAll(tasks.map(t => t.id))
-                        } else {
+                        else
                             onDeselectAll(tasks.map(t => t.id))
-                        }
                     }}
                     className="w-4 h-4 rounded border-border cursor-pointer"/>
             )}
