@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/db/actions/shared'
 import { getTeamById } from '@/lib/db/actions/teams'
 
-const log = logger('api/teams/[teamId]')
+const log = logger('api/t/[teamId]')
 
 export const GET = async (
     _request: Request,
@@ -21,10 +21,10 @@ export const GET = async (
         
     } catch (e) {
         
-        log.e('teamRoute', e)
+        log.e(e)
         
         return NextResponse.json(
-            { error: 'Failed to fetch teams.' },
+            { error: 'Failed to fetch team.' },
             { status: 500 },
         )
         
