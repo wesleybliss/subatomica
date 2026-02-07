@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { useWireValue } from '@forminator/react-wire'
-import { teams as storeTeams } from '@/store/tea
+import { teams as storeTeams } from '@/store/teams'
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,

@@ -1,8 +1,8 @@
 import * as client from '@/db/client'
 import { and, eq, inArray, or } from 'drizzle-orm'
-import { projects, teamMembers, teams } from '@/db/schema'
+import { projects, taskLanes, teamMembers, teams } from '@/db/schema'
 import { ensureProjectLanes } from '@/db/actions/lanes'
-import { Project } from '@repo/shared/types'
+import { Project, TaskLane } from '@repo/shared/types'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db: any = client.db!
@@ -100,7 +100,11 @@ export async function getProjects(userId: string, teamId?: string): Promise<Proj
         .orderBy(projects.name)
 }
 
-export async function getProjectById(userId: string, teamId: string, projectId: string): Promise<Project> {
+export async function getProjectById(
+    userId: string,
+    teamId: string,
+    projectId: string,
+): Promise<(Project & { taskLanes: TaskLane[] }) | undefined> {
     
     const memberTeamIds = db
         .select({ teamId: teamMembers.teamId })
@@ -124,5 +128,15 @@ export async function getProjectById(userId: string, teamId: string, projectId: 
             inArray(projects.teamId, accessibleTeamIds),
         ))
         .limit(1)
-    return project
+    if (!project)
+        return project
+    const lanes = await db
+        .select()
+        .from(taskLanes)
+        .where(eq(taskLanes.projectId, project.id))
+        .orderBy(taskLanes.order)
+    return {
+        ...project,
+        taskLanes: lanes,
+    }
 }

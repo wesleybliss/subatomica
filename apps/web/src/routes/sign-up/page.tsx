@@ -60,7 +60,7 @@ export default function SignUpPage() {
                 throw new Error(result.error.message ?? 'Unknown error')
             }
             
-            router.push('/dashboard')
+            navigate('/dashboard')
         } catch (e) {
             console.error('handleSubmit', e)
             setError('Failed to create account. Please try again.')
@@ -127,7 +127,7 @@ export default function SignUpPage() {
                     
                     <div className="mt-4 text-center text-sm text-neutral-600">
                         Already have an account?{' '}
-                        <Link href="/sign-in" className="text-neutral-900 font-medium hover:underline">
+                        <Link to="/sign-in" className="text-neutral-900 font-medium hover:underline">
                             Sign in
                         </Link>
                     </div>

@@ -65,35 +65,6 @@ export const getTasksByTeam = async (
     
 }
 
-export const getTasksByTeamTODO = (
-    teamId: string,
-    projectId: string,
-) => {
-    
-    const tasksQueryKey = useMemo(() => (
-        ['tasks', { teamId }] as const
-    ), [teamId])
-    
-    // const { data: tasks = initialTasks }
-    const query = useQuery({
-        queryKey: tasksQueryKey,
-        queryFn: async () => {
-            const params = new URLSearchParams({ teamId })
-            const response = await request(`/teams/${teamId}/projects/${projectId}/tasks?${params.toString()}`)
-            if (!response.ok)
-                throw new Error('Failed to fetch tasks')
-            return await response.json() as Promise<Task[]>
-        },
-        initialData: [],
-    })
-    
-    return {
-        ...query,
-        tasksQueryKey,
-    }
-    
-}
-
 export const updateTask = (taskId: string, data: Partial<Task>) => {
     
     return request(`/tasks/${taskId}`, {

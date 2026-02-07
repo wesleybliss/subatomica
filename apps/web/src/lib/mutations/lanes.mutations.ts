@@ -1,4 +1,4 @@
-import type { TaskLane } from '../../../../packages/shared/types/lanes.types'
+import type { TaskLane } from '@repo/shared/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const useCreateTaskLaneMutation = (

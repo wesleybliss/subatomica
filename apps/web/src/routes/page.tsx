@@ -18,7 +18,7 @@ export default function HomePage() {
             <header className="border-b border-neutral-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <image
+                        <img
                             className="shrink-0"
                             src="/logos/sub-atomica-high-resolution-logo-grayscale-transparent.png"
                             alt="Sub Atomica"
@@ -27,10 +27,10 @@ export default function HomePage() {
                         <span className="text-xl font-bold">Sub Atomica</span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <Link href="/sign-in">
+                        <Link to="/sign-in">
                             <Button variant="ghost">Sign In</Button>
                         </Link>
-                        <Link href="/sign-up">
+                        <Link to="/sign-up">
                             <Button>Get Started</Button>
                         </Link>
                     </div>

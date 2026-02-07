@@ -27,7 +27,7 @@ import ProjectsLayout from '@/routes/projects/ProjectsLayout'
 
 reactWirePersisted.setNamespace(NS)
 
-const VERCEL_ANALYTICS_ENABLED = false
+// const VERCEL_ANALYTICS_ENABLED = false
 
 /*const geist = Geist({
     subsets: ['latin'],
@@ -51,10 +51,6 @@ export const metadata = {
         apple: '/logos/sub-atomica-high-resolution-logo-grayscale-transparent-192.png',
     },
 }
-
-const AuthLayout = () => (
-    <Outlet />
-)
 
 const LandingPage = () => (
     <>
@@ -82,7 +78,7 @@ export default function RootLayout() {
     
     return (
         
-        <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem>
+        <ThemeProvider defaultTheme="system">
             
             <QueryProvider>
                 

@@ -1,3 +1,4 @@
+import { TaskLane } from '@/types/lanes.types'
 
 export interface Project {
     id: string
@@ -7,4 +8,6 @@ export interface Project {
     teamId: string
     name: string
     description: string
+    
+    taskLanes?: TaskLane[]
 }

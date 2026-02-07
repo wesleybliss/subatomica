@@ -2,6 +2,7 @@
     "compilerOptions": {
         "strict": true,
         "moduleResolution": "bundler",
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "types": ["vite/client"]
     }
 }

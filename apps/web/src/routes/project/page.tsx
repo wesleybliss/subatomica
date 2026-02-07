@@ -3,13 +3,6 @@ import * as store from '@/store'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useGetProjectQuery } from '@/lib/queries/projects.queries'
 import { ProjectDetailClient } from '@/routes/project/ProjectDetailClient'
-import StoreWriterClient from '@/components/StoreWriterClient'
-import { useGetProjectLanesQuery } from '@/lib/queries/lanes.queries'
-import { useMemo } from 'react'
-
-interface ProjectDetailPageProps {
-
-}
 
 export default function ProjectDetailPage() {
     
@@ -23,12 +16,7 @@ export default function ProjectDetailPage() {
     const projects = useWireValue(store.projects)
     const tasks = useWireValue(store.tasks)
     
-    const { isPending: projectIsPending, error: projectError, data: project } = useGetProjectQuery(teamId, projectId)
-    const { isPending: lanesIsPending, error: lanesError, data: lanes } = useGetProjectLanesQuery(teamId, projectId)
-    
-    const isPending = useMemo(() => (
-        projectIsPending || lanesIsPending
-    ), [projectIsPending, lanesIsPending])
+    const { isPending, error, data: project } = useGetProjectQuery(teamId, projectId)
     
     if (!teamId) {
         console.warn('ProjectDetailPage: no teamId')
@@ -49,24 +37,19 @@ export default function ProjectDetailPage() {
         return null
     }
     
-    if (projectError)
-        return <div>projectError: {projectError.message}</div>
+    if (error)
+        return <div>error: {error.message}</div>
     
-    if (lanesError)
-        return <div>lanesError: {lanesError.message}</div>
-    
-    return (<>
+    return (
         
         <ProjectDetailClient
             teamId={teamId}
             project={project}
             initialTasks={tasks}
-            initialLanes={lanes}
+            initialLanes={project?.taskLanes || []}
             teamMembers={teamMembers}
             projects={projects} />
         
-        <StoreWriterClient storeKey="lanes" data={lanes} />
-    
-    </>)
+    )
     
 }

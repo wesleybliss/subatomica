@@ -1,4 +1,4 @@
-import type { Project } from '@repo/shared/types'
+import type { Project, TaskLane } from '@repo/shared/types'
 import { request } from '@/lib/api/client'
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -16,7 +16,17 @@ export const useGetProjectsQuery = (teamId: string) => {
         queryFn: async () => {
             try {
                 const res = await request<Project[]>(`/teams/${teamId}/projects`)
+                
                 store.projects.setValue(res || [])
+                
+                const taskLanes: TaskLane[] = []
+                
+                res?.forEach(it => {
+                    if (it.taskLanes?.length)
+                        taskLanes.push(...it.taskLanes)
+                })
+                store.lanes.setValue(taskLanes)
+                
                 return res || []
             } catch (e) {
                 console.error('useGetProjectsQuery', e)
