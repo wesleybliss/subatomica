@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import * as store from '@/store'
 
-export const useGetProjectsQuery = (teamId: string | undefined) => {
+export const useGetProjectsQuery = (teamId: string) => {
     
     const projectsQueryKey = useMemo(() => (
         ['projects'] as const
@@ -30,6 +30,45 @@ export const useGetProjectsQuery = (teamId: string | undefined) => {
     return {
         ...query,
         projectsQueryKey,
+    }
+    
+}
+
+export const useGetProjectQuery = (teamId: string, projectId: string) => {
+    
+    const projectQueryKey = useMemo(() => (
+        ['project'] as const
+    ), [])
+    
+    const query = useQuery({
+        queryKey: projectQueryKey,
+        queryFn: async () => {
+            try {
+                const res = (await request(`/teams/${teamId}/projects/${projectId}`) as Project) || []
+                
+                if (res?.id) {
+                    const next = store.projects.getValue() || []
+                    const idx = next.findIndex(it => it.id === res.id)
+                    if (idx >= 0)
+                        next[idx] = res
+                    else
+                        next.push(res)
+                    store.projects.setValue(next)
+                }
+                
+                return res
+            } catch (e) {
+                console.error('useGetProjectQuery', e)
+                return null
+            }
+        },
+        enabled: !!teamId && !!projectId,
+        // initialData: [],
+    })
+    
+    return {
+        ...query,
+        projectQueryKey,
     }
     
 }

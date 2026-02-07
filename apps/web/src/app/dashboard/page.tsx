@@ -16,8 +16,6 @@ export default function DashboardPage() {
     if (isPending)
         return <div>@todo loading...</div>
     
-    console.log('wtf', teams, error)
-    
     if (!lastUpdatedTeam)
         return (
             <div>@todo no lastUpdatedTeam</div>

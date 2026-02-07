@@ -6,7 +6,8 @@ import { prettyJSON } from 'hono/pretty-json'
 import pkg from '../../../package.json' assert { type: 'json' }
 import { auth as defaultAuth } from '@/services/auth' // BetterAuth instance
 import teamsRoutes from '@/routes/teams'
-/*import { projectsRoute } from './routes/projects'*/
+import projectsRoute from '@/routes/projects'
+import tasksRoute from '@/routes/tasks'
 import { env } from './env'
 
 type Package = {
@@ -83,25 +84,34 @@ export const createApp = (auth = defaultAuth) => {
         
     })
     
-    const protectRoute = (path: string) => {
-        
-        app.use(path, async (c, next) => {
-            
-            const session = await auth.api.getSession({ headers: c.req.raw.headers })
-            
-            if (!session || !session.user || !session.session)
-                // return c.body(null, 401)
-                return c.json({ error: 'Unauthorized' }, 401)
-            
-            await next()
-            
-        })
-        
-        return app
-        
-    }
-    
-    teamsRoutes(protectRoute('/t/*'))
+    const protectedRoutes = new Hono<{
+        Variables: {
+            user: typeof auth.$Infer.Session.user;
+            session: typeof auth.$Infer.Session.session
+        }
+    }>()
+
+    protectedRoutes.use('*', async (c, next) => {
+        const user = c.get('user')
+        if (!user) {
+            return c.json({ error: 'Unauthorized' }, 401)
+        }
+        await next()
+    })
+
+    const teams = new Hono()
+    teamsRoutes(teams)
+    protectedRoutes.route('/teams', teams)
+
+    const projects = new Hono()
+    projectsRoute(projects)
+    protectedRoutes.route('/teams/:teamId/projects', projects)
+
+    const tasks = new Hono()
+    tasksRoute(tasks)
+    protectedRoutes.route('/teams/:teamId/projects/:projectId/tasks', tasks)
+
+    app.route('/', protectedRoutes)
     
     //
     

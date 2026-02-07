@@ -4,7 +4,7 @@ import * as reactWirePersisted from 'react-wire-persisted'
 import type React from 'react'
 import { preconnect } from 'react-dom'
 import { NS } from '@/lib/constants'
-import { Routes, Route, Outlet, Navigate } from 'react-router'
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom'
 import DebugTools from '@/components/debug/DebugTools'
 import DebugClient from '@/components/debug/DebugClient'
 import ThemeProvider from '@/components/ThemeProvider'
@@ -63,6 +63,16 @@ const LandingPage = () => (
     </>
 )
 
+const GlobalLayout = () => (
+    <>
+        <Outlet />
+        <GlobalClient />
+        <GlobalCommand />
+        <DebugClient />
+        <DebugTools />
+    </>
+)
+
 export default function RootLayout() {
     
     const { data: session, isPending } = useSession()
@@ -78,31 +88,30 @@ export default function RootLayout() {
                 
                 <Routes>
                     
-                    <Route index element={session ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
-                    <Route path="sign-up" element={<SignUpPage />} />
-                    <Route path="sign-in" element={<SignInPage />} />
-                    
-                    <Route element={<ProtectedRoute />}>
+                    <Route element={<GlobalLayout />}>
                         
-                        <Route path="dashboard" element={<DashboardPage />} />
-                        <Route path="debug" element={<DebugPage />} />
+                        <Route index element={session ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
+                        <Route path="sign-up" element={<SignUpPage />} />
+                        <Route path="sign-in" element={<SignInPage />} />
                         
-                        <Route path="t" element={<TeamsLayout />}>
+                        <Route element={<ProtectedRoute />}>
                             
-                            <Route index element={<TeamsPage />} />
+                            <Route path="dashboard" element={<DashboardPage />} />
+                            <Route path="debug" element={<DebugPage />} />
                             
-                            <Route path=":teamId" element={<TeamLayout />}>
+                            <Route path="t" element={<TeamsLayout />}>
                                 
-                                <Route index element={<TeamPage />} />
+                                <Route index element={<TeamsPage />} />
                                 
-                                <Route path="p" element={<TeamProjectsLayout />}>
+                                <Route path=":teamId" element={<TeamLayout />}>
                                     
-                                    <Route index element={<TeamProjectsPage />} />
+                                    <Route index element={<TeamPage />} />
                                     
-                                    <Route path=":projectId" element={<ProjectDetailPage />}>
+                                    <Route path="p" element={<TeamProjectsLayout />}>
                                         
-                                        <Route index element={<ProjectDetailPage />} />
-                                        {/* @todo task page */}
+                                        <Route index element={<TeamProjectsPage />} />
+                                        
+                                        <Route path=":projectId" element={<ProjectDetailPage />} />
                                     
                                     </Route>
                                 
@@ -116,13 +125,7 @@ export default function RootLayout() {
                 
                 </Routes>
                 
-                <GlobalClient />
-                <GlobalCommand />
-                
                 {/*{VERCEL_ANALYTICS_ENABLED && <Analytics />}*/}
-                
-                <DebugClient />
-                <DebugTools />
             
             </QueryProvider>
         

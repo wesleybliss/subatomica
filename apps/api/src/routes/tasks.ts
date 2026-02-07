@@ -28,8 +28,7 @@ export const getTaskById = async (c: Context) => {
 
 export default (app: any) => {
     
-    app.get('/teams/:teamId/projects/:projectId/tasks', getTasks)
-    app.get('/teams/:teamId/projects/:projectId/tasks/:taskId', getTaskById)
-    
+    app.get('/', getTasks)
+    app.get('/:taskId', getTaskById)
     
 }
