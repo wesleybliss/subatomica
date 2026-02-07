@@ -30,9 +30,9 @@ export default function TeamPage() {
     const isPending = useMemo(() => (
         projectsIsPending || tasksIsPending || teamMembersIsPending
     ), [projectsIsPending, tasksIsPending, teamMembersIsPending])
-    
+    console.log({projectsIsPending, tasksIsPending, teamMembersIsPending})
     if (isPending)
-        return <div>@todo Loading...</div>
+        return <div>@todo Loading teams...</div>
     
     if (!team)
         return <div className="p-6">Team not found</div>

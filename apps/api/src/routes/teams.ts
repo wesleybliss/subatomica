@@ -1,6 +1,8 @@
 import logger from '@repo/shared/utils/logger'
 import { Context } from 'hono'
 import * as teamsService from '@/services/teams'
+import * as projectsService from '@/services/projects'
+import * as tasksService from '@/services/tasks'
 
 const log = logger('routes/teams')
 
@@ -36,10 +38,34 @@ export const getTeamMembers = async (c: Context) => {
     
 }
 
+export const getTeamProjects = async (c: Context) => {
+    
+    const user = c.get('user')
+    const teamId = c.req.param('teamId')
+    
+    const teamProjects = await projectsService.getProjects(user.id, teamId)
+    
+    return c.json(teamProjects)
+    
+}
+
+export const getTeamTasks = async (c: Context) => {
+    
+    const user = c.get('user')
+    const teamId = c.req.param('teamId')
+    
+    const teamTasks = await tasksService.getTasks(user.id, teamId)
+    
+    return c.json(teamTasks)
+    
+}
+
 export default (app: any) => {
   
-    app.get('/t', getTeams)
-    app.get('/t/:teamId', getTeamById)
-    app.get('/t/:teamId/members', getTeamMembers)
+    app.get('/teams', getTeams)
+    app.get('/teams/:teamId', getTeamById)
+    app.get('/teams/:teamId/members', getTeamMembers)
+    app.get('/teams/:teamId/projects', getTeamProjects)
+    app.get('/teams/:teamId/tasks', getTeamTasks)
     
 }

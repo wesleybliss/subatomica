@@ -16,13 +16,14 @@ export const useGetTasksQuery = (teamId: string | undefined, projectId?: string 
                 const url = projectId
                     ? `/teams/${teamId}/projects/${projectId}/tasks`
                     : `/teams/${teamId}/tasks`
+                console.log('useGetTasksQuery url', url)
                 return await request(url) as Promise<Task[]>
             } catch (e) {
-                console.error('useGetProjectsQuery', e)
+                console.error('useGetTasksQuery', e)
                 return null
             }
         },
-        enabled: !!teamId && !!projectId,
+        enabled: !!teamId,
         // initialData: [],
     })
     

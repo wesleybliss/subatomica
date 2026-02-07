@@ -5,29 +5,31 @@ export const getTasks = async (c: Context) => {
     
     const user = c.get('user')
     const teamId = c.req.param('teamId')
+    const projectId = c.req.param('projectId')
     
-    const projects = await tasksService.getTasks(user.id, teamId)
+    const tasks = await tasksService.getTasks(user.id, projectId, teamId)
     
-    return c.json(projects)
+    return c.json(tasks)
     
 }
 
-export const getProjectById = async (c: Context) => {
+export const getTaskById = async (c: Context) => {
     
     const user = c.get('user')
     const teamId = c.req.param('teamId')
     const projectId = c.req.param('projectId')
+    const taskId = c.req.param('taskId')
     
-    const project = await tasksService.getProjectById(user.id, teamId, projectId)
+    const task = await tasksService.getTaskById(user.id, teamId, projectId, taskId)
     
-    return c.json(project)
+    return c.json(task)
     
 }
 
 export default (app: any) => {
     
     app.get('/teams/:teamId/projects', getTasks)
-    app.get('/teams/:teamId/projects/:projectId', getProjectById)
+    app.get('/teams/:teamId/projects/:projectId', getTaskById)
     
     
 }
