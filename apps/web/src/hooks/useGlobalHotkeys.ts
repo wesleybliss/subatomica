@@ -32,7 +32,7 @@ const useGlobalHotkeys = () => {
     
     const globalCommandOpen = useWire(store.globalCommandOpen)
     
-    useHotkey('ctrl+p', () => {
+    useHotkey('ctrl+projects', () => {
         
         globalCommandOpen.setValue(!globalCommandOpen.getValue())
         

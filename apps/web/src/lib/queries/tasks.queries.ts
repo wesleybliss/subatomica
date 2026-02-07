@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import type { Task } from '@repo/shared/types'
 import { request } from '@/lib/api/client'
 import { useQuery } from '@tanstack/react-query'
+import * as store from '@/store'
 
 export const useGetTasksQuery = (teamId: string, projectId?: string) => {
     
@@ -9,18 +10,21 @@ export const useGetTasksQuery = (teamId: string, projectId?: string) => {
         ['tasks', teamId, projectId] as const
     ), [teamId, projectId])
     
-    const query = useQuery({
+    const query = useQuery<Task[], Error>({
         queryKey: tasksQueryKey,
         queryFn: async () => {
             try {
                 const url = projectId
                     ? `/teams/${teamId}/projects/${projectId}/tasks`
                     : `/teams/${teamId}/tasks`
-                console.log('useGetTasksQuery url', url)
-                return await request(url) as Promise<Task[]>
+                const res = await request<Task[]>(url)
+                
+                store.tasks.setValue(res || [])
+                
+                return res || []
             } catch (e) {
                 console.error('useGetTasksQuery', e)
-                return null
+                return []
             }
         },
         enabled: !!teamId,

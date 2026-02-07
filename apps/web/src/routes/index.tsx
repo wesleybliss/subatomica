@@ -11,19 +11,19 @@ import ThemeProvider from '@/components/ThemeProvider'
 import QueryProvider from '@/components/QueryProvider'
 import GlobalCommand from '@/components/dialogs/GlobalCommand/GlobalCommand'
 import GlobalClient from '@/components/GlobalClient'
-import DashboardPage from '@/app/dashboard/page'
-import DebugPage from '@/app/debug/page'
-import SignUpPage from '@/app/sign-up/page'
-import SignInPage from '@/app/sign-in/page'
-import TeamsPage from '@/app/t/page'
-import TeamPage from '@/app/t/[teamId]/page'
-import TeamProjectsPage from '@/app/t/[teamId]/p/page'
-import ProjectDetailPage from '@/app/t/[teamId]/p/[projectId]/page'
+import DashboardPage from '@/routes/dashboard/page'
+import DebugPage from '@/routes/debug/page'
+import SignUpPage from '@/routes/sign-up/page'
+import SignInPage from '@/routes/sign-in/page'
+import TeamsPage from '@/routes/teams/TeamsPage'
+import TeamPage from '@/routes/team/TeamPage'
+import TeamProjectsPage from '@/routes/projects/ProjectsPage'
+import ProjectDetailPage from '@/routes/project/page'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { useSession } from '@/lib/auth-client'
-import TeamsLayout from '@/app/t/layout'
-import TeamLayout from '@/app/t/[teamId]/layout'
-import TeamProjectsLayout from '@/app/t/[teamId]/p/layout'
+import TeamsLayout from '@/routes/teams/TeamsLayout'
+import TeamLayout from '@/routes/team/TeamLayout'
+import ProjectsLayout from '@/routes/projects/ProjectsLayout'
 
 reactWirePersisted.setNamespace(NS)
 
@@ -107,7 +107,7 @@ export default function RootLayout() {
                                     
                                     <Route index element={<TeamPage />} />
                                     
-                                    <Route path="p" element={<TeamProjectsLayout />}>
+                                    <Route path="p" element={<ProjectsLayout />}>
                                         
                                         <Route index element={<TeamProjectsPage />} />
                                         

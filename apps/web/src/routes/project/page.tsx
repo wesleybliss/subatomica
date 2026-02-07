@@ -2,8 +2,10 @@ import { useWireValue } from '@forminator/react-wire'
 import * as store from '@/store'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useGetProjectQuery } from '@/lib/queries/projects.queries'
-import { ProjectDetailClient } from './ProjectDetailClient'
+import { ProjectDetailClient } from '@/routes/project/ProjectDetailClient'
 import StoreWriterClient from '@/components/StoreWriterClient'
+import { useGetProjectLanesQuery } from '@/lib/queries/lanes.queries'
+import { useMemo } from 'react'
 
 interface ProjectDetailPageProps {
 
@@ -19,10 +21,14 @@ export default function ProjectDetailPage() {
     
     const teamMembers = useWireValue(store.teamMembers)
     const projects = useWireValue(store.projects)
-    const lanes = useWireValue(store.lanes)
     const tasks = useWireValue(store.tasks)
     
     const { isPending: projectIsPending, error: projectError, data: project } = useGetProjectQuery(teamId, projectId)
+    const { isPending: lanesIsPending, error: lanesError, data: lanes } = useGetProjectLanesQuery(teamId, projectId)
+    
+    const isPending = useMemo(() => (
+        projectIsPending || lanesIsPending
+    ), [projectIsPending, lanesIsPending])
     
     if (!teamId) {
         console.warn('ProjectDetailPage: no teamId')
@@ -30,7 +36,7 @@ export default function ProjectDetailPage() {
         return null
     }
     
-    if (projectIsPending)
+    if (isPending)
         return <div>Loading project...</div>
     
     if (!project) {
@@ -45,6 +51,9 @@ export default function ProjectDetailPage() {
     
     if (projectError)
         return <div>projectError: {projectError.message}</div>
+    
+    if (lanesError)
+        return <div>lanesError: {lanesError.message}</div>
     
     return (<>
         

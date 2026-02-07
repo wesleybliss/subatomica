@@ -11,16 +11,16 @@ export const useGetProjectsQuery = (teamId: string) => {
     ), [teamId])
     
     // const { data: projects = initialTasks }
-    const query = useQuery({
+    const query = useQuery<Project[], Error>({
         queryKey: projectsQueryKey,
         queryFn: async () => {
             try {
-                const res = (await request(`/teams/${teamId}/projects`) as Project[]) || []
-                store.projects.setValue(res)
-                return res
+                const res = await request<Project[]>(`/teams/${teamId}/projects`)
+                store.projects.setValue(res || [])
+                return res || []
             } catch (e) {
                 console.error('useGetProjectsQuery', e)
-                return null
+                return []
             }
         },
         enabled: !!teamId,

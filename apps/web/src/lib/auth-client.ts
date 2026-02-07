@@ -8,7 +8,7 @@ console.log('lib/auth-client: baseURL:', import.meta.env.VITE_BETTER_AUTH_URL)
 export const authClient = createAuthClient({
     baseURL: import.meta.env.VITE_BETTER_AUTH_URL,
     
-    // Don't automatically add /api/auth to the basePath
+    // Don'teams automatically add /api/auth to the basePath
     basePath: '/auth',
 })
 

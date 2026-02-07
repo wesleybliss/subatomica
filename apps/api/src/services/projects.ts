@@ -115,29 +115,6 @@ export async function getProjectById(userId: string, teamId: string, projectId: 
             inArray(teams.id, memberTeamIds),
         ))
     
-    console.log('getProjectById', {
-        memberTeamIds: await db
-            .select({ teamId: teamMembers.teamId })
-            .from(teamMembers)
-            .where(eq(teamMembers.userId, userId)),
-        accessibleTeamIds: await db
-            .select({ id: teams.id })
-            .from(teams)
-            .where(or(
-                eq(teams.ownerId, userId),
-                inArray(teams.id, memberTeamIds),
-            )),
-        project: await db
-            .select()
-            .from(projects)
-            .where(and(
-                eq(projects.teamId, teamId),
-                eq(projects.id, projectId),
-                inArray(projects.teamId, accessibleTeamIds),
-            ))
-            .limit(1),
-    })
-    
     const [project] = await db
         .select()
         .from(projects)

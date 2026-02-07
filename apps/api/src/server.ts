@@ -6,7 +6,7 @@ import { serve } from '@hono/node-server'
     __honoServer?: ReturnType<typeof serve>
 }*/
 
-// serve(app)?
+// serve(routes)?
 const options = {
     port: parseInt(process.env.PORT || '5000', 10),
     hostname: process.env.HOST || '0.0.0.0',

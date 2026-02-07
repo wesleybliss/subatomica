@@ -24,7 +24,7 @@ Create `app/t/[teamId]/p/[projectId]/ProjectDetailLayoutClient.tsx` (Client Comp
 - Sync the `activeView` with the current route.
 
 ### 3. Implement Catch-all View Page
-Rename `app/t/[teamId]/p/[projectId]/page.tsx` to `app/t/[teamId]/p/[projectId]/[[...view]]/page.tsx`.
+Rename `app/t/[teamId]/p/[projectId]/ProjectsPage.tsx` to `app/t/[teamId]/p/[projectId]/[[...view]]/ProjectsPage.tsx`.
 This page will:
 - Determine the view from the `view` parameter.
 - Render the appropriate view component (`KanbanView`, `ListView`, or `TimelineView`).

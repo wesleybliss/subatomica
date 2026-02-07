@@ -11,7 +11,7 @@ const createFullUrl = (url: string) => {
     
 }
 
-export const request = async (url: string, options?: RequestInit) => {
+export const request = async <T,>(url: string, options?: RequestInit): Promise<T> => {
     
     const fullUrl = createFullUrl(url)
     

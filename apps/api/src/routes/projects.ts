@@ -29,7 +29,6 @@ export const getProjectById = async (c: Context) => {
     if (!projectId)
         throw new HTTPException(404, { message: 'Param projectId required' })
     
-    
     const project = await projectsService.getProjectById(user.id, teamId, projectId)
     
     return c.json(project)

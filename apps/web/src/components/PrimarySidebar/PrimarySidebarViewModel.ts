@@ -37,7 +37,7 @@ const PrimarySidebarViewModel = ({ teamId }: PrimarySidebarViewModelInput) => {
     
     const navClassName = cn(
         'flex-1 overflow-y-auto',
-        isCollapsed ? 'px-2' : 'p-3',
+        isCollapsed ? 'px-2' : 'projects-3',
     )
     
     const collapseButtonClassName = cn(

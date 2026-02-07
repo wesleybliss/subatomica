@@ -3,10 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useSession } from '@/lib/auth-client'
 
-export default async function HomePage() {
+export default function HomePage() {
     
     const navigate = useNavigate()
-    
     const session = useSession()
     
     if (session) navigate('/dashboard', { replace: true })

@@ -28,7 +28,7 @@ export function TaskDetailForm({ task, teamMembers, onSaved, onClose }: TaskDeta
     const editor = useEditor({
         immediatelyRender: false,
         extensions: [StarterKit],
-        content: task.description || '<p></p>',
+        content: task.description || '<projects></projects>',
         editorProps: {
             attributes: {
                 class: [
@@ -42,7 +42,7 @@ export function TaskDetailForm({ task, teamMembers, onSaved, onClose }: TaskDeta
         setTitle(task.title)
         setAssigneeId(task.assigneeId ?? '')
         if (editor && task.description !== editor.getHTML())
-            editor.commands.setContent(task.description || '<p></p>')
+            editor.commands.setContent(task.description || '<projects></projects>')
     }, [editor, task.assigneeId, task.description, task.title])
     const members = useMemo(() => teamMembers, [teamMembers])
     const handleSave = async () => {

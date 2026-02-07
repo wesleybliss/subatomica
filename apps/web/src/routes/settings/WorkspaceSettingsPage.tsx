@@ -1,29 +1,34 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import * as store from '@/store'
 import SettingsAccountHeader from '@/components/settings/SettingsAccountHeader'
 import { MembersSection } from '@/components/settings/MembersSection'
 import { useSession } from '@/lib/auth-client'
-import { canManageTeamMembers, getTeamById, getTeamMembers } from '@/lib/queries/teams.queries'
+import { useWireValue } from '@forminator/react-wire'
+import { useMemo } from 'react'
 
 const avatarUrlFor = (name: string, email: string) =>
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
 
-export default async function WorkspaceSettingsPage({ params }: { params: Promise<{ teamId: string }> }) {
+export default function WorkspaceSettingsPage() {
     
+    const params = useParams()
+    const navigate = useNavigate()
     const { data: session } = useSession()
+    
+    const teamId = params.teamId
+    
+    const teams = useWireValue(store.teams)
+    const teamMembers = useWireValue(store.teamMembers)
+    
+    const team = useMemo(() => (
+        teams?.find(it => it.id === teamId)
+    ), [teams, teamId])
     
     if (!session) return navigate('/sign-in', { replace: true })
     
-    const navigate = useNavigate()
-    
-    const { teamId } = await params
-    const team = await getTeamById(teamId)
-    
     if (!team) return navigate('/')
     
-    const [members, canManage] = await Promise.all([
-        getTeamMembers(teamId),
-        canManageTeamMembers(teamId),
-    ])
+    // @todo check canManageTeamMembers(teamId),
     
     const name = session.user?.name || session.user?.email || 'User'
     const email = session.user?.email || ''

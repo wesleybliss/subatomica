@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import App from './app'
+import App from '@/routes'
 import './globals.css'
 
 // eslint-disable-next-line no-restricted-globals

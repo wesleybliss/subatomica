@@ -54,7 +54,7 @@ export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps)
             <div
                 ref={cardRef}
                 className={cn(
-                    'bg-card border border-border rounded-lg p-3 cursor-move',
+                    'bg-card border border-border rounded-lg projects-3 cursor-move',
                     'transition-all hover:shadow-md hover:border-primary/50', {
                         'opacity-50': isDragging,
                         'opacity-100': !isDragging,

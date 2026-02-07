@@ -8,7 +8,7 @@ import TeamsAccountMenu from '@/components/PrimarySidebar/TeamsAccountMenu'
 import { Button } from '@/components/ui/button'
 import PrimarySidebarViewModel from './PrimarySidebarViewModel'
 
-// @todo @deprecated - don't delete yet, might merge some things into the AppSidebar
+// @todo @deprecated - don'teams delete yet, might merge some things into the AppSidebar
 const PrimarySidebar = ({ teamId }: { teamId: string }) => {
     const {
         isCollapsed,

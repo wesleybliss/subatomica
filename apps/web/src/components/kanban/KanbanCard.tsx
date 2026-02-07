@@ -16,7 +16,7 @@ export function KanbanCard({ task, selected, onToggle, onClick }: KanbanCardProp
         <div
             className={cn(
                 'group relative bg-card border border-border',
-                'rounded-lg p-4 cursor-pointer transition-all hover:border-primary/50', {
+                'rounded-lg projects-4 cursor-pointer transition-all hover:border-primary/50', {
                     'border-primary ring-2 ring-primary/20': selected,
                 },
             )}

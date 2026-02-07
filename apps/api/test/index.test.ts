@@ -24,7 +24,7 @@ describe('Sanity check', () => {
             version: pkg.version,
         })
         
-        // Unauthenticated call to /t should fail
+        // Unauthenticated call to /teams should fail
         expect((await client.t.$get()).status).toBe(401)
         
     })
@@ -41,7 +41,7 @@ describe('Sanity check', () => {
     
     /*it('should return the version', async () => {
         
-        const res = await client.t.$get()
+        const res = await client.teams.$get()
         
         // Assertions
         expect(res.status).toBe(200)

@@ -29,7 +29,7 @@ Current dialogs are very basic and don't look great. Ensure we're using Shadcn/u
 
 ## Organize project detail navbar
 
-Currently, `ProjectDetailNavbar.tsx` lives inside the `KanbanView.tsx` component. Move it up a level higher so that it can be shared across all views. I think it should probably live in the `app/t/[teamId]/p/[projectId]/page.tsx` component, but I'm not positive.
+Currently, `ProjectDetailNavbar.tsx` lives inside the `KanbanView.tsx` component. Move it up a level higher so that it can be shared across all views. I think it should probably live in the `app/t/[teamId]/p/[projectId]/ProjectsPage.tsx` component, but I'm not positive.
 
 ## Fix secondary navigation
 

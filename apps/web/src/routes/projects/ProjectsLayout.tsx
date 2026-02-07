@@ -5,18 +5,14 @@ import { useGetTasksQuery } from '@/lib/queries/tasks.queries'
 import type React from 'react'
 import { Outlet } from 'react-router-dom'
 
-interface TeamProjectsLayoutProps {
-    children: React.ReactNode
-}
-
-export default function TeamProjectsLayout() {
+export default function ProjectsLayout() {
     
     const params = useParams()
     const navigate = useNavigate()
     const teamId: string | null = params.teamId as string
     
-    const { isPending: projectsIsPending, error: projectsError, data: projects = [] } = useGetProjectsQuery(teamId)
-    const { isPending: tasksIsPending, error: tasksError, data: tasks = [] } = useGetTasksQuery(teamId)
+    const { isPending: projectsIsPending, error: projectsError } = useGetProjectsQuery(teamId)
+    const { isPending: tasksIsPending, error: tasksError } = useGetTasksQuery(teamId)
     
     const isPending = useMemo(() => (
         projectsIsPending || tasksIsPending
@@ -33,12 +29,6 @@ export default function TeamProjectsLayout() {
     if (tasksError)
         return <div>tasksError: {tasksError.message}</div>
     
-    return (<>
-        
-        <Outlet />
-        
-        {/*<StoreWriterClient storeKey="projects" data={projects} />
-        <StoreWriterClient storeKey="tasks" data={tasks} />*/}
+    return <Outlet />
     
-    </>)
 }

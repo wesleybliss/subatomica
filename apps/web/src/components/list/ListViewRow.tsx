@@ -195,7 +195,7 @@ export function ListViewRow({
                         onDelete?.(task.id)
                     }}
                     className={cn(
-                        'p-1.5 hover:bg-destructive/10',
+                        'projects-1.5 hover:bg-destructive/10',
                         'rounded transition-colors',
                         'opacity-0 group-hover:opacity-100',
                     )}

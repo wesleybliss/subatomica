@@ -2,6 +2,7 @@ import type { Team, TeamMemberProfile } from '@repo/shared/types'
 import { request } from '@/lib/api/client'
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import * as store from '@/store'
 
 export const useGetTeamsQuery = () => {
     
@@ -10,14 +11,19 @@ export const useGetTeamsQuery = () => {
     ), [])
     
     // const { data: teams = initialTasks }
-    const query = useQuery({
+    const query = useQuery<Team[], Error>({
         queryKey: teamsQueryKey,
         queryFn: async () => {
             try {
-                return await request('/teams') as Promise<Team[]>
+                const res = await request<Team[]>('/teams')
+                
+                store.teams.setValue(res || [])
+                
+                return res || []
+                
             } catch (e) {
                 console.error('useGetTeamsQuery', e)
-                return null
+                return []
             }
         },
         // initialData: [],
@@ -37,14 +43,14 @@ export const useGetTeamMembersQuery = (teamId: string) => {
     ), [teamId])
     
     // const { data: teamMembers = initialTasks }
-    const query = useQuery({
+    const query = useQuery<TeamMemberProfile[], Error>({
         queryKey: teamMembersQueryKey,
         queryFn: async () => {
             try {
-                return await request(`/teams/${teamId}/members`) as Promise<TeamMemberProfile[]>
+                return await request<TeamMemberProfile[]>(`/teams/${teamId}/members`)
             } catch (e) {
                 console.error('useGetTeamMembersQuery', e)
-                return null
+                return []
             }
         },
         // initialData: [],
@@ -55,10 +61,6 @@ export const useGetTeamMembersQuery = (teamId: string) => {
         teamMembersQueryKey,
     }
     
-}
-
-export const getUserTeams = async (): Promise<Team[]> => {
-    return await request('/teams') as Team[]
 }
 
 export const getTeamById = async (teamId: string): Promise<Team> => {
