@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import type { Project, Task, TaskLane } from '@repo/shared/types'
 
 const ListViewViewModel = (
@@ -62,7 +61,7 @@ const ListViewViewModel = (
     
     const handleDeleteTask = async (taskId: string) => {
         try {
-            const response = await fetch(`/api/tasks/${taskId}`, {
+            const response = await fetch(`/teams/${teamId}/projects/${projectId}/tasks/${taskId}`, {
                 method: 'DELETE',
             })
             if (!response.ok) throw new Error('Failed to delete task')
@@ -82,7 +81,7 @@ const ListViewViewModel = (
         try {
             await Promise.all(
                 Array.from(selectedTasks).map(taskId =>
-                    fetch(`/api/tasks/${taskId}`, { method: 'DELETE' }),
+                    fetch(`/teams/${teamId}/projects/${projectId}/tasks/${taskId}`, { method: 'DELETE' }),
                 ),
             )
             window.location.reload()
@@ -96,7 +95,7 @@ const ListViewViewModel = (
         try {
             await Promise.all(
                 Array.from(selectedTasks).map(taskId =>
-                    fetch(`/api/tasks/${taskId}`, {
+                    fetch(`/teams/${teamId}/projects/${projectId}/tasks/${taskId}`, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status: newStatus }),
@@ -114,7 +113,7 @@ const ListViewViewModel = (
         try {
             await Promise.all(
                 taskIds.map(taskId =>
-                    fetch(`/api/tasks/${taskId}`, {
+                    fetch(`/teams/${teamId}/projects/${projectId}/tasks/${taskId}`, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status: newStatus }),

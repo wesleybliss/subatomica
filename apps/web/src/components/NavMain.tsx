@@ -27,7 +27,7 @@ export function NavMain({
                 
                 {items.map(item => (
                     <SidebarMenuItem key={item.title}>
-                        <a href={item.url}>
+                        <Link to={item.url}>
                             
                             <SidebarMenuButton
                                 className="px-3 py-6"
@@ -41,7 +41,7 @@ export function NavMain({
                             
                             </SidebarMenuButton>
                         
-                        </a>
+                        </Link>
                     </SidebarMenuItem>
                 ))}
             

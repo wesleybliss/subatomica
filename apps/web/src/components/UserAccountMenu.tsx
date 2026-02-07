@@ -1,8 +1,6 @@
-import { Link } from 'react-router-dom'
 import { memo, useMemo } from 'react'
 import { useWireValue } from '@forminator/react-wire'
-import { teams as storeTeams } from '@/store/teams'
-import { usePathname, useRouter } from 'next/navigation'
+import { teams as storeTeams } from '@/store/tea
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
@@ -15,14 +13,16 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { signOut, useSession } from '@/lib/auth-client'
 import { getUnixTime } from 'date-fns'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const avatarUrlFor = (name: string, email: string) =>
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
 
 const UserAccountMenu = () => {
     const { data: session } = useSession()
-    const router = useRouter()
-    const pathname = usePathname()
+    const location = useLocation()
+    const navigate = useNavigate()
+    const pathname = location.pathname
     
     const teams = useWireValue(storeTeams)
     
@@ -46,11 +46,11 @@ const UserAccountMenu = () => {
     }
     
     const onTeamSelect = (teamId: string) => {
-        router.push(`/t/${teamId}`)
+        navigate(`/t/${teamId}`)
     }
     
     const onSettingsClick = () => {
-        router.push(`/t/${activeTeamId}/settings`)
+        navigate(`/t/${activeTeamId}/settings`)
     }
     
     return (

@@ -32,7 +32,7 @@ const PrimarySidebar = ({ teamId }: { teamId: string }) => {
                         return (
                             <Link
                                 key={`${item.label}-${index}`}
-                                href={item.href}
+                                to={item.href}
                                 title={isCollapsed ? item.label : undefined}
                                 className={getNavItemClassName(isActive)}>
                                 <Icon className="w-4 h-4 shrink-0" />

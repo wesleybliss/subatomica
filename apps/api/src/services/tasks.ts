@@ -130,27 +130,18 @@ export async function getTasks(userId: string, teamId: string, projectId?: strin
             eq(teams.ownerId, userId),
             inArray(teams.id, memberTeamIds),
         ))
-    const accessibleProjectIds = db
+    const teamProjectIds = db
         .select({ id: projects.id })
         .from(projects)
-        .where(inArray(projects.teamId, accessibleTeamIds))
-    const teamProjectIds = teamId
-        ? db
-            .select({ id: projects.id })
-            .from(projects)
-            .where(and(
-                eq(projects.teamId, teamId),
-                inArray(projects.teamId, accessibleTeamIds),
-            ))
-        : null
-    console.log('wtf', {teamId, projectId, teamProjectIds, accessibleTeamIds})
+        .where(and(
+            eq(projects.teamId, teamId),
+            inArray(projects.teamId, accessibleTeamIds),
+        ))
     const query = projectId
         ? and(
             eq(tasks.projectId, projectId),
             inArray(tasks.projectId, teamProjectIds))
-        : and(
-            eq(tasks.teamId, teamId),
-            inArray(tasks.teamId, accessibleTeamIds))
+        : inArray(tasks.projectId, teamProjectIds)
     return db.select()
         .from(tasks)
         .where(query)

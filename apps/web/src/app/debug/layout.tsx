@@ -23,7 +23,7 @@ export default function DebugPage({
                 <ul className="flex items-center">
                     {debugLinks.map(([url, label]) => (
                         <li key={url} className="mr-4">
-                            <Link className="text-sm" href={url}>
+                            <Link className="text-sm" to={url}>
                                 {label}
                             </Link>
                         </li>

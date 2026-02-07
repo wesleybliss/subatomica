@@ -113,7 +113,7 @@ export default function RootLayout() {
                         </Route>
                     
                     </Route>
-                    
+                
                 </Routes>
                 
                 <GlobalClient />

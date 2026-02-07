@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-import { usePathname } from 'next/navigation'
 import { useWireValue } from '@forminator/react-wire'
 import {
     Search,
@@ -14,6 +12,7 @@ import {
 import { cn } from '@/lib/utils'
 import { primarySidebarCollapsed } from '@/store/app'
 import type { LucideIcon } from 'lucide-react'
+import { useLocation } from 'react-router-dom'
 
 type NavItem = {
     icon: LucideIcon
@@ -27,7 +26,8 @@ type PrimarySidebarViewModelInput = {
 }
 
 const PrimarySidebarViewModel = ({ teamId }: PrimarySidebarViewModelInput) => {
-    const pathname = usePathname()
+    const location = useLocation()
+    const pathname = location.pathname
     const isCollapsed = useWireValue(primarySidebarCollapsed)
     
     const sidebarClassName = cn(

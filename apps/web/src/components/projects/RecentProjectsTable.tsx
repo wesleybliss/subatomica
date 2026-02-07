@@ -66,7 +66,7 @@ const RecentProjectsTable = ({
                         <TableRow key={`recent-project-${it.id}`}>
                             
                             <TableCell className="text-base">
-                                <Link href={`/t/${teamId}/p/${it.id}`}>
+                                <Link to={`/t/${teamId}/p/${it.id}`}>
                                     {it.name}
                                 </Link>
                             </TableCell>

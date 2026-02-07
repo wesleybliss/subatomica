@@ -65,7 +65,7 @@ export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps)
                 }}>
                 <div className="flex items-start justify-between gap-2 mb-2">
                     <Link
-                        href={taskHref}
+                        to={taskHref}
                         className="text-xs text-muted-foreground hover:text-primary transition-colors font-mono"
                         onClick={e => e.stopPropagation()}>
                         {projectDisplay}

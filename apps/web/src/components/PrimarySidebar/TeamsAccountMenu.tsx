@@ -1,8 +1,7 @@
-import { Link } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
 import { useWireValue } from '@forminator/react-wire'
 import { teams as storeTeams } from '@/store/teams'
-import { usePathname, useRouter } from 'next/navigation'
 import { ChevronDown, Plus } from 'lucide-react'
 import {
     DropdownMenu,
@@ -20,8 +19,9 @@ type TeamsAccountMenuProps = {
 
 const TeamsAccountMenu = ({ collapsed = false }: TeamsAccountMenuProps) => {
     
-    const pathname = usePathname()
-    const router = useRouter()
+    const location = useLocation()
+    const navigate = useNavigate()
+    const pathname = location.pathname
     
     const teams = useWireValue(storeTeams)
     
@@ -35,11 +35,11 @@ const TeamsAccountMenu = ({ collapsed = false }: TeamsAccountMenuProps) => {
     const activeTeamInitial = activeTeamName.slice(0, 1).toUpperCase()
     
     const onTeamSelect = (teamId: string) => {
-        router.push(`/t/${teamId}`)
+        navigate(`/t/${teamId}`)
     }
     
     const onCreateTeam = () => {
-        router.push(`/t/${activeTeamId}/teams`)
+        navigate(`/t/${activeTeamId}/teams`)
     }
     
     return (

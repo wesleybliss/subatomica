@@ -14,7 +14,7 @@ export default function TeamProjectsPage() {
     const getTaskCountForProject = (projectId: string) =>
         tasks.filter(task => task.projectId === projectId).length
     
-    if (!team) return <div className="p-6">Loading...</div>
+    if (!team) return <div className="p-6">Loading projects...</div>
     
     return (
         
@@ -37,7 +37,7 @@ export default function TeamProjectsPage() {
                         Get started by creating a project from the team overview page.
                     </p>
                     <Link
-                        href={`/t/${team.id}`}
+                        to={`/t/${team.id}`}
                         className="mt-4 inline-flex items-center justify-center rounded-md border border-input
                             bg-background px-4 py-2 text-sm font-medium hover:bg-accent
                             hover:text-accent-foreground">
@@ -49,7 +49,7 @@ export default function TeamProjectsPage() {
                     {projects.map(project => {
                         const taskCount = getTaskCountForProject(project.id)
                         return (
-                            <Link key={project.id} href={`/t/${team.id}/p/${project.id}`}>
+                            <Link key={project.id} to={`/t/${team.id}/p/${project.id}`}>
                                 <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                         <CardTitle className="text-sm font-medium line-clamp-1">

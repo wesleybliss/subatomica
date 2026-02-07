@@ -2,6 +2,7 @@ import type { Project } from '@repo/shared/types'
 import { request } from '@/lib/api/client'
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import * as store from '@/store'
 
 export const useGetProjectsQuery = (teamId: string | undefined) => {
     
@@ -14,7 +15,9 @@ export const useGetProjectsQuery = (teamId: string | undefined) => {
         queryKey: projectsQueryKey,
         queryFn: async () => {
             try {
-                return await request(`/teams/${teamId}/projects`) as Promise<Project[]>
+                const res = (await request(`/teams/${teamId}/projects`) as Project[]) || []
+                store.projects.setValue(res)
+                return res
             } catch (e) {
                 console.error('useGetProjectsQuery', e)
                 return null

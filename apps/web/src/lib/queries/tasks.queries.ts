@@ -3,7 +3,7 @@ import type { Task } from '@repo/shared/types'
 import { request } from '@/lib/api/client'
 import { useQuery } from '@tanstack/react-query'
 
-export const useGetTasksQuery = (teamId: string | undefined, projectId?: string | undefined) => {
+export const useGetTasksQuery = (teamId: string, projectId?: string) => {
     
     const tasksQueryKey = useMemo(() => (
         ['tasks'] as const
@@ -34,15 +34,14 @@ export const useGetTasksQuery = (teamId: string | undefined, projectId?: string 
     
 }
 
-
 export const getTasks = async (teamId: string, projectId: string) => {
     
     return await request(`/api/t/${teamId}/p/${projectId}/tasks`)
     
 }
 
-export const getTaskById = async (taskId: string) => {
-    const response = await fetch(`/api/tasks/${taskId}`, {
+export const getTaskById = async (teamId: string, projectId: string, taskId: string) => {
+    const response = await fetch(`/teams/${teamId}/projects/${projectId}/tasks/${taskId}`, {
         credentials: 'include',
     })
     if (!response.ok)
@@ -50,18 +49,21 @@ export const getTaskById = async (taskId: string) => {
     return await response.json() as Task
 }
 
+// @deprecated
 export const getTasksByTeam = async (
     teamId: string,
+    projectId: string,
 ) => {
     
     const params = new URLSearchParams({ teamId })
     
-    return await request(`/api/tasks?${params.toString()}`)
+    return await request(`/teams/${teamId}/projects/${projectId}/tasks?${params.toString()}`)
     
 }
 
 export const getTasksByTeamTODO = (
     teamId: string,
+    projectId: string,
 ) => {
     
     const tasksQueryKey = useMemo(() => (
@@ -73,7 +75,7 @@ export const getTasksByTeamTODO = (
         queryKey: tasksQueryKey,
         queryFn: async () => {
             const params = new URLSearchParams({ teamId })
-            const response = await request(`/api/tasks?${params.toString()}`)
+            const response = await request(`/teams/${teamId}/projects/${projectId}/tasks?${params.toString()}`)
             if (!response.ok)
                 throw new Error('Failed to fetch tasks')
             return await response.json() as Promise<Task[]>

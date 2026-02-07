@@ -18,7 +18,7 @@ export default function TeamsPage() {
                 <ul>
                     {teams.map(team => (
                         <li key={team.id}>
-                            <Link href={`/t/${team.id}`}>
+                            <Link to={`/t/${team.id}`}>
                                 {team.name}
                             </Link>
                         </li>

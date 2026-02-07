@@ -22,15 +22,15 @@ export default function TeamPage() {
         teams?.find(it => it.id === teamId)
     ), [teams, teamId])
     
-    const { isPending: projectsIsPending, error: projectsError, data: projects } = useGetProjectsQuery(teamId)
-    const { isPending: tasksIsPending, error: tasksError, data: tasks } = useGetTasksQuery(teamId)
-    const { isPending: teamMembersIsPending, error: teamMembersError, data: teamMembers } =
+    const { isPending: projectsIsPending, error: projectsError, data: projects = [] } = useGetProjectsQuery(teamId)
+    const { isPending: tasksIsPending, error: tasksError, data: tasks = [] } = useGetTasksQuery(teamId)
+    const { isPending: teamMembersIsPending, error: teamMembersError, data: teamMembers = [] } =
         useGetTeamMembersQuery(teamId)
     
     const isPending = useMemo(() => (
         projectsIsPending || tasksIsPending || teamMembersIsPending
     ), [projectsIsPending, tasksIsPending, teamMembersIsPending])
-    console.log({projectsIsPending, tasksIsPending, teamMembersIsPending})
+    
     if (isPending)
         return <div>@todo Loading teams...</div>
     
@@ -101,7 +101,7 @@ export default function TeamPage() {
                         Recent Projects
                     </h2>
                     <div className="flex justify-end items-center">
-                        <Link className="text-sm" href={`/t/${teamId}/p`}>
+                        <Link className="text-sm" to={`/t/${teamId}/p`}>
                             View All Projects
                         </Link>
                     </div>

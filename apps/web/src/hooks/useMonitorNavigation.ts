@@ -1,10 +1,9 @@
-import { Link } from 'react-router-dom'
 import { useEffect } from 'react'
-import { useParams, usePathname } from 'next/navigation'
 import { useWire } from '@forminator/react-wire'
 import { selectedProjectId as storeSelectedProjectId } from '@/store/projects'
 import { selectedTaskId as storeSelectedTaskId } from '@/store/tasks'
 import { selectedTeamId as storeSelectedTeamId } from '@/store/teams'
+import { useParams, useLocation } from 'react-router-dom'
 
 const normalizeParam = (value: string | string[] | undefined) => {
     
@@ -18,7 +17,8 @@ const normalizeParam = (value: string | string[] | undefined) => {
 const useMonitorNavigation = () => {
     
     const params = useParams()
-    const pathname = usePathname()
+    const location = useLocation()
+    const pathname = location.pathname
     
     const selectedTeamId = useWire(storeSelectedTeamId)
     const selectedProjectId = useWire(storeSelectedProjectId)
@@ -29,6 +29,13 @@ const useMonitorNavigation = () => {
         const teamId = normalizeParam(params?.teamId as string | string[] | undefined)
         const projectId = normalizeParam(params?.projectId as string | string[] | undefined)
         const taskId = normalizeParam(params?.taskId as string | string[] | undefined)
+        
+        console.log('useMonitorNavigation', {
+            teamId,
+            projectId,
+            taskId,
+            params: params,
+        })
         
         selectedTeamId.setValue(teamId)
         selectedProjectId.setValue(projectId)

@@ -27,7 +27,7 @@ export const request = async (url: string, options?: RequestInit) => {
     if (!res.ok)
         throw new Error(`API Error: ${res.status}`)
     
-    return res.json()
+    return await res.json()
     
 }
 

@@ -5,6 +5,7 @@ export const useCreateTaskMutation = (
     localTasks: Task[],
     setLocalTasks: (value: Task[]) => void,
     activeQueryKey: readonly (string | number | boolean | Record<string, unknown>)[],
+    teamId: string,
     projectId?: string | null | undefined,
     onRefresh?: () => void,
 ) => {
@@ -18,7 +19,7 @@ export const useCreateTaskMutation = (
         { previousTasks?: Task[] }
     >({
         mutationFn: async ({ status, tempId }: CreateTaskInput) => {
-            const response = await fetch(`/api/tasks`, {
+            const response = await fetch(`/teams/${teamId}/projects/${projectId}/tasks`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status, tempId, projectId }),
@@ -86,13 +87,15 @@ export const useUpdateTaskOrderMutation = (
     localTasks: Task[],
     setLocalTasks: (value: Task[]) => void,
     activeQueryKey: readonly (string | number | boolean | Record<string, unknown>)[],
+    teamId: string,
+    projectId: string,
     onRefresh?: () => void,
 ) => {
     const queryClient = useQueryClient()
-
+    
     return useMutation<Task, Error, UpdateTaskOrderInput, { previousTasks?: Task[] }>({
         mutationFn: async ({ taskId, status, order }: UpdateTaskOrderInput) => {
-            const response = await fetch(`/api/tasks/${taskId}`, {
+            const response = await fetch(`/teams/${teamId}/projects/${projectId}/tasks/${taskId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status, order }),
