@@ -4,7 +4,7 @@ import * as reactWirePersisted from 'react-wire-persisted'
 import type React from 'react'
 import { preconnect } from 'react-dom'
 import { NS } from '@/lib/constants'
-import { Routes, Route, Outlet } from 'react-router'
+import { Routes, Route, Outlet, Navigate } from 'react-router'
 import DebugTools from '@/components/debug/DebugTools'
 import DebugClient from '@/components/debug/DebugClient'
 import ThemeProvider from '@/components/ThemeProvider'
@@ -20,6 +20,7 @@ import TeamPage from '@/app/t/[teamId]/page'
 import TeamProjectsPage from '@/app/t/[teamId]/p/page'
 import ProjectDetailPage from '@/app/t/[teamId]/p/[projectId]/page'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import { useSession } from '@/lib/auth-client'
 
 reactWirePersisted.setNamespace(NS)
 
@@ -61,7 +62,10 @@ const LandingPage = () => (
 
 export default function RootLayout() {
     
-    // const { data: session, isPending } = authClient.useSession()
+    const { data: session, isPending } = useSession()
+    
+    if (isPending)
+        return null
     
     return (
         
@@ -71,7 +75,7 @@ export default function RootLayout() {
                 
                 <Routes>
                     
-                    <Route index element={<LandingPage />} />
+                    <Route index element={session ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
                     <Route path="sign-up" element={<SignUpPage />} />
                     <Route path="sign-in" element={<SignInPage />} />
                     

@@ -1,6 +1,4 @@
-import { Link } from 'react-router-dom'
 import { ChevronDown, Edit, Search, Trash2 } from 'lucide-react'
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
@@ -12,7 +10,7 @@ const PrimarySidebarHeader = ({ setSearchOpen }: { setSearchOpen: (item: boolean
             
             <div className="flex items-center gap-2">
                 
-                <Image
+                <image
                     className="shrink-0"
                     src="/logos/sub-atomica-high-resolution-logo-grayscale-transparent.png"
                     alt="Sub Atomica"
