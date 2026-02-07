@@ -6,6 +6,8 @@ import { ensureUserHasTeam } from '@/db/actions'
 import { db } from '@/db/client'
 import * as schema from '@/db/schema'
 
+const DEBUG_LOGGING = false
+
 if (!process.env.BETTER_AUTH_URL)
     throw new Error('BETTER_AUTH_URL env var not set')
 
@@ -35,7 +37,7 @@ export const createAuth = (options: CreateAuthOptions = {}) => {
         trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS!.split(','),
     }
     
-    return betterAuth({
+    const config = {
         database: drizzleAdapter(db, {
             provider: options.provider || defaultOptions.provider!,
             schema,
@@ -85,7 +87,7 @@ export const createAuth = (options: CreateAuthOptions = {}) => {
                 // Ensure user has a team after signup or signin
                 if (ctx.path === '/sign-up/email' || ctx.path === '/sign-in/email') {
                     const user = ctx.context?.newSession?.user
-                    console.log('Ensure user has a team after signup or signin', user, ctx)
+                    console.log('Ensure user has a team after signup or signin', user)
                     if (user?.id)
                         await ensureUserHasTeam(user.id)
                 }
@@ -94,11 +96,24 @@ export const createAuth = (options: CreateAuthOptions = {}) => {
         },
         secret: options.secret || defaultOptions.secret!,
         baseURL: options.baseURL || defaultOptions.baseURL!,
+        basePath: '/auth',
         trustedOrigins: options.trustedOrigins || defaultOptions.trustedOrigins!,
-    })
+        redirectURL: {
+            signIn: '/dashboard',
+            signUp: '/dashboard',
+            signOut: '/',
+        },
+    }
+    
+    if (DEBUG_LOGGING)
+        console.log('betterAuth config', config)
+    
+    return betterAuth(config)
     
 }
 
 export const auth = createAuth()
+
+export default auth
 
 export type Session = typeof auth.$Infer.Session

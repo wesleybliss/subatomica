@@ -2,17 +2,12 @@ import * as client from '@/db/client'
 import { teamMembers, teams, users } from '@/db/schema'
 import { eq, desc, and, or, inArray } from 'drizzle-orm'
 import { Team } from '@repo/shared/types'
-import { getCurrentUser } from '@/db/actions/shared'
 import { User } from 'better-auth'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db: any = client.db!
 
-export async function createTeam(name: string, ownerId: string, tempUser?: User): Promise<Team> {
-    const user = tempUser || await getCurrentUser()
-    
-    if (ownerId !== user.id)
-        throw new Error('Unauthorized')
+export async function createTeam(name: string, ownerId: string): Promise<Team> {
     
     const [team] = await db
         .insert(teams)
@@ -35,40 +30,34 @@ export async function createTeam(name: string, ownerId: string, tempUser?: User)
 }
 
 export async function getUserTeams(userId: string, tempUser?: User): Promise<Team[]> {
-    const user = tempUser || await getCurrentUser()
-    
-    if (userId !== user.id)
-        throw new Error('Unauthorized')
     
     const memberTeamIds = db
         .select({ teamId: teamMembers.teamId })
         .from(teamMembers)
-        .where(eq(teamMembers.userId, user.id))
+        .where(eq(teamMembers.userId, userId))
     
     return db.select()
         .from(teams)
         .where(or(
-            eq(teams.ownerId, user.id),
+            eq(teams.ownerId, userId),
             inArray(teams.id, memberTeamIds),
         ))
         .orderBy(teams.name)
 }
 
-export async function getTeamById(teamId: string): Promise<Team> {
-    
-    const user = await getCurrentUser()
+export async function getTeamById(userId: string, teamId: string): Promise<Team> {
     
     const memberTeamIds = db
         .select({ teamId: teamMembers.teamId })
         .from(teamMembers)
-        .where(eq(teamMembers.userId, user.id))
+        .where(eq(teamMembers.userId, userId))
     
     const [team] = await db.select()
         .from(teams)
         .where(and(
             eq(teams.id, teamId),
             or(
-                eq(teams.ownerId, user.id),
+                eq(teams.ownerId, userId),
                 inArray(teams.id, memberTeamIds),
             ),
         ))
@@ -78,18 +67,17 @@ export async function getTeamById(teamId: string): Promise<Team> {
     
 }
 
-export async function getTeamByLastUpdated(): Promise<Team> {
-    const user = await getCurrentUser()
+export async function getTeamByLastUpdated(userId: string): Promise<Team> {
     
     const memberTeamIds = db
         .select({ teamId: teamMembers.teamId })
         .from(teamMembers)
-        .where(eq(teamMembers.userId, user.id))
+        .where(eq(teamMembers.userId, userId))
     
     const [team] = await db.select()
         .from(teams)
         .where(or(
-            eq(teams.ownerId, user.id),
+            eq(teams.ownerId, userId),
             inArray(teams.id, memberTeamIds),
         ))
         .orderBy(desc(teams.updatedAt))
@@ -97,19 +85,18 @@ export async function getTeamByLastUpdated(): Promise<Team> {
     return team
 }
 
-export async function getTeamMembers(teamId: string) {
-    const user = await getCurrentUser()
+export async function getTeamMembers(userId: string, teamId: string) {
     const memberTeamIds = db
         .select({ teamId: teamMembers.teamId })
         .from(teamMembers)
-        .where(eq(teamMembers.userId, user.id))
+        .where(eq(teamMembers.userId, userId))
     const [team] = await db
         .select({ id: teams.id, ownerId: teams.ownerId })
         .from(teams)
         .where(and(
             eq(teams.id, teamId),
             or(
-                eq(teams.ownerId, user.id),
+                eq(teams.ownerId, userId),
                 inArray(teams.id, memberTeamIds),
             ),
         ))
@@ -170,16 +157,15 @@ export async function getTeamMembers(teamId: string) {
     return membersFromTable
 }
 
-export async function ensureUserHasTeam(userId: string, tempUser?: User): Promise<Team> {
-    const userTeams = await getUserTeams(userId, tempUser)
+export async function ensureUserHasTeam(userId: string): Promise<Team> {
+    const userTeams = await getUserTeams(userId)
     console.log('ensureUserHasTeam', userTeams)
     if (userTeams.length === 0)
-        return createTeam('Personal', userId, tempUser)
+        return createTeam('Personal', userId)
     return userTeams[0]
 }
 
-async function checkUserCanManageMembers(teamId: string): Promise<void> {
-    const user = await getCurrentUser()
+async function checkUserCanManageMembers(userId: string, teamId: string): Promise<void> {
     
     // First check if user is the team owner
     const [team] = await db
@@ -188,7 +174,7 @@ async function checkUserCanManageMembers(teamId: string): Promise<void> {
         .where(eq(teams.id, teamId))
         .limit(1)
     
-    if (team?.ownerId === user.id) {
+    if (team?.ownerId === userId) {
         return
     }
     
@@ -198,7 +184,7 @@ async function checkUserCanManageMembers(teamId: string): Promise<void> {
         .from(teamMembers)
         .where(and(
             eq(teamMembers.teamId, teamId),
-            eq(teamMembers.userId, user.id),
+            eq(teamMembers.userId, userId),
         ))
         .limit(1)
     
@@ -208,7 +194,6 @@ async function checkUserCanManageMembers(teamId: string): Promise<void> {
 }
 
 export async function addTeamMember(teamId: string, email: string) {
-    await checkUserCanManageMembers(teamId)
     
     const [targetUser] = await db
         .select({ id: users.id })
@@ -243,7 +228,7 @@ export async function addTeamMember(teamId: string, email: string) {
 }
 
 export async function removeTeamMember(teamId: string, userId: string) {
-    await checkUserCanManageMembers(teamId)
+    await checkUserCanManageMembers(userId, teamId)
     
     const [targetMembership] = await db
         .select({ role: teamMembers.role })
@@ -272,9 +257,9 @@ export async function removeTeamMember(teamId: string, userId: string) {
     return { success: true }
 }
 
-export async function canManageTeamMembers(teamId: string): Promise<boolean> {
+export async function canManageTeamMembers(userId: string, teamId: string): Promise<boolean> {
     try {
-        await checkUserCanManageMembers(teamId)
+        await checkUserCanManageMembers(userId, teamId)
         return true
     } catch {
         return false

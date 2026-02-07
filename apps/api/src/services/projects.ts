@@ -1,6 +1,5 @@
 import * as client from '@/db/client'
 import { and, eq, inArray, or } from 'drizzle-orm'
-import { getCurrentUser } from '@/db/actions/shared'
 import { projects, teamMembers, teams } from '@/db/schema'
 import { ensureProjectLanes } from '@/db/actions/lanes'
 import { Project } from '@repo/shared/types'
@@ -8,18 +7,17 @@ import { Project } from '@repo/shared/types'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db: any = client.db!
 
-export async function createProject(name: string, teamId: string): Promise<Project> {
-  const user = await getCurrentUser()
+export async function createProject(userId: string, teamId: string, name: string): Promise<Project> {
   const memberTeamIds = db
       .select({ teamId: teamMembers.teamId })
       .from(teamMembers)
-      .where(eq(teamMembers.userId, user.id))
+      .where(eq(teamMembers.userId, userId))
   const [team] = await db.select({ id: teams.id })
       .from(teams)
       .where(and(
           eq(teams.id, teamId),
           or(
-              eq(teams.ownerId, user.id),
+              eq(teams.ownerId, userId),
               inArray(teams.id, memberTeamIds),
           ),
       ))
@@ -30,7 +28,7 @@ export async function createProject(name: string, teamId: string): Promise<Proje
       .insert(projects)
       .values({
         name,
-        ownerId: user.id,
+        ownerId: userId,
         teamId,
       })
       .returning()
@@ -38,34 +36,32 @@ export async function createProject(name: string, teamId: string): Promise<Proje
   return project
 }
 
-export async function deleteProject(projectId: string): Promise<void> {
-  const user = await getCurrentUser()
+export async function deleteProject(userId: string, projectId: string): Promise<void> {
   const [project] = await db
       .select({ ownerId: projects.ownerId })
       .from(projects)
       .where(eq(projects.id, projectId))
       .limit(1)
-  if (!project || project.ownerId !== user.id)
+  if (!project || project.ownerId !== userId)
     throw new Error('Unauthorized')
   await db
       .delete(projects)
       .where(eq(projects.id, projectId))
 }
 
-export async function renameProject(projectId: string, name: string): Promise<void> {
+export async function renameProject(userId: string, projectId: string, name: string): Promise<void> {
   const trimmedName = name.trim()
   if (!trimmedName)
     throw new Error('Project name is required')
-  const user = await getCurrentUser()
   const memberTeamIds = db
       .select({ teamId: teamMembers.teamId })
       .from(teamMembers)
-      .where(eq(teamMembers.userId, user.id))
+      .where(eq(teamMembers.userId, userId))
   const accessibleTeamIds = db
       .select({ id: teams.id })
       .from(teams)
       .where(or(
-          eq(teams.ownerId, user.id),
+          eq(teams.ownerId, userId),
           inArray(teams.id, memberTeamIds),
       ))
   const updated = await db
@@ -80,17 +76,16 @@ export async function renameProject(projectId: string, name: string): Promise<vo
     throw new Error('Unauthorized')
 }
 
-export async function getProjects(teamId?: string): Promise<Project[]> {
-  const user = await getCurrentUser()
+export async function getProjects(userId: string, teamId?: string): Promise<Project[]> {
   const memberTeamIds = db
       .select({ teamId: teamMembers.teamId })
       .from(teamMembers)
-      .where(eq(teamMembers.userId, user.id))
+      .where(eq(teamMembers.userId, userId))
   const accessibleTeamIds = db
       .select({ id: teams.id })
       .from(teams)
       .where(or(
-          eq(teams.ownerId, user.id),
+          eq(teams.ownerId, userId),
           inArray(teams.id, memberTeamIds),
       ))
   const query = teamId
@@ -105,17 +100,16 @@ export async function getProjects(teamId?: string): Promise<Project[]> {
       .orderBy(projects.name)
 }
 
-export async function getProjectById(projectId: string): Promise<Project> {
-  const user = await getCurrentUser()
+export async function getProjectById(userId: string, projectId: string): Promise<Project> {
   const memberTeamIds = db
       .select({ teamId: teamMembers.teamId })
       .from(teamMembers)
-      .where(eq(teamMembers.userId, user.id))
+      .where(eq(teamMembers.userId, userId))
   const accessibleTeamIds = db
       .select({ id: teams.id })
       .from(teams)
       .where(or(
-          eq(teams.ownerId, user.id),
+          eq(teams.ownerId, userId),
           inArray(teams.id, memberTeamIds),
       ))
   const [project] = await db

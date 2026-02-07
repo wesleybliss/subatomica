@@ -8,27 +8,27 @@ type DbCredentials = {
 }
 
 // 'turso' | 'postgresql'
-if (!process.env.DATABASE_DIALECT)
+if (!import.meta.env.DATABASE_DIALECT)
     throw new Error('client.ts: DATABASE_DIALECT env variable is not set')
 
-if (!process.env.DATABASE_URL)
+if (!import.meta.env.DATABASE_URL)
     throw new Error('client.ts: DATABASE_URL must be defined')
 
 const dbCredentials: DbCredentials = {
-    url: process.env.DATABASE_URL!,
+    url: import.meta.env.DATABASE_URL!,
 }
 
-if (process.env.DATABASE_DIALECT === 'turso')
-    dbCredentials.authToken = process.env.TURSO_AUTH_TOKEN
+if (import.meta.env.DATABASE_DIALECT === 'turso')
+    dbCredentials.authToken = import.meta.env.TURSO_AUTH_TOKEN
 
-console.log('drizzle config', process.env.DATABASE_DIALECT, process.env.DATABASE_URL)
+console.log('drizzle config', import.meta.env.DATABASE_DIALECT, import.meta.env.DATABASE_URL)
 
 export default defineConfig({
     out: './drizzle',
-    schema: process.env.DATABASE_DIALECT === 'turso'
+    schema: import.meta.env.DATABASE_DIALECT === 'turso'
         ? './lib/db/turso/schema.turso.ts'
         : './lib/db/postgres/schema.postgres.ts',
     // @ts-expect-error Supports multiple dialects
-    dialect: process.env.DATABASE_DIALECT! as Dialect,
+    dialect: import.meta.env.DATABASE_DIALECT! as Dialect,
     dbCredentials,
 })

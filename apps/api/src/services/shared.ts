@@ -1,14 +1,25 @@
-import { auth } from 'src/services/auth'
+import { Context } from 'hono'
+import auth from '@/services/auth'
 import type { User } from 'better-auth'
 
-// Helper to get current user
-export const getCurrentUser = async (request: FastifyRequest): Promise<User> => {
+export const getCurrentSession = async (c: Context) => {
     
     const session = await auth.api.getSession({
-        headers: request.headers,
+        headers: c.req.raw.headers,
     })
     
-    if (!session?.user?.id)
+    if (!session)
+        throw new Error('Unauthorized')
+    
+    return session
+    
+}
+
+export const getCurrentUser = async (c: Context): Promise<User> => {
+    
+    const session = await getCurrentSession(c)
+    
+    if (!session || !session.user)
         throw new Error('Unauthorized')
     
     return session.user

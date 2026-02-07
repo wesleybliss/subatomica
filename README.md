@@ -42,7 +42,7 @@ A modern web application built with Next.js 16, React 19, and Drizzle ORM.
     DATABASE_DIALECT="turso" # or "postgres"
     TURSO_AUTH_TOKEN="..." # if using Turso
     BETTER_AUTH_SECRET="..."
-    BETTER_AUTH_URL="http://localhost:3000"
+    VITE_BETTER_AUTH_URL="http://localhost:3000"
     ```
 
 4.  Push Database Schema:

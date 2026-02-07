@@ -3,7 +3,7 @@ import * as client from '@/db/client'
 import { teamMembers, teams, users } from '@/db/schema'
 import { eq, desc, and, or, inArray } from 'drizzle-orm'
 import { Team } from '@repo/shared/types'
-import { getCurrentUser } from '@/db/actions/shared'
+import { getCurrentUser } from '@/services/shared'
 import { User } from 'better-auth'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

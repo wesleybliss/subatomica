@@ -12,7 +12,7 @@ Update the project detail routing to support different views (Kanban, List, Time
 ## Implementation Plan
 
 ### 1. Introduce Project Layout
-Create `app/t/[teamId]/p/[projectId]/layout.tsx` (Server Component) to:
+Create `app/t/[teamId]/p/[projectId]/index.tsx` (Server Component) to:
 - Fetch project-wide data (`project`, `tasks`, `lanes`, `teamMembers`, `projects`).
 - Use a new `ProjectDetailLayoutClient` to wrap the children.
 

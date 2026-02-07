@@ -1,7 +1,7 @@
 'use server'
 import * as client from '@/db/client'
 import { and, desc, eq, inArray, or } from 'drizzle-orm'
-import { getCurrentUser } from '@/db/actions/shared'
+import { getCurrentUser } from '@/services/shared'
 import { projects, taskLanes, tasks, teamMembers, teams } from '@/db/schema'
 import type { TaskLane } from '@/types'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

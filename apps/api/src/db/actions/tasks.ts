@@ -1,7 +1,7 @@
 'use server'
 import * as client from '@/db/client'
 import { or, and, desc, eq, like, inArray } from 'drizzle-orm'
-import { getCurrentUser } from '@/db/actions/shared'
+import { getCurrentUser } from '@/services/shared'
 import { projects, tasks, teamMembers, teams } from '@/db/schema'
 import { ensureProjectLanes } from '@/db/actions/lanes'
 import { Task } from '@/types'

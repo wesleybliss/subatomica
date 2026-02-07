@@ -21,7 +21,7 @@ Agent guidelines for automated agents in this repo.
 - **Style:** Use modern ES7+ syntax. No semicolons or unnecessary parentheses or brackets. Clean code, with decent spacing for readability. 
 - **Package Manager:** `pnpm` (do not use npm or yarn).
 - **Environment:** Node.js environment for tooling/SSR, Browser for the client-side app.
-- **Files:** Use camelCase for filenames generally, but match existing conventions (e.g., `page.tsx`, `layout.tsx`, `PrimarySidebar.tsx`).
+- **Files:** Use camelCase for filenames generally, but match existing conventions (e.g., `page.tsx`, `index.tsx`, `PrimarySidebar.tsx`).
 - **Types:** Place any new TypeScript types in `@/types`.
 - **Progress:** Prefer keeping checklists for larger tasks. If a task has a checklist, be sure to check it done after completion.
 
@@ -57,7 +57,7 @@ Agent guidelines for automated agents in this repo.
     - `kebab-case` for file names (except special Next.js files).
 - **React:**
     - Functional components with Hooks.
-    - Server Components by default in `app/`. Add `'use client'` at the top for Client Components.
+    - Server Components by default in `app/`. Add `import { Link } from 'react-router-dom'` at the top for Client Components.
 - **Database:**
     - Schema definitions reside in `lib/db/`.
     - Be aware of the dual-dialect setup (`postgres` vs `turso`) in `lib/db/`.
