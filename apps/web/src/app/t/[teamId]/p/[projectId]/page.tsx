@@ -25,6 +25,7 @@ export default function ProjectDetailPage() {
     const { isPending: projectIsPending, error: projectError, data: project } = useGetProjectQuery(teamId, projectId)
     
     if (!teamId) {
+        console.warn('ProjectDetailPage: no teamId')
         navigate(`/teams/${teamId}`)
         return null
     }
@@ -32,15 +33,20 @@ export default function ProjectDetailPage() {
     if (projectIsPending)
         return <div>Loading project...</div>
     
-    if (!project || project.teamId !== teamId)
+    if (!project) {
+        console.warn('ProjectDetailPage: no project')
         return null
+    }
+    
+    if (project.teamId !== teamId) {
+        console.warn('ProjectDetailPage: teamId mismatch', { projectTeamId: project.teamId, teamId })
+        return null
+    }
     
     if (projectError)
         return <div>projectError: {projectError.message}</div>
     
     return (<>
-        
-        <div>ProjectDetailPage</div>
         
         <ProjectDetailClient
             teamId={teamId}

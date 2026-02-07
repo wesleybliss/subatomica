@@ -7,8 +7,8 @@ import * as store from '@/store'
 export const useGetProjectsQuery = (teamId: string) => {
     
     const projectsQueryKey = useMemo(() => (
-        ['projects'] as const
-    ), [])
+        ['projects', teamId] as const
+    ), [teamId])
     
     // const { data: projects = initialTasks }
     const query = useQuery({
@@ -37,14 +37,14 @@ export const useGetProjectsQuery = (teamId: string) => {
 export const useGetProjectQuery = (teamId: string, projectId: string) => {
     
     const projectQueryKey = useMemo(() => (
-        ['project'] as const
-    ), [])
+        ['project', teamId, projectId] as const
+    ), [teamId, projectId])
     
     const query = useQuery({
         queryKey: projectQueryKey,
         queryFn: async () => {
             try {
-                const res = (await request(`/teams/${teamId}/projects/${projectId}`) as Project) || []
+                const res = (await request(`/teams/${teamId}/projects/${projectId}`) as Project) || null
                 
                 if (res?.id) {
                     const next = store.projects.getValue() || []

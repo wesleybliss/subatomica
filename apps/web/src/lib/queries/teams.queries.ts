@@ -33,8 +33,8 @@ export const useGetTeamsQuery = () => {
 export const useGetTeamMembersQuery = (teamId: string) => {
     
     const teamMembersQueryKey = useMemo(() => (
-        ['teamMembers'] as const
-    ), [])
+        ['teamMembers', teamId] as const
+    ), [teamId])
     
     // const { data: teamMembers = initialTasks }
     const query = useQuery({

@@ -6,8 +6,8 @@ import { useQuery } from '@tanstack/react-query'
 export const useGetTasksQuery = (teamId: string, projectId?: string) => {
     
     const tasksQueryKey = useMemo(() => (
-        ['tasks'] as const
-    ), [])
+        ['tasks', teamId, projectId] as const
+    ), [teamId, projectId])
     
     const query = useQuery({
         queryKey: tasksQueryKey,
