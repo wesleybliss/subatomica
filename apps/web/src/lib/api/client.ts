@@ -1,7 +1,21 @@
 
+const createFullUrl = (url: string) => {
+    
+    if (url.startsWith('http:'))
+        return url
+    
+    if (url.startsWith('/'))
+        return `${import.meta.env.VITE_BETTER_AUTH_URL}${url}`
+    
+    return `${import.meta.env.VITE_BETTER_AUTH_URL}/${url}`
+    
+}
+
 export const request = async (url: string, options?: RequestInit) => {
     
-    const res = await fetch(url, {
+    const fullUrl = createFullUrl(url)
+    
+    const res = await fetch(fullUrl, {
         ...options,
         credentials: 'include',
         headers: {

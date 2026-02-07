@@ -1,15 +1,22 @@
-import { useWireValue } from '@forminator/react-wire'
-import * as store from '@/store'
 import { useNavigate } from 'react-router-dom'
 import { getUnixTime } from 'date-fns'
+import { useMemo } from 'react'
+import { useGetTeamsQuery } from '@/lib/queries/teams.queries'
 
 export default function DashboardPage() {
     
     const navigate = useNavigate()
     
-    const teams = useWireValue(store.teams)
+    const { isPending, error, data: teams } = useGetTeamsQuery()
     
-    const lastUpdatedTeam = teams.sort((a, b) => getUnixTime(a.updatedAt) - getUnixTime(b.updatedAt))?.[0]
+    const lastUpdatedTeam = useMemo(() => (
+        teams?.sort((a, b) => getUnixTime(a.updatedAt) - getUnixTime(b.updatedAt))?.[0]
+    ), [teams])
+    
+    if (isPending)
+        return <div>@todo loading...</div>
+    
+    console.log('wtf', teams, error)
     
     if (!lastUpdatedTeam)
         return (
@@ -17,7 +24,7 @@ export default function DashboardPage() {
         )
     
     // Redirect to the most recent team page
-    navigate(`/t/${lastUpdatedTeam.id}`)
+    setTimeout(() => navigate(`/t/${lastUpdatedTeam.id}`), 300)
     
     // @todo loader
     return (

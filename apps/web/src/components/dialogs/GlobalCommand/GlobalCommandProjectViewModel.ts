@@ -1,4 +1,4 @@
-import logger from '@/lib/logger'
+import logger from '@repo/shared/utils/logger'
 import { useState } from 'react'
 import { useWireValue } from '@forminator/react-wire'
 import * as store from '@/store'

@@ -21,6 +21,9 @@ import TeamProjectsPage from '@/app/t/[teamId]/p/page'
 import ProjectDetailPage from '@/app/t/[teamId]/p/[projectId]/page'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { useSession } from '@/lib/auth-client'
+import TeamsLayout from '@/app/t/layout'
+import TeamLayout from '@/app/t/[teamId]/layout'
+import TeamProjectsLayout from '@/app/t/[teamId]/p/layout'
 
 reactWirePersisted.setNamespace(NS)
 
@@ -84,15 +87,15 @@ export default function RootLayout() {
                         <Route path="dashboard" element={<DashboardPage />} />
                         <Route path="debug" element={<DebugPage />} />
                         
-                        <Route path="t" element={<TeamsPage />}>
+                        <Route path="t" element={<TeamsLayout />}>
                             
                             <Route index element={<TeamsPage />} />
                             
-                            <Route path=":teamId" element={<TeamPage />}>
+                            <Route path=":teamId" element={<TeamLayout />}>
                                 
-                                <Route index element={<TeamsPage />} />
+                                <Route index element={<TeamPage />} />
                                 
-                                <Route path="p" element={<TeamProjectsPage />}>
+                                <Route path="p" element={<TeamProjectsLayout />}>
                                     
                                     <Route index element={<TeamProjectsPage />} />
                                     
@@ -100,7 +103,7 @@ export default function RootLayout() {
                                         
                                         <Route index element={<ProjectDetailPage />} />
                                         {/* @todo task page */}
-                                        
+                                    
                                     </Route>
                                 
                                 </Route>
@@ -108,7 +111,7 @@ export default function RootLayout() {
                             </Route>
                         
                         </Route>
-                        
+                    
                     </Route>
                     
                 </Routes>

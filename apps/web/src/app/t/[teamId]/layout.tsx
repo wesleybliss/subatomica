@@ -7,13 +7,14 @@ import { getTeamById, getUserTeams } from '@/lib/queries/teams.queries'
 import { getGravatarUrl } from '@/lib/gravatar'
 import { useSession } from '@/lib/auth-client'
 import { Team } from '@repo/shared/types'
+import { Outlet } from 'react-router-dom'
 
-export default function TeamLayout({ children, }: { children: React.ReactNode }) {
+export default function TeamLayout() {
     
     const navigate = useNavigate()
     
     const session = useSession()
-    const user = session.data?.user!
+    const user = session.data?.user
     
     const [team, setTeam] = useState<Team | null>(null)
     const [teams, setTeams] = useState<Team[]>([])
@@ -52,7 +53,7 @@ export default function TeamLayout({ children, }: { children: React.ReactNode })
                 user={{ ...user, image: avatarUrl }} />
             
             <SidebarInset className="flex-1 overflow-hidden flex flex-col">
-                {children}
+                <Outlet />
             </SidebarInset>
         
         </SidebarProvider>

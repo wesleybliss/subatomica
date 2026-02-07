@@ -1,48 +1,50 @@
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
+import { useWireValue } from '@forminator/react-wire'
+import * as store from '@/store'
 import { Link } from 'react-router-dom'
-import { getTeamById, getTeamMembers } from '@/lib/queries/teams.queries'
-import { getProjects } from '@/lib/queries/projects.queries'
-import { getTasksByTeam } from '@/lib/queries/tasks.queries'
+import { useGetTeamMembersQuery } from '@/lib/queries/teams.queries'
+import { useGetProjectsQuery } from '@/lib/queries/projects.queries'
+import { useGetTasksQuery } from '@/lib/queries/tasks.queries'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FolderKanban, LayoutGrid, Users } from 'lucide-react'
 import RecentProjectsTable from '@/components/projects/RecentProjectsTable'
 import { useParams } from 'react-router-dom'
-import { Team, Project, TeamMemberProfile, Task } from '@repo/shared/types'
+import { Team } from '@repo/shared/types'
 
 export default function TeamPage() {
     
     const params = useParams()
     const teamId = params.teamId as string
     
-    const [team, setTeam] = useState<Team>()
-    const [projects, setProjects] = useState<Project[]>()
-    const [tasks, setTasks] = useState<Task[]>()
-    const [teamMembers, setTeamMembers] = useState<TeamMemberProfile[]>()
+    const teams = useWireValue(store.teams)
     
-    useEffect(() => {
-        
-        const fetchDataTodo = async () => {
-            try {
-                const [_team, _projects, _tasks, _teamMembers] = await Promise.all([
-                    getTeamById(teamId),
-                    getProjects(teamId),
-                    getTasksByTeam(teamId),
-                    getTeamMembers(teamId),
-                ])
-                setTeam(_team)
-                setProjects(_projects)
-                setTasks(_tasks)
-                setTeamMembers(_teamMembers)
-            } catch (error) {
-                console.error('TeamPage', error)
-                return <div className="p-6">Unable to load team</div>
-            }
-        }
-        
-    }, [teamId])
+    const team = useMemo<Team | undefined>(() => (
+        teams?.find(it => it.id === teamId)
+    ), [teams, teamId])
+    
+    const { isPending: projectsIsPending, error: projectsError, data: projects } = useGetProjectsQuery(teamId)
+    const { isPending: tasksIsPending, error: tasksError, data: tasks } = useGetTasksQuery(teamId)
+    const { isPending: teamMembersIsPending, error: teamMembersError, data: teamMembers } =
+        useGetTeamMembersQuery(teamId)
+    
+    const isPending = useMemo(() => (
+        projectsIsPending || tasksIsPending || teamMembersIsPending
+    ), [projectsIsPending, tasksIsPending, teamMembersIsPending])
+    
+    if (isPending)
+        return <div>@todo Loading...</div>
     
     if (!team)
         return <div className="p-6">Team not found</div>
+    
+    if (projectsError)
+        return <div>Error: {projectsError.message}</div>
+    
+    if (tasksError)
+        return <div>Error: {tasksError.message}</div>
+    
+    if (teamMembersError)
+        return <div>Error: {teamMembersError.message}</div>
     
     return (
         <div className="flex flex-1 flex-col p-6">

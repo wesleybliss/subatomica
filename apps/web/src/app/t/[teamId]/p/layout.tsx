@@ -6,15 +6,16 @@ import StoreWriterClient from '@/components/StoreWriterClient'
 import type React from 'react'
 import { useSession } from '@/lib/auth-client'
 import { Project, Task } from '@repo/shared/types'
+import { Outlet } from 'react-router-dom'
 
 interface TeamProjectsLayoutProps {
     children: React.ReactNode
 }
 
-export default function TeamProjectsLayout({ children }: TeamProjectsLayoutProps) {
+export default function TeamProjectsLayout() {
     
     const session = useSession()
-    const user = session.data?.user!
+    const user = session.data?.user
     
     const [projects, setProjects] = useState<Project[]>([])
     const [tasks, setTasks] = useState<Task[]>([])
@@ -41,7 +42,8 @@ export default function TeamProjectsLayout({ children }: TeamProjectsLayoutProps
     
     return (<>
         
-        {children}
+        <Outlet />
+        
         <StoreWriterClient storeKey="projects" data={projects} />
         <StoreWriterClient storeKey="tasks" data={tasks} />
     

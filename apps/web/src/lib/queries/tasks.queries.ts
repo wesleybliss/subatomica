@@ -3,27 +3,27 @@ import type { Task } from '@repo/shared/types'
 import { request } from '@/lib/api/client'
 import { useQuery } from '@tanstack/react-query'
 
-export const useGetTasksQuery = (
-    teamId: string,
-    projectId: string,
-    initialTasks: Task[],
-) => {
+export const useGetTasksQuery = (teamId: string | undefined, projectId?: string | undefined) => {
     
     const tasksQueryKey = useMemo(() => (
-        ['tasks', { teamId, projectId }] as const
-    ), [teamId, projectId])
+        ['tasks'] as const
+    ), [])
     
-    // const { data: tasks = initialTasks }
     const query = useQuery({
         queryKey: tasksQueryKey,
         queryFn: async () => {
-            const params = new URLSearchParams({ teamId, projectId })
-            const response = await request(`/api/tasks?${params.toString()}`)
-            if (!response.ok)
-                throw new Error('Failed to fetch tasks')
-            return await response.json() as Promise<Task[]>
+            try {
+                const url = projectId
+                    ? `/teams/${teamId}/projects/${projectId}/tasks`
+                    : `/teams/${teamId}/tasks`
+                return await request(url) as Promise<Task[]>
+            } catch (e) {
+                console.error('useGetProjectsQuery', e)
+                return null
+            }
         },
-        initialData: initialTasks,
+        enabled: !!teamId && !!projectId,
+        // initialData: [],
     })
     
     return {
@@ -32,6 +32,7 @@ export const useGetTasksQuery = (
     }
     
 }
+
 
 export const getTasks = async (teamId: string, projectId: string) => {
     

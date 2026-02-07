@@ -1,7 +1,6 @@
-import { Link } from 'react-router-dom'
 import * as React from 'react'
 import { FolderKanban, Settings2, Shapes } from 'lucide-react'
-import { usePathname } from 'next/navigation'
+import { useLocation } from 'react-router-dom'
 
 import type { Team } from '@repo/shared/types'
 import { NavMain } from '@/components/NavMain'
@@ -33,7 +32,8 @@ export function AppSidebar({
     user,
     ...props
 }: AppSidebarProps) {
-    const pathname = usePathname()
+    const location = useLocation()
+    const pathname = location.pathname
     const navMain = [
         {
             title: 'Overview',

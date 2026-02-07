@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import logger from '@/lib/logger'
+import logger from '@repo/shared/utils/logger'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useWireState } from '@forminator/react-wire'
 import * as store from '@/store'

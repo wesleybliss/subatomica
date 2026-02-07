@@ -29,8 +29,8 @@ export async function createTeam(name: string, ownerId: string): Promise<Team> {
     
 }
 
-export async function getUserTeams(userId: string, tempUser?: User): Promise<Team[]> {
-    
+export async function getUserTeams(userId: string): Promise<Team[]> {
+    console.log('wtf', 'getUserTeams', userId)
     const memberTeamIds = db
         .select({ teamId: teamMembers.teamId })
         .from(teamMembers)

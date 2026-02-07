@@ -1,4 +1,4 @@
-import logger from '@/lib/logger'
+import logger from '@repo/shared/utils/logger'
 import { useWire } from '@forminator/react-wire'
 import * as store from '@/store'
 import { useHotkeys } from 'react-hotkeys-hook'

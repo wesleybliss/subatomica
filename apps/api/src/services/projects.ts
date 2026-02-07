@@ -100,7 +100,7 @@ export async function getProjects(userId: string, teamId?: string): Promise<Proj
       .orderBy(projects.name)
 }
 
-export async function getProjectById(userId: string, projectId: string): Promise<Project> {
+export async function getProjectById(userId: string, teamId: string, projectId: string): Promise<Project> {
   const memberTeamIds = db
       .select({ teamId: teamMembers.teamId })
       .from(teamMembers)
@@ -116,6 +116,7 @@ export async function getProjectById(userId: string, projectId: string): Promise
       .select()
       .from(projects)
       .where(and(
+          eq(projects.teamId, teamId),
           eq(projects.id, projectId),
           inArray(projects.teamId, accessibleTeamIds),
       ))
