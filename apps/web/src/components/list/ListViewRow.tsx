@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-
 import { useRef, useEffect, useState } from 'react'
 import { Task, TeamMemberProfile } from '@repo/shared/types'
 import { Calendar, Trash2 } from 'lucide-react'

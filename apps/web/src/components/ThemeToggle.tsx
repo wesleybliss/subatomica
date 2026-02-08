@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-
 import { useEffect, useMemo, useState } from 'react'
 import { Laptop, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'

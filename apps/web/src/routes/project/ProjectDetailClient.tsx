@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@repo/shared/types'
 import KanbanView from '@/components/kanban/KanbanView'

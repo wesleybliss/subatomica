@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-
 import { useState } from 'react'
 import { KanbanColumn } from './KanbanColumn'
 import { KanbanCard } from './KanbanCard'

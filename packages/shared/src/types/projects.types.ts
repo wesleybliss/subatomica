@@ -11,3 +11,5 @@ export interface Project {
     
     taskLanes?: TaskLane[]
 }
+
+export type ProjectDetailView = 'kanban' | 'timeline' | 'list'

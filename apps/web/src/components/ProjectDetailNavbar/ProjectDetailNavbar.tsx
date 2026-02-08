@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import type { Project, ProjectDetailView } from '@repo/shared/types'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'

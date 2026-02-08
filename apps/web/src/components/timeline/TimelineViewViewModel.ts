@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { useMemo } from 'react'
 import { format, addDays, differenceInDays, isValid, parseISO } from 'date-fns'
 import type { Project, Task } from '@repo/shared/types'
@@ -35,7 +34,7 @@ const TimelineViewModel = ({ projects, tasks }: TimelineViewModelInput) => {
                 due: toDate(task.dueDate),
                 start: toDate(task.createdAt) || toDate(task.dueDate),
             }))
-            .filter((task): task is DatedTask & { due: Date; start: Date } => 
+            .filter((task): task is DatedTask & { due: Date; start: Date } =>
                 task.due !== null && task.start !== null,
             )
         

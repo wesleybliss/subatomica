@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import useListViewViewModel from '@/components/list/ListViewViewModel'
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@repo/shared/types'
 import ListViewToolbar from './ListViewToolbar'

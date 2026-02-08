@@ -106,7 +106,7 @@ export const useUpdateTaskOrderMutation = (
         },
         onMutate: async ({ taskId, status, order }: UpdateTaskOrderInput) => {
             await queryClient.cancelQueries({ queryKey: activeQueryKey })
-
+            
             const previousTasks = queryClient.getQueryData<Task[]>(activeQueryKey)
             const nextTasks = (previousTasks || localTasks).map((task: Task) =>
                 task.id === taskId

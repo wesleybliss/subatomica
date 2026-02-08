@@ -9,7 +9,7 @@ export const useCreateTaskLaneMutation = (
     onRefresh?: () => void,
 ) => {
     const queryClient = useQueryClient()
-
+    
     return useMutation<
         { created: TaskLane; tempId: string },
         Error,
@@ -32,9 +32,9 @@ export const useCreateTaskLaneMutation = (
         onMutate: async ({ name, color, tempId }) => {
             if (!projectId)
                 return { previousLanes: undefined }
-
+            
             await queryClient.cancelQueries({ queryKey: activeQueryKey })
-
+            
             const previousLanes = queryClient.getQueryData<TaskLane[]>(activeQueryKey)
             const nextOrder = Math.max(0, ...localLanes.map(lane => lane.order)) + 1000
             const optimisticLane: TaskLane = {
@@ -50,7 +50,7 @@ export const useCreateTaskLaneMutation = (
                 .sort((a, b) => a.order - b.order)
             queryClient.setQueryData(activeQueryKey, nextLanes)
             setLocalLanes(nextLanes)
-
+            
             return { previousLanes }
         },
         onError: (_error: Error, _vars, context: { previousLanes?: TaskLane[] } | undefined) => {
@@ -75,7 +75,7 @@ export const useDeleteTaskLaneMutation = (
     onRefresh?: () => void,
 ) => {
     const queryClient = useQueryClient()
-
+    
     return useMutation<
         { deletedId: string },
         Error,
@@ -92,12 +92,12 @@ export const useDeleteTaskLaneMutation = (
         },
         onMutate: async ({ laneId }) => {
             await queryClient.cancelQueries({ queryKey: activeQueryKey })
-
+            
             const previousLanes = queryClient.getQueryData<TaskLane[]>(activeQueryKey)
             const nextLanes = (previousLanes || localLanes).filter(lane => lane.id !== laneId)
             queryClient.setQueryData(activeQueryKey, nextLanes)
             setLocalLanes(nextLanes)
-
+            
             return { previousLanes }
         },
         onError: (_error: Error, _vars, context: { previousLanes?: TaskLane[] } | undefined) => {
@@ -117,7 +117,7 @@ export const useUpdateTaskLaneMutation = (
     onRefresh?: () => void,
 ) => {
     const queryClient = useQueryClient()
-
+    
     return useMutation<
         TaskLane,
         Error,
@@ -136,14 +136,14 @@ export const useUpdateTaskLaneMutation = (
         },
         onMutate: async ({ laneId, data }) => {
             await queryClient.cancelQueries({ queryKey: activeQueryKey })
-
+            
             const previousLanes = queryClient.getQueryData<TaskLane[]>(activeQueryKey)
             const nextLanes = (previousLanes || localLanes).map(lane =>
                 lane.id === laneId ? { ...lane, ...data } : lane,
             )
             queryClient.setQueryData(activeQueryKey, nextLanes)
             setLocalLanes(nextLanes)
-
+            
             return { previousLanes }
         },
         onError: (_error: Error, _vars, context: { previousLanes?: TaskLane[] } | undefined) => {

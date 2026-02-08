@@ -14,7 +14,10 @@ export default function DashboardPage() {
     ), [teams])
     
     if (isPending)
-        return <div>@todo loading...</div>
+        return <div>@todo DashboardPage loading...</div>
+    
+    if (error)
+        return <div>@todo DashboardPage error {error.message}</div>
     
     if (!lastUpdatedTeam)
         return (

@@ -1,9 +1,9 @@
 // @todo
 
 export const addTeamMember = async (teamId: string, email: string) => {
-    console.log('@todo addTeamMember')
+    console.log('@todo addTeamMember', { teamId, email })
 }
 
 export const removeTeamMember = async (teamId: string, userId: string) => {
-    console.log('@todo removeTeamMember')
+    console.log('@todo removeTeamMember', { teamId, userId })
 }

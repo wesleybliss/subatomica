@@ -73,7 +73,7 @@ export const getTeamMembers = async (teamId: string): Promise<TeamMemberProfile[
 
 export const canManageTeamMembers = (teamId: string) => {
     
-    console.warn('!!!!!! @todo canManageTeamMembers')
+    console.warn('!!!!!! @todo canManageTeamMembers', teamId)
     
     return true
     

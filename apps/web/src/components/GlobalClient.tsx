@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import useGlobalHotkeys from '@/hooks/useGlobalHotkeys'
 import useMonitorNavigation from '@/hooks/useMonitorNavigation'
 

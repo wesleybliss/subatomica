@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import useListViewGroupViewModel from '@/components/list/ListViewGroupViewModel'
 import { Task, TaskLane, TeamMemberProfile } from '@repo/shared/types'
 import { ListViewRow } from './ListViewRow'
