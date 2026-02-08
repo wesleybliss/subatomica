@@ -1,5 +1,6 @@
 import { Task, CreateTaskInput, UpdateTaskOrderInput } from '@repo/shared/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { request } from '@/lib/api/client'
 
 export const useCreateTaskMutation = (
     localTasks: Task[],
@@ -19,14 +20,11 @@ export const useCreateTaskMutation = (
         { previousTasks?: Task[] }
     >({
         mutationFn: async ({ status, tempId }: CreateTaskInput) => {
-            const response = await fetch(`/teams/${teamId}/projects/${projectId}/tasks/${tempId}`, {
+            const created = await request<Task>(`/teams/${teamId}/projects/${projectId}/tasks/${tempId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status, tempId, projectId }),
             })
-            if (!response.ok)
-                throw new Error('Failed to fetch tasks')
-            const created = await response.json() as Task
             return { created, tempId }
         },
         onMutate: async ({ status, tempId }: CreateTaskInput) => {
@@ -95,14 +93,12 @@ export const useUpdateTaskOrderMutation = (
     
     return useMutation<Task, Error, UpdateTaskOrderInput, { previousTasks?: Task[] }>({
         mutationFn: async ({ taskId, status, order }: UpdateTaskOrderInput) => {
-            const response = await fetch(`/teams/${teamId}/projects/${projectId}/tasks/${taskId}`, {
+            const response = await request<Task>(`/teams/${teamId}/projects/${projectId}/tasks/${taskId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status, order }),
             })
-            if (!response.ok)
-                throw new Error('Failed to update task order')
-            return await response.json() as Task
+            return response as Task
         },
         onMutate: async ({ taskId, status, order }: UpdateTaskOrderInput) => {
             await queryClient.cancelQueries({ queryKey: activeQueryKey })

@@ -38,33 +38,6 @@ export const useGetTasksQuery = (teamId: string, projectId?: string) => {
     
 }
 
-export const getTasks = async (teamId: string, projectId: string) => {
-    
-    return await request(`/api/t/${teamId}/p/${projectId}/tasks`)
-    
-}
-
-export const getTaskById = async (teamId: string, projectId: string, taskId: string) => {
-    const response = await fetch(`/teams/${teamId}/projects/${projectId}/tasks/${taskId}`, {
-        credentials: 'include',
-    })
-    if (!response.ok)
-        throw new Error('Failed to fetch task')
-    return await response.json() as Task
-}
-
-// @deprecated
-export const getTasksByTeam = async (
-    teamId: string,
-    projectId: string,
-) => {
-    
-    const params = new URLSearchParams({ teamId })
-    
-    return await request(`/teams/${teamId}/projects/${projectId}/tasks?${params.toString()}`)
-    
-}
-
 export const updateTask = (taskId: string, data: Partial<Task>): Promise<Task> => {
     
     return request(`/tasks/${taskId}`, {
