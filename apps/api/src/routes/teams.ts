@@ -1,12 +1,15 @@
 import logger from '@repo/shared/utils/logger'
-import { Context } from 'hono'
+import { Context, Hono } from 'hono'
 import * as teamsService from '@/services/teams'
 import * as projectsService from '@/services/projects'
 import * as tasksService from '@/services/tasks'
+import { ApiAppEnv } from '@/env'
 
 const log = logger('routes/teams')
 
 export const getTeams = async (c: Context) => {
+    
+    log.d('getTeams', c.get('user'))
     
     const user = c.get('user')
     
@@ -60,8 +63,8 @@ export const getTeamTasks = async (c: Context) => {
     
 }
 
-export default (app: any) => {
-  
+export default (app: Hono<ApiAppEnv>) => {
+    
     app.get('/', getTeams)
     app.get('/:teamId', getTeamById)
     app.get('/:teamId/members', getTeamMembers)

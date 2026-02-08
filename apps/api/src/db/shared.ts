@@ -20,11 +20,11 @@ export const tursoTable = <
     TTableName extends string,
     TColumnsMap extends TursoColumns
 >(
-    name: TTableName,
-    columns: TColumnsMap,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extraConfig?: (table: any) => Record<string, any>,
-) => {
+        name: TTableName,
+        columns: TColumnsMap,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        extraConfig?: (table: any) => Record<string, any>,
+    ) => {
     
     const { sqliteTable, text } = sqliteCore
     const timestamp = tursoTimestamp

@@ -1,35 +1,32 @@
 import 'dotenv/config'
-import { Hono } from 'hono'
+import { Context, Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { prettyJSON } from 'hono/pretty-json'
 import pkg from '../../../package.json' assert { type: 'json' }
 import { auth as defaultAuth } from '@/services/auth' // BetterAuth instance
+import healthRoutes from '@/routes/health'
 import teamsRoutes from '@/routes/teams'
 import projectsRoute from '@/routes/projects'
 import tasksRoute from '@/routes/tasks'
-import { env } from './env'
+import { createApp } from '@/env'
+// import { env } from './env'
 
 type Package = {
     version: string
 }
 
-export const createApp = (auth = defaultAuth) => {
+export const createApiServer = (auth = defaultAuth) => {
     
-    const app = new Hono<{
-        Variables: {
-            user: typeof auth.$Infer.Session.user | null;
-            session: typeof auth.$Infer.Session.session | null
-        }
-    }>()
+    const app = createApp()
     
     // Global middleware
     app.use('*', cors({
         origin: process.env.BETTER_AUTH_TRUSTED_ORIGINS!.split(','),
         credentials: true, // optional: if you need cookies/auth
-        allowHeaders: ["Content-Type", "Authorization"],
-        allowMethods: ["POST", "GET", "OPTIONS"],
-        exposeHeaders: ["Content-Length"],
+        allowHeaders: ['Content-Type', 'Authorization'],
+        allowMethods: ['POST', 'GET', 'OPTIONS'],
+        exposeHeaders: ['Content-Length'],
         maxAge: 600,
     }))
     app.use('*', logger())
@@ -66,11 +63,11 @@ export const createApp = (auth = defaultAuth) => {
     })
     
     // Handle all auth routes under /auth/*
-    app.on(['GET', 'POST'], '/auth/*', async (c) => {
+    app.on(['GET', 'POST'], '/auth/*', async c => {
         return auth.handler(c.req.raw)
     })
     
-    app.get('/session', (c) => {
+    app.get('/session', c => {
         
         const session = c.get('session')
         const user = c.get('user')
@@ -79,7 +76,7 @@ export const createApp = (auth = defaultAuth) => {
         
         return c.json({
             session,
-            user
+            user,
         })
         
     })
@@ -90,7 +87,7 @@ export const createApp = (auth = defaultAuth) => {
             session: typeof auth.$Infer.Session.session
         }
     }>()
-
+    
     protectedRoutes.use('*', async (c, next) => {
         const user = c.get('user')
         if (!user) {
@@ -98,28 +95,31 @@ export const createApp = (auth = defaultAuth) => {
         }
         await next()
     })
-
-    const teams = new Hono()
+    
+    const health = createApp()
+    healthRoutes(health)
+    
+    const teams = createApp()
     teamsRoutes(teams)
     protectedRoutes.route('/teams', teams)
-
-    const projects = new Hono()
+    
+    const projects = createApp()
     projectsRoute(projects)
     protectedRoutes.route('/teams/:teamId/projects', projects)
-
-    const tasks = new Hono()
+    
+    const tasks = createApp()
     tasksRoute(tasks)
     protectedRoutes.route('/teams/:teamId/projects/:projectId/tasks', tasks)
-
+    
     app.route('/', protectedRoutes)
     
     //
     
     // 404 handler
-    app.notFound((c) => c.json({ error: 'Not Found' }, 404))
+    app.notFound(c => c.json({ error: 'Not Found' }, 404))
     
     // Error handler
-    app.onError((err, c) => {
+    app.onError((err: Error, c: Context) => {
         console.error(err)
         return c.json({ error: 'Internal Server Error' }, 500)
     })
@@ -128,4 +128,4 @@ export const createApp = (auth = defaultAuth) => {
     
 }
 
-export default createApp()
+export default createApiServer()

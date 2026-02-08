@@ -6,6 +6,10 @@
         "dev": "tsx watch src/server.ts",
         "start": "node dist/server.js",
         "build": "tsc",
+        "lint": "eslint .",
+        "lint:dry": "eslint --fix-dry-run .",
+        "lint:fix": "eslint --fix .",
+        "lint:fix:one": "eslint --fix",
         "test": "vitest run",
         "test:watch": "vitest run --watch",
         "test:ui": "vitest --ui"

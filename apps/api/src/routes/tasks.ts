@@ -1,5 +1,6 @@
-import { Context } from 'hono'
+import { Context, Hono } from 'hono'
 import * as tasksService from '@/services/tasks'
+import { ApiAppEnv } from '@/env'
 
 export const getTasks = async (c: Context) => {
     
@@ -26,7 +27,7 @@ export const getTaskById = async (c: Context) => {
     
 }
 
-export default (app: any) => {
+export default (app: Hono<ApiAppEnv>) => {
     
     app.get('/', getTasks)
     app.get('/:taskId', getTaskById)

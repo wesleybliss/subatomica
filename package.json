@@ -2,16 +2,35 @@
     "name": "subatomica",
     "private": true,
     "version": "1.0.0",
-    "workspaces": ["apps/*", "packages/*"],
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
     "scripts": {
         "dev:web": "pnpm --filter web dev",
         "dev:api": "pnpm --filter api dev",
         "dev": "pnpm -r dev",
+        "lint": "pnpm -r lint",
+        "lint:dry": "pnpm -r lint:dry",
+        "lint:fix": "pnpm -r lint:fix",
+        "lint:fix:one": "pnpm -r lint:fix:one",
         "test:web": "pnpm --filter web test",
         "test:api": "pnpm --filter api test",
         "test": "pnpm -r test"
     },
     "pnpm": {
         "neverBuiltDependencies": []
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.39.2",
+        "@typescript-eslint/eslint-plugin": "^8.54.0",
+        "@typescript-eslint/parser": "^8.54.0",
+        "eslint": "^9.39.2",
+        "eslint-plugin-import": "^2.32.0",
+        "eslint-plugin-indent-empty-lines": "^2.0.2",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-compiler": "19.1.0-rc.2",
+        "eslint-plugin-react-hooks": "^7.0.1",
+        "globals": "^17.3.0"
     }
 }

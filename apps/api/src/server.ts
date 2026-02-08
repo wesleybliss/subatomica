@@ -10,7 +10,7 @@ import { serve } from '@hono/node-server'
 const options = {
     port: parseInt(process.env.PORT || '5000', 10),
     hostname: process.env.HOST || '0.0.0.0',
-    fetch: app.fetch
+    fetch: app.fetch,
 }
 
 export default options

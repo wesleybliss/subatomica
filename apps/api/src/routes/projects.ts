@@ -1,7 +1,8 @@
-import { Context } from 'hono'
+import { Context, Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 // import { ProjectSchema } from '@repo/shared/schemas/project'
 import * as projectsService from '@/services/projects'
+import { ApiAppEnv } from '@/env'
 
 export const getProjects = async (c: Context) => {
     
@@ -35,7 +36,7 @@ export const getProjectById = async (c: Context) => {
     
 }
 
-export default (app: any) => {
+export default (app: Hono<ApiAppEnv>) => {
     
     app.get('/', getProjects)
     app.get('/:projectId', getProjectById)
