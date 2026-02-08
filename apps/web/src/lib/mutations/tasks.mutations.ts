@@ -5,8 +5,8 @@ export const useCreateTaskMutation = (
     localTasks: Task[],
     setLocalTasks: (value: Task[]) => void,
     activeQueryKey: readonly (string | number | boolean | Record<string, unknown>)[],
-    teamId?: string,
-    projectId?: string,
+    teamId?: string | null,
+    projectId?: string | null,
     onRefresh?: () => void,
 ) => {
     

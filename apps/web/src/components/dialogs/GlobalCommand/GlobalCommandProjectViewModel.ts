@@ -14,6 +14,7 @@ const GlobalCommandProjectViewModel = () => {
     
     const tasks = useWireValue(store.tasks)
     const lanes = useWireValue(store.lanes)
+    const selectedTeamId = useWireValue(store.selectedTeamId)
     const selectedProjectId = useWireValue(store.selectedProjectId)
     
     const [localTasks, setLocalTasks] = useState<Task[]>(tasks || [])
@@ -22,6 +23,7 @@ const GlobalCommandProjectViewModel = () => {
         localTasks,
         setLocalTasks,
         activeQueryKey,
+        selectedTeamId,
         selectedProjectId,
         window.location.reload,
     )
