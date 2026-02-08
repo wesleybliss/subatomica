@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom'
 import type { Team } from '@repo/shared/types'
 import { NavMain } from '@/components/NavMain'
 import { NavUser } from '@/components/NavUser'
-import { TeamSwitcher } from '@/components/team-switcher'
+import { TeamSwitcher } from '@/components/TeamSwitcher'
 import {
     Sidebar,
     SidebarContent,
@@ -58,13 +58,13 @@ export function AppSidebar({
     ]
     return (
         <Sidebar collapsible="icon" {...props}>
-            <SidebarHeader>
+            <SidebarHeader className="p-2">
                 <TeamSwitcher
                     teams={teams}
                     activeTeamId={teamId}
                     teamName={teamName} />
             </SidebarHeader>
-            <SidebarContent>
+            <SidebarContent className="p-2">
                 <NavMain items={navMain} />
             </SidebarContent>
             <SidebarFooter>
