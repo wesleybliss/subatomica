@@ -1,19 +1,20 @@
 import { testClient } from 'hono/testing'
 import { describe, it, expect } from 'vitest'
-import { createApp } from '@/app'
+import { createApiServer } from '@/app'
 import pkg from '../../../package.json'
 import { createAuth } from '@/services/auth'
+import { ApiAppEnv } from '@/env'
+import { Hono } from 'hono'
 
-import { hc } from 'hono/client'
-import type { AppType } from '@/app'
-
-export const $client: ReturnType<typeof hc<AppType>> = {} as any
+// import { hc } from 'hono/client'
+// import type { AppType } from '@/app'
+// export const $client: ReturnType<typeof hc<AppType>> = {} as any
 
 describe('Sanity check', () => {
     
     const auth = createAuth()
-    const app = createApp(auth)
-    const client = testClient(app)
+    const app = createApiServer(auth)
+    const client = testClient<Hono<ApiAppEnv>>(app)
     
     it('should return the version', async () => {
         
@@ -36,7 +37,7 @@ describe('Sanity check', () => {
         const res = await client.auth.signInEmailPassword('foo@gmail.com', 'bar')
         
         expect(res.status).toBe(200)
-    
+        
     })
     
     /*it('should return the version', async () => {
