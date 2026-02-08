@@ -62,13 +62,11 @@ const KanbanTaskLane = ({
     
     return (
         
-        <div
-            suppressHydrationWarning
-            className={cn('shrink-0 flex flex-col h-full min-h-0 rounded', {
-                'w-[320px]': !isCollapsed,
-                'w-10 overflow-hidden pt-4': isCollapsed,
-                'bg-linear-to-b from-accent/10 to-transparent': isCollapsed,
-            })}>
+        <div className={cn('shrink-0 flex flex-col h-full min-h-0 rounded', {
+            'w-[320px]': !isCollapsed,
+            'w-10 overflow-hidden pt-4': isCollapsed,
+            'bg-linear-to-b from-accent/10 to-transparent': isCollapsed,
+        })}>
             
             <div className={cn('flex items-center mb-3', {
                 'justify-center': isCollapsed,

@@ -5,6 +5,7 @@ import * as store from '@/store'
 import { useCreateTaskMutation } from '@/lib/mutations/tasks.mutations'
 import { Task } from '@repo/shared/types'
 import { toast } from 'sonner'
+import { v7 as uuidv7 } from 'uuid'
 
 const log = logger('GlobalCommandProjectViewModel')
 
@@ -32,7 +33,7 @@ const GlobalCommandProjectViewModel = () => {
         
         try {
             
-            const tempId = `temp-${Date.now()}`
+            const tempId = uuidv7()
             const status = lanes
                 .sort((a, b) => a.order - b.order)[0].key
             

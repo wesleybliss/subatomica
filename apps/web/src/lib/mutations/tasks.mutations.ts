@@ -19,7 +19,7 @@ export const useCreateTaskMutation = (
         { previousTasks?: Task[] }
     >({
         mutationFn: async ({ status, tempId }: CreateTaskInput) => {
-            const response = await fetch(`/teams/${teamId}/projects/${projectId}/tasks`, {
+            const response = await fetch(`/teams/${teamId}/projects/${projectId}/tasks/${tempId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status, tempId, projectId }),

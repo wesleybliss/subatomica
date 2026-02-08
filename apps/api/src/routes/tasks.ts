@@ -79,6 +79,20 @@ export const createTask = async (c: Context) => {
     }
 }
 
+export const createTaskWithId = async (c: Context) => {
+    try {
+        const user = c.get('user')
+        const teamId = c.req.param('teamId')
+        const projectId = c.req.param('projectId')
+        const taskId = c.req.param('taskId')
+        const payload = TaskCreateSchema.parse(await c.req.json())
+        const task = await tasksService.createTask(user.id, teamId, projectId, { ...payload, id: taskId })
+        return c.json(task, 201)
+    } catch (error) {
+        handleRouteError(error)
+    }
+}
+
 export const updateTask = async (c: Context) => {
     try {
         const user = c.get('user')
@@ -114,6 +128,7 @@ const routes = new Hono<ApiAppEnv>()
     .get('/', getTasks)
     .get('/:taskId', getTaskById)
     .post('/', createTask)
+    .post('/:taskId', createTaskWithId)
     .patch('/:taskId', updateTask)
     .delete('/:taskId', deleteTask)
 

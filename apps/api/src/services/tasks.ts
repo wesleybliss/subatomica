@@ -20,6 +20,7 @@ function getTeamProjectIds(userId: string, teamId: string) {
 }
 
 type CreateTaskInput = {
+    id?: string
     title?: string
     status?: string
     description?: string
@@ -63,16 +64,18 @@ export async function createTask(
         ? data.order
         : await getNextTaskOrder(project.id, status)
     
+    const insertValues = {
+        title,
+        userId,
+        projectId: project.id,
+        description: data.description || '',
+        status,
+        order,
+        ...(data.id ? { id: data.id } : {}),
+    }
     const [task] = await db
         .insert(tasks)
-        .values({
-            title,
-            userId,
-            projectId: project.id,
-            description: data.description || '',
-            status,
-            order,
-        })
+        .values(insertValues)
         .returning()
     
     return task

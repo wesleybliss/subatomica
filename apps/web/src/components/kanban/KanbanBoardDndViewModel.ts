@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useWireState } from '@forminator/react-wire'
 import * as store from '@/store'
 import { Task, TaskLane, TaskStatus } from '@repo/shared/types'
+import { v7 as uuidv7 } from 'uuid'
 import {
     useCreateTaskLaneMutation,
     useDeleteTaskLaneMutation,
@@ -102,7 +103,7 @@ const KanbanBoardDndViewModel = (
         if (!projectId || !onLanesChange) return
         setIsAddingLane(true)
         try {
-            const tempId = `temp-${Date.now()}`
+            const tempId = uuidv7()
             await createTaskLaneMutation.mutateAsync({
                 name: 'New Lane',
                 color: 'bg-muted',
@@ -138,7 +139,7 @@ const KanbanBoardDndViewModel = (
         if (!projectId) return
         setIsCreating(status)
         try {
-            const tempId = `temp-${Date.now()}`
+            const tempId = uuidv7()
             await createTaskMutation.mutateAsync({ status, tempId })
         } catch (error) {
             log.e('Failed to create task:', error)
