@@ -65,7 +65,7 @@ export const getTasksByTeam = async (
     
 }
 
-export const updateTask = (taskId: string, data: Partial<Task>) => {
+export const updateTask = (taskId: string, data: Partial<Task>): Promise<Task> => {
     
     return request(`/tasks/${taskId}`, {
         method: 'PUT',
