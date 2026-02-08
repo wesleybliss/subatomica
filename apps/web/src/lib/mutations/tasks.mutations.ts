@@ -48,6 +48,7 @@ export const useCreateTaskMutation = (
                 description: '',
                 projectId,
                 userId: 'pending',
+                localId: 0,
                 status,
                 priority: null,
                 dueDate: null,

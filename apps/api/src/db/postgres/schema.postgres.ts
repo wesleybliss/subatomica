@@ -56,6 +56,7 @@ export const verifications = table('verifications', {
 // Teams table
 export const teams = table('teams', {
     name: text('name').notNull(),
+    slug: text('slug').notNull().unique(),
     ownerId: uuid('ownerId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
@@ -82,6 +83,8 @@ export const teamMembers = table('teamMembers', {
 // Projects table
 export const projects = table('projects', {
     name: text('name').notNull(),
+    slug: text('slug').notNull(),
+    taskSequence: integer('taskSequence').notNull().default(1),
     description: text('description').notNull().default(''),
     teamId: uuid('teamId')
         .notNull()
@@ -92,6 +95,7 @@ export const projects = table('projects', {
     isStarred: boolean('isStarred').notNull().default(false),
 }, table => ({
     teamNameUnique: uniqueIndex('projects_team_name_unique').on(table.teamId, table.name),
+    teamSlugUnique: uniqueIndex('projects_team_slug_unique').on(table.teamId, table.slug),
     teamIdIndex: index('projects_team_id_idx').on(table.teamId),
     ownerIdIndex: index('projects_owner_id_idx').on(table.ownerId),
 }))
@@ -116,6 +120,7 @@ export const tasks = table('tasks', {
     projectId: uuid('projectId')
         .notNull()
         .references(() => projects.id, { onDelete: 'cascade' }),
+    localId: integer('localId').notNull(),
     userId: uuid('userId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
@@ -129,6 +134,7 @@ export const tasks = table('tasks', {
     isStarred: boolean('isStarred').notNull().default(false),
 }, table => ({
     projectIdIndex: index('tasks_project_id_idx').on(table.projectId),
+    projectLocalIdUnique: uniqueIndex('tasks_project_local_id_unique').on(table.projectId, table.localId),
     userIdIndex: index('tasks_user_id_idx').on(table.userId),
     assigneeIdIndex: index('tasks_assignee_id_idx').on(table.assigneeId),
     statusIndex: index('tasks_status_idx').on(table.status),

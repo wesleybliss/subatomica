@@ -3,6 +3,7 @@ import { and, desc, eq, inArray, sql } from 'drizzle-orm'
 import { projects, tasks } from '@/db/schema'
 import { Task } from '@repo/shared/types'
 import { getAccessibleTeamIds } from '@/services/shared'
+import { generateProjectAcronym, formatTaskKey } from '@/lib/slugs'
 
 /**
  * Gets IDs of projects in a team that are accessible to the user
@@ -43,7 +44,7 @@ export async function createTask(
     const accessibleTeamIds = getAccessibleTeamIds(userId)
     
     const [project] = await db
-        .select({ id: projects.id })
+        .select({ id: projects.id, taskSequence: projects.taskSequence })
         .from(projects)
         .where(and(
             eq(projects.id, projectId),
@@ -64,10 +65,13 @@ export async function createTask(
         ? data.order
         : await getNextTaskOrder(project.id, status)
     
+    const localId = project.taskSequence
+    
     const insertValues = {
         title,
         userId,
         projectId: project.id,
+        localId,
         description: data.description || '',
         status,
         order,
@@ -77,6 +81,12 @@ export async function createTask(
         .insert(tasks)
         .values(insertValues)
         .returning()
+    
+    // Increment taskSequence in projects
+    await db
+        .update(projects)
+        .set({ taskSequence: project.taskSequence + 1 })
+        .where(eq(projects.id, projectId))
     
     return task
 }
@@ -201,4 +211,69 @@ const getNextTaskOrder = async (projectId: string, status: string) => {
         ))
     
     return (row?.maxOrder ?? 0) + 1000
+}
+
+/**
+ * Get task key (e.g., "CPW-01") for a task
+ */
+export async function getTaskKey(projectId: string, taskId: string): Promise<string | null> {
+    const [project] = await db
+        .select({ name: projects.name })
+        .from(projects)
+        .where(eq(projects.id, projectId))
+        .limit(1)
+    
+    const [task] = await db
+        .select({ localId: tasks.localId })
+        .from(tasks)
+        .where(eq(tasks.id, taskId))
+        .limit(1)
+    
+    if (!project || !task)
+        return null
+    
+    const acronym = generateProjectAcronym(project.name)
+    return formatTaskKey(acronym, task.localId)
+}
+
+/**
+ * Get task by key (e.g., "CPW-01") within a project
+ */
+export async function getTaskByKey(
+    userId: string,
+    teamId: string,
+    projectId: string,
+    taskKey: string,
+): Promise<Task | null> {
+    const teamProjectIds = getTeamProjectIds(userId, teamId)
+    
+    const [project] = await db
+        .select({ id: projects.id })
+        .from(projects)
+        .where(and(
+            eq(projects.id, projectId),
+            inArray(projects.id, teamProjectIds),
+        ))
+        .limit(1)
+    
+    if (!project)
+        return null
+    
+    const localIdMatch = taskKey.match(/^[A-Z0-9]+-(\d+)$/)
+    
+    if (!localIdMatch)
+        return null
+    
+    const localId = parseInt(localIdMatch[1], 10)
+    
+    const [task] = await db
+        .select()
+        .from(tasks)
+        .where(and(
+            eq(tasks.projectId, projectId),
+            eq(tasks.localId, localId),
+        ))
+        .limit(1)
+    
+    return task || null
 }

@@ -18,7 +18,8 @@
         "typecheck": "pnpm --filter web exec tsc --noEmit",
         "test:web": "pnpm --filter web test",
         "test:api": "pnpm --filter api test",
-        "test": "pnpm -r test"
+        "test": "pnpm -r test",
+        "update-shared": "pnpm -r update-shared"
     },
     "pnpm": {
         "neverBuiltDependencies": []

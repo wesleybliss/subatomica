@@ -3,6 +3,7 @@ import { and, eq, inArray } from 'drizzle-orm'
 import { projects, taskLanes, teamMembers, teams } from '@/db/schema'
 import { Project, TaskLane } from '@repo/shared/types'
 import { getAccessibleTeamIds } from '@/services/shared'
+import { generateSlug } from '@/lib/slugs'
 
 const db = client.db
 
@@ -67,10 +68,13 @@ export async function createProject(userId: string, teamId: string, name: string
     if (!team)
         throw new Error('NotFound: Team not found')
     
+    const slug = generateSlug(name)
+    
     const [project] = await db
         .insert(projects)
         .values({
             name,
+            slug,
             ownerId: userId,
             teamId,
         })
@@ -121,9 +125,14 @@ export async function renameProject(userId: string, projectId: string, name: str
     if (role !== 'owner' && role !== 'admin')
         throw new Error('Forbidden: Only owners or admins can rename projects')
     
+    const newSlug = generateSlug(trimmedName)
+    
     const [updated] = await db
         .update(projects)
-        .set({ name: trimmedName })
+        .set({
+            name: trimmedName,
+            slug: newSlug,
+        })
         .where(eq(projects.id, projectId))
         .returning()
     
@@ -162,6 +171,38 @@ export async function getProjectById(
         .where(and(
             eq(projects.teamId, teamId),
             eq(projects.id, projectId),
+            inArray(projects.teamId, accessibleTeamIds),
+        ))
+        .limit(1)
+    
+    if (!project)
+        return undefined
+    
+    const lanes = await db
+        .select()
+        .from(taskLanes)
+        .where(eq(taskLanes.projectId, project.id))
+        .orderBy(taskLanes.order)
+    
+    return {
+        ...project,
+        taskLanes: lanes,
+    }
+}
+
+export async function getProjectBySlug(
+    userId: string,
+    teamId: string,
+    slug: string,
+): Promise<(Project & { taskLanes: TaskLane[] }) | undefined> {
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
+    
+    const [project] = await db
+        .select()
+        .from(projects)
+        .where(and(
+            eq(projects.teamId, teamId),
+            eq(projects.slug, slug),
             inArray(projects.teamId, accessibleTeamIds),
         ))
         .limit(1)

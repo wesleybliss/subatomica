@@ -7,6 +7,8 @@ export interface Project {
     ownerId: string
     teamId: string
     name: string
+    slug: string
+    taskSequence: number
     description: string
     
     taskLanes?: TaskLane[]

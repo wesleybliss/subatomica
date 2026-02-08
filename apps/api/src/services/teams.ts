@@ -1,8 +1,9 @@
 import * as client from '@/db/client'
 import { teamMembers, teams, users } from '@/db/schema'
-import { and, desc, eq, inArray, sql } from 'drizzle-orm'
+import { and, eq, inArray, sql } from 'drizzle-orm'
 import { Team } from '@repo/shared/types'
 import { getAccessibleTeamIds } from '@/services/shared'
+import { generateSlug } from '@/lib/slugs'
 
 const db = client.db
 
@@ -54,10 +55,13 @@ const getTeamRole = async (userId: string, teamId: string) => {
 }
 
 export async function createTeam(name: string, ownerId: string): Promise<Team> {
+    const slug = generateSlug(name)
+    
     const [team] = await db
         .insert(teams)
         .values({
             name,
+            slug,
             ownerId,
         })
         .returning()
@@ -96,14 +100,17 @@ export async function getTeamById(userId: string, teamId: string): Promise<Team>
     return team
 }
 
-export async function getTeamByLastUpdated(userId: string): Promise<Team> {
+export async function getTeamBySlug(userId: string, slug: string): Promise<Team> {
     const accessibleTeamIds = getAccessibleTeamIds(userId)
     
     const [team] = await db.select()
         .from(teams)
-        .where(inArray(teams.id, accessibleTeamIds))
-        .orderBy(desc(teams.updatedAt))
+        .where(and(
+            eq(teams.slug, slug),
+            inArray(teams.id, accessibleTeamIds),
+        ))
         .limit(1)
+    
     return team
 }
 
@@ -180,6 +187,34 @@ export async function ensureUserHasTeam(userId: string): Promise<Team> {
     if (userTeams.length === 0)
         return createTeam('Personal', userId)
     return userTeams[0]
+}
+
+export async function renameTeam(userId: string, teamId: string, newName: string): Promise<Team> {
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
+    
+    const [team] = await db.select()
+        .from(teams)
+        .where(and(
+            eq(teams.id, teamId),
+            inArray(teams.id, accessibleTeamIds),
+        ))
+        .limit(1)
+    
+    if (!team)
+        throw new Error('NotFound: Team not found')
+    
+    const newSlug = generateSlug(newName)
+    
+    const [updated] = await db
+        .update(teams)
+        .set({
+            name: newName,
+            slug: newSlug,
+        })
+        .where(eq(teams.id, teamId))
+        .returning()
+    
+    return updated
 }
 
 async function checkUserCanManageMembers(userId: string, teamId: string): Promise<void> {

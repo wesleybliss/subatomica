@@ -7,6 +7,7 @@ export interface Task {
     id: string
     userId: string
     projectId: string
+    localId: number
     title: string
     description: string
     status: TaskStatus

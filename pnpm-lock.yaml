@@ -87,6 +87,9 @@ importers:
       '@vitest/ui':
         specifier: ^4.0.18
         version: 4.0.18(vitest@4.0.18)
+      drizzle-kit:
+        specifier: ^0.31.8
+        version: 0.31.8
       jsdom:
         specifier: ^28.0.0
         version: 28.0.0(@noble/hashes@2.0.1)
@@ -117,12 +120,6 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.71.1(react@19.2.4))
-      '@libsql/client':
-        specifier: ^0.17.0
-        version: 0.17.0
-      '@neondatabase/serverless':
-        specifier: latest
-        version: 1.0.2
       '@repo/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -138,9 +135,6 @@ importers:
       '@tiptap/starter-kit':
         specifier: ^3.19.0
         version: 3.19.0
-      '@types/pg':
-        specifier: latest
-        version: 8.16.0
       '@vercel/analytics':
         specifier: 1.6.1
         version: 1.6.1(next@16.1.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
@@ -171,12 +165,6 @@ importers:
       dotenv:
         specifier: ^17.2.3
         version: 17.2.4
-      drizzle-kit:
-        specifier: latest
-        version: 0.31.8
-      drizzle-orm:
-        specifier: ^0.45.1
-        version: 0.45.1(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.0)(@neondatabase/serverless@1.0.2)(@prisma/client@7.3.0(prisma@7.3.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.16.0)(kysely@0.28.11)(mysql2@3.15.3)(postgres@3.4.7)(prisma@7.3.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))
       lucide-react:
         specifier: ^0.563.0
         version: 0.563.0(react@19.2.4)

@@ -4,6 +4,7 @@ export type Team = {
     updatedAt: string
     ownerId: string
     name: string
+    slug: string
 }
 
 export type TeamMemberProfile = {
