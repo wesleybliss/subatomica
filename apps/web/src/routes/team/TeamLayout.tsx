@@ -26,9 +26,15 @@ export default function TeamLayout() {
         teams?.find(it => it.id === teamId)
     ), [teams, teamId])
     
+    if (!user) navigate('/sign-in', { replace: true })
     if (!teamId) navigate('/', { replace: true })
     
     const avatarUrl = getGravatarUrl(user?.email ?? '')
+    const avatarUser = {
+        name: user!.name,
+        email: user!.email,
+        image: avatarUrl,
+    }
     
     if (!team) return <div>@todo TeamLayout no team ({teamId})</div>
     
@@ -40,7 +46,7 @@ export default function TeamLayout() {
                 teamId={teamId}
                 teamName={team.name}
                 teams={teams}
-                user={{ ...user, image: avatarUrl }} />
+                user={avatarUser} />
             
             <SidebarInset className="flex-1 overflow-hidden flex flex-col">
                 <Outlet />

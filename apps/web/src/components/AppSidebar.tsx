@@ -14,15 +14,17 @@ import {
     SidebarRail,
 } from '@/components/ui/sidebar'
 
+type AvatarUser = {
+    name: string
+    email: string
+    image?: string | null
+}
+
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
     teamId: string
     teamName: string
     teams: Team[]
-    user: {
-        name: string
-        email: string
-        image?: string | null
-    }
+    user: AvatarUser
 }
 
 export function AppSidebar({

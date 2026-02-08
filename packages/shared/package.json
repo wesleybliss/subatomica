@@ -9,8 +9,5 @@
     },
     "dependencies": {
         "zod": "^4.3.6"
-    },
-    "debug": {
-        ".": "./src/index.ts"
     }
 }

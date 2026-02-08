@@ -98,7 +98,7 @@ const ProjectsSelectorDropdown = ({
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     <DropdownMenuItem
-                        onClick={() => router.push(`/t/${teamId}/p`)}>
+                        onClick={() => navigate(`/t/${teamId}/p`)}>
                         <FolderKanban className="mr-2 h-4 w-4" />
                         View all projects
                     </DropdownMenuItem>
