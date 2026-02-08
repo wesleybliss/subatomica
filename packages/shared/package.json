@@ -4,10 +4,13 @@
     "type": "module",
     "exports": {
         "./types": "./src/types/index.ts",
+        "./types/*": "./src/types/*.ts",
         "./schemas": "./src/schemas/index.ts",
-        "./utils/*": "./src/utils/*"
+        "./schemas/*": "./src/schemas/*.ts",
+        "./utils/*": "./src/utils/*.ts"
     },
     "dependencies": {
+        "@forminator/react-wire": "^0.7.0",
         "@types/react": "^19.2.13",
         "zod": "^4.3.6"
     }

@@ -1,4 +1,4 @@
-import { TaskLane } from '@/types/lanes.types'
+import { TaskLane } from './lanes.types'
 
 export interface Project {
     id: string

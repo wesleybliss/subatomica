@@ -28,7 +28,7 @@ export function ProjectDetailClient({
     const [tasksQuery, setTasksQuery] = useState<string>('')
     const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set())
     
-    const { tasksQueryKey, data: tasks = initialTasks } = useGetTasksQuery(teamId, project.id, initialTasks)
+    const { tasksQueryKey, data: tasks = initialTasks } = useGetTasksQuery(teamId, project.id)
     
     useEffect(() => {
         if (!tasksQuery.length) {

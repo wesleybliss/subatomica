@@ -29,6 +29,7 @@ const KanbanBoardDnd = ({
     const vm = useKanbanBoardDndViewModel(
         lanes,
         tasks,
+        teamId,
         projectId,
         queryKey,
         onRefresh,

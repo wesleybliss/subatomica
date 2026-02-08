@@ -19,6 +19,7 @@ const log = logger('KanbanBoardDndViewModel')
 const KanbanBoardDndViewModel = (
     lanes: TaskLane[],
     tasks: Task[],
+    teamId?: string,
     projectId?: string,
     queryKey?: ReadonlyArray<string | number | boolean | Record<string, unknown>>,
     onRefresh?: () => void,
@@ -61,6 +62,7 @@ const KanbanBoardDndViewModel = (
         localTasks,
         setLocalTasks,
         activeQueryKey,
+        teamId,
         projectId,
         onRefresh,
     )
@@ -91,6 +93,8 @@ const KanbanBoardDndViewModel = (
         localTasks,
         setLocalTasks,
         activeQueryKey,
+        teamId,
+        projectId,
         onRefresh,
     )
     

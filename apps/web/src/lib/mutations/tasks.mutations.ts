@@ -5,8 +5,8 @@ export const useCreateTaskMutation = (
     localTasks: Task[],
     setLocalTasks: (value: Task[]) => void,
     activeQueryKey: readonly (string | number | boolean | Record<string, unknown>)[],
-    teamId: string,
-    projectId?: string | null | undefined,
+    teamId?: string,
+    projectId?: string,
     onRefresh?: () => void,
 ) => {
     
@@ -87,8 +87,8 @@ export const useUpdateTaskOrderMutation = (
     localTasks: Task[],
     setLocalTasks: (value: Task[]) => void,
     activeQueryKey: readonly (string | number | boolean | Record<string, unknown>)[],
-    teamId: string,
-    projectId: string,
+    teamId?: string,
+    projectId?: string,
     onRefresh?: () => void,
 ) => {
     const queryClient = useQueryClient()
