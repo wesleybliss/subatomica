@@ -1,26 +1,34 @@
 import * as client from '@/db/client'
-import { and, eq, inArray, or } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import { projects, taskLanes, teamMembers, teams } from '@/db/schema'
 import { Project, TaskLane } from '@repo/shared/types'
+import { getAccessibleTeamIds } from '@/services/shared'
 
 const db = client.db
 
-/**
- * Gets IDs of teams accessible to the user
- */
-function getAccessibleTeamIds(userId: string) {
-    const memberTeamIds = db
-        .select({ id: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
-    
-    return db
-        .select({ id: teams.id })
+const getTeamRole = async (userId: string, teamId: string) => {
+    const [team] = await db
+        .select({ ownerId: teams.ownerId })
         .from(teams)
-        .where(or(
-            eq(teams.ownerId, userId),
-            inArray(teams.id, memberTeamIds),
+        .where(eq(teams.id, teamId))
+        .limit(1)
+    
+    if (!team)
+        return null
+    
+    if (team.ownerId === userId)
+        return 'owner'
+    
+    const [membership] = await db
+        .select({ role: teamMembers.role })
+        .from(teamMembers)
+        .where(and(
+            eq(teamMembers.teamId, teamId),
+            eq(teamMembers.userId, userId),
         ))
+        .limit(1)
+    
+    return membership?.role ?? null
 }
 
 export const ensureProjectLanes = async (projectId: string) => {
@@ -57,7 +65,7 @@ export async function createProject(userId: string, teamId: string, name: string
         .limit(1)
     
     if (!team)
-        throw new Error('Unauthorized or Team not found')
+        throw new Error('NotFound: Team not found')
     
     const [project] = await db
         .insert(projects)
@@ -74,37 +82,55 @@ export async function createProject(userId: string, teamId: string, name: string
 
 export async function deleteProject(userId: string, projectId: string): Promise<void> {
     const [project] = await db
-        .select({ ownerId: projects.ownerId })
+        .select({ teamId: projects.teamId })
         .from(projects)
         .where(eq(projects.id, projectId))
         .limit(1)
     
-    if (!project || project.ownerId !== userId)
-        throw new Error('Unauthorized or Project not found')
+    if (!project)
+        throw new Error('NotFound: Project not found')
+    
+    const role = await getTeamRole(userId, project.teamId)
+    if (!role)
+        throw new Error('NotFound: Project not found')
+    if (role !== 'owner')
+        throw new Error('Forbidden: Only owners can delete projects')
     
     await db
         .delete(projects)
         .where(eq(projects.id, projectId))
 }
 
-export async function renameProject(userId: string, projectId: string, name: string): Promise<void> {
+export async function renameProject(userId: string, projectId: string, name: string): Promise<Project> {
     const trimmedName = name.trim()
     if (!trimmedName)
         throw new Error('Project name is required')
     
-    const accessibleTeamIds = getAccessibleTeamIds(userId)
+    const [project] = await db
+        .select({ teamId: projects.teamId })
+        .from(projects)
+        .where(eq(projects.id, projectId))
+        .limit(1)
     
-    const updated = await db
+    if (!project)
+        throw new Error('NotFound: Project not found')
+    
+    const role = await getTeamRole(userId, project.teamId)
+    if (!role)
+        throw new Error('NotFound: Project not found')
+    if (role !== 'owner' && role !== 'admin')
+        throw new Error('Forbidden: Only owners or admins can rename projects')
+    
+    const [updated] = await db
         .update(projects)
         .set({ name: trimmedName })
-        .where(and(
-            eq(projects.id, projectId),
-            inArray(projects.teamId, accessibleTeamIds),
-        ))
-        .returning({ id: projects.id })
+        .where(eq(projects.id, projectId))
+        .returning()
     
-    if (updated.length === 0)
-        throw new Error('Unauthorized or Project not found')
+    if (!updated)
+        throw new Error('NotFound: Project not found')
+    
+    return updated
 }
 
 export async function getProjects(userId: string, teamId?: string): Promise<Project[]> {

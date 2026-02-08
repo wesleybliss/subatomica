@@ -61,7 +61,13 @@ Implement the following routes in the Hono API:
 - [ ] All `useMutation` hooks in the web app receive a `200/201` response from the API.
 - [ ] Users cannot access projects or tasks for teams they are not part of, even if they know the UUID.
 
-## 7. Implementation Plan
+## 7. General Instructions
+
+1. Maintain coding style of the project & respect linting rules.
+2. Run `pnpm lint` in the workspace root after all major changes.
+3. Run `pnpm typecheck` in the workspace root after all major changes.
+
+## 8. Implementation Plan
 1.  **Phase 1:** Refactor shared access logic.
 2.  **Phase 2:** Fix member management service bugs.
 3.  **Phase 3:** Register missing Project routes.

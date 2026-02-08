@@ -1,26 +1,56 @@
 import * as client from '@/db/client'
 import { teamMembers, teams, users } from '@/db/schema'
-import { eq, desc, and, or, inArray } from 'drizzle-orm'
+import { and, desc, eq, inArray, sql } from 'drizzle-orm'
 import { Team } from '@repo/shared/types'
+import { getAccessibleTeamIds } from '@/services/shared'
 
 const db = client.db
 
-/**
- * Gets IDs of teams accessible to the user
- */
-function getAccessibleTeamIds(userId: string) {
-    const memberTeamIds = db
-        .select({ id: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
-    
-    return db
-        .select({ id: teams.id })
+const ensureOwnerMembership = async (teamId: string) => {
+    const [team] = await db
+        .select({ ownerId: teams.ownerId })
         .from(teams)
-        .where(or(
-            eq(teams.ownerId, userId),
-            inArray(teams.id, memberTeamIds),
+        .where(eq(teams.id, teamId))
+        .limit(1)
+    
+    if (!team)
+        return null
+    
+    await db
+        .insert(teamMembers)
+        .values({
+            userId: team.ownerId,
+            teamId,
+            role: 'owner',
+        })
+        .onConflictDoNothing()
+    
+    return team.ownerId
+}
+
+const getTeamRole = async (userId: string, teamId: string) => {
+    const [team] = await db
+        .select({ ownerId: teams.ownerId })
+        .from(teams)
+        .where(eq(teams.id, teamId))
+        .limit(1)
+    
+    if (!team)
+        return null
+    
+    if (team.ownerId === userId)
+        return 'owner'
+    
+    const [membership] = await db
+        .select({ role: teamMembers.role })
+        .from(teamMembers)
+        .where(and(
+            eq(teamMembers.teamId, teamId),
+            eq(teamMembers.userId, userId),
         ))
+        .limit(1)
+    
+    return membership?.role ?? null
 }
 
 export async function createTeam(name: string, ownerId: string): Promise<Team> {
@@ -153,33 +183,18 @@ export async function ensureUserHasTeam(userId: string): Promise<Team> {
 }
 
 async function checkUserCanManageMembers(userId: string, teamId: string): Promise<void> {
-    // First check if user is the team owner
-    const [team] = await db
-        .select({ ownerId: teams.ownerId })
-        .from(teams)
-        .where(eq(teams.id, teamId))
-        .limit(1)
-    
-    if (team?.ownerId === userId) {
-        return
-    }
-    
-    // Otherwise check teamMembers table for admin role
-    const [membership] = await db
-        .select({ role: teamMembers.role })
-        .from(teamMembers)
-        .where(and(
-            eq(teamMembers.teamId, teamId),
-            eq(teamMembers.userId, userId),
-        ))
-        .limit(1)
-    
-    if (!membership || (membership.role !== 'owner' && membership.role !== 'admin')) {
-        throw new Error('Unauthorized: Only owners and admins can manage team members')
-    }
+    const role = await getTeamRole(userId, teamId)
+    if (!role || (role !== 'owner' && role !== 'admin'))
+        throw new Error('Forbidden: Only owners and admins can manage team members')
 }
 
-export async function addTeamMember(teamId: string, email: string) {
+export async function addTeamMember(teamId: string, requesterId: string, email: string) {
+    const role = await getTeamRole(requesterId, teamId)
+    if (!role)
+        throw new Error('NotFound: Team not found')
+    if (role !== 'owner' && role !== 'admin')
+        throw new Error('Forbidden: Only owners and admins can add team members')
+    
     const [targetUser] = await db
         .select({ id: users.id })
         .from(users)
@@ -187,7 +202,7 @@ export async function addTeamMember(teamId: string, email: string) {
         .limit(1)
     
     if (!targetUser) {
-        throw new Error(`User not found with email address "${email}"`)
+        throw new Error('NotFound: User not found')
     }
     
     const [existingMembership] = await db
@@ -200,7 +215,7 @@ export async function addTeamMember(teamId: string, email: string) {
         .limit(1)
     
     if (existingMembership) {
-        throw new Error('User is already a member of this team')
+        throw new Error('Conflict: User is already a member of this team')
     }
     
     await db.insert(teamMembers).values({
@@ -212,31 +227,76 @@ export async function addTeamMember(teamId: string, email: string) {
     return { success: true }
 }
 
-export async function removeTeamMember(teamId: string, userId: string) {
-    await checkUserCanManageMembers(userId, teamId)
+export async function removeTeamMember(teamId: string, requesterId: string, targetUserId: string) {
+    const ownerId = await ensureOwnerMembership(teamId)
+    if (!ownerId)
+        throw new Error('NotFound: Team not found')
     
+    const requesterRole = await getTeamRole(requesterId, teamId)
     const [targetMembership] = await db
         .select({ role: teamMembers.role })
         .from(teamMembers)
         .where(and(
             eq(teamMembers.teamId, teamId),
-            eq(teamMembers.userId, userId),
+            eq(teamMembers.userId, targetUserId),
         ))
         .limit(1)
     
-    if (!targetMembership) {
-        throw new Error('User is not a member of this team')
+    const targetRole = targetUserId === ownerId
+        ? 'owner'
+        : targetMembership?.role
+    
+    if (!targetRole)
+        throw new Error('NotFound: Team member not found')
+    
+    if (!requesterRole)
+        throw new Error('Forbidden: Only team members can remove themselves')
+    
+    if (requesterId !== targetUserId) {
+        if (requesterRole !== 'owner' && requesterRole !== 'admin')
+            throw new Error('Forbidden: Only owners and admins can remove members')
+        if ((targetRole === 'owner' || targetRole === 'admin') && requesterRole !== 'owner')
+            throw new Error('Forbidden: Only owners can remove admins or owners')
     }
     
-    if (targetMembership.role === 'owner') {
-        throw new Error('Cannot remove the team owner')
+    if (targetRole === 'owner') {
+        const [ownerCount] = await db
+            .select({ count: sql<number>`count(*)` })
+            .from(teamMembers)
+            .where(and(
+                eq(teamMembers.teamId, teamId),
+                eq(teamMembers.role, 'owner'),
+            ))
+        
+        if ((ownerCount?.count ?? 0) <= 1)
+            throw new Error('Forbidden: Cannot remove the last owner')
+        
+        if (targetUserId === ownerId) {
+            const [nextOwner] = await db
+                .select({ userId: teamMembers.userId })
+                .from(teamMembers)
+                .where(and(
+                    eq(teamMembers.teamId, teamId),
+                    eq(teamMembers.role, 'owner'),
+                    sql`${teamMembers.userId} <> ${targetUserId}`,
+                ))
+                .limit(1)
+            
+            if (!nextOwner)
+                throw new Error('Forbidden: Cannot remove the last owner')
+            
+            await db
+                .update(teams)
+                .set({ ownerId: nextOwner.userId })
+                .where(eq(teams.id, teamId))
+        }
     }
     
     await db
         .delete(teamMembers)
         .where(and(
             eq(teamMembers.teamId, teamId),
-            eq(teamMembers.userId, userId),
+            eq(teamMembers.userId, targetUserId),
         ))
     
     return { success: true }

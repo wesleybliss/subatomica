@@ -25,7 +25,7 @@ export const createApiServer = (auth = defaultAuth) => {
         origin: process.env.BETTER_AUTH_TRUSTED_ORIGINS!.split(','),
         credentials: true, // optional: if you need cookies/auth
         allowHeaders: ['Content-Type', 'Authorization'],
-        allowMethods: ['POST', 'GET', 'OPTIONS'],
+        allowMethods: ['POST', 'GET', 'PATCH', 'DELETE', 'OPTIONS'],
         exposeHeaders: ['Content-Length'],
         maxAge: 600,
     }))

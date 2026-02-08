@@ -1,25 +1,8 @@
 import { db } from '@/db/client'
-import { and, desc, eq, inArray, or } from 'drizzle-orm'
-import { projects, teamMembers, teams, tasks } from '@/db/schema'
+import { and, desc, eq, inArray, sql } from 'drizzle-orm'
+import { projects, tasks } from '@/db/schema'
 import { Task } from '@repo/shared/types'
-
-/**
- * Gets IDs of teams accessible to the user
- */
-function getAccessibleTeamIds(userId: string) {
-    const memberTeamIds = db
-        .select({ id: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
-    
-    return db
-        .select({ id: teams.id })
-        .from(teams)
-        .where(or(
-            eq(teams.ownerId, userId),
-            inArray(teams.id, memberTeamIds),
-        ))
-}
+import { getAccessibleTeamIds } from '@/services/shared'
 
 /**
  * Gets IDs of projects in a team that are accessible to the user
@@ -36,58 +19,80 @@ function getTeamProjectIds(userId: string, teamId: string) {
         ))
 }
 
-export async function createTask(userId: string, teamId: string, name: string): Promise<Task> {
-    const trimmedName = name.trim()
-    if (!trimmedName)
-        throw new Error('Task name is required')
-    
+type CreateTaskInput = {
+    title?: string
+    status?: string
+    description?: string
+    order?: number
+}
+
+type UpdateTaskInput = {
+    title?: string
+    status?: string
+    description?: string
+    order?: number
+}
+
+export async function createTask(
+    userId: string,
+    teamId: string,
+    projectId: string,
+    data: CreateTaskInput,
+): Promise<Task> {
     const accessibleTeamIds = getAccessibleTeamIds(userId)
     
-    // Check if teamId is actually a projectId
-    let [project] = await db
+    const [project] = await db
         .select({ id: projects.id })
         .from(projects)
         .where(and(
-            eq(projects.id, teamId),
+            eq(projects.id, projectId),
+            eq(projects.teamId, teamId),
             inArray(projects.teamId, accessibleTeamIds),
         ))
         .limit(1)
     
-    if (!project) {
-        // Otherwise treat teamId as a teamId and find its first project
-        [project] = await db
-            .select({ id: projects.id })
-            .from(projects)
-            .where(and(
-                eq(projects.teamId, teamId),
-                inArray(projects.teamId, accessibleTeamIds),
-            ))
-            .orderBy(projects.name)
-            .limit(1)
-    }
-    
     if (!project)
-        throw new Error('Unauthorized or Project not found')
+        throw new Error('NotFound: Project not found')
+    
+    const title = (data.title || 'New Task').trim()
+    if (!title)
+        throw new Error('Task name is required')
+    
+    const status = data.status || 'backlog'
+    const order = typeof data.order === 'number'
+        ? data.order
+        : await getNextTaskOrder(project.id, status)
     
     const [task] = await db
         .insert(tasks)
         .values({
-            title: trimmedName,
+            title,
             userId,
             projectId: project.id,
-            description: '',
+            description: data.description || '',
+            status,
+            order,
         })
         .returning()
     
     return task
 }
 
-export async function deleteTask(userId: string, taskId: string): Promise<void> {
+export async function deleteTask(
+    userId: string,
+    teamId: string,
+    projectId: string,
+    taskId: string,
+): Promise<void> {
     const accessibleTeamIds = getAccessibleTeamIds(userId)
     const accessibleProjectIds = db
         .select({ id: projects.id })
         .from(projects)
-        .where(inArray(projects.teamId, accessibleTeamIds))
+        .where(and(
+            eq(projects.id, projectId),
+            eq(projects.teamId, teamId),
+            inArray(projects.teamId, accessibleTeamIds),
+        ))
     
     const [task] = await db
         .select({ id: tasks.id })
@@ -99,35 +104,56 @@ export async function deleteTask(userId: string, taskId: string): Promise<void> 
         .limit(1)
     
     if (!task)
-        throw new Error('Unauthorized or Task not found')
+        throw new Error('NotFound: Task not found')
     
     await db
         .delete(tasks)
         .where(eq(tasks.id, taskId))
 }
 
-export async function renameTask(userId: string, taskId: string, name: string): Promise<void> {
-    const trimmedName = name.trim()
-    if (!trimmedName)
-        throw new Error('Task name is required')
-    
+export async function updateTask(
+    userId: string,
+    teamId: string,
+    projectId: string,
+    taskId: string,
+    data: UpdateTaskInput,
+): Promise<Task> {
     const accessibleTeamIds = getAccessibleTeamIds(userId)
     const accessibleProjectIds = db
         .select({ id: projects.id })
         .from(projects)
-        .where(inArray(projects.teamId, accessibleTeamIds))
+        .where(and(
+            eq(projects.id, projectId),
+            eq(projects.teamId, teamId),
+            inArray(projects.teamId, accessibleTeamIds),
+        ))
     
-    const updated = await db
+    const updateData: Partial<Task> = {}
+    if (typeof data.title === 'string')
+        updateData.title = data.title.trim()
+    if (typeof data.description === 'string')
+        updateData.description = data.description
+    if (typeof data.status === 'string')
+        updateData.status = data.status
+    if (typeof data.order === 'number')
+        updateData.order = data.order
+    
+    if (updateData.title === '')
+        throw new Error('Task name is required')
+    
+    const [updated] = await db
         .update(tasks)
-        .set({ title: trimmedName })
+        .set(updateData)
         .where(and(
             eq(tasks.id, taskId),
             inArray(tasks.projectId, accessibleProjectIds),
         ))
-        .returning({ id: tasks.id })
+        .returning()
     
-    if (updated.length === 0)
-        throw new Error('Unauthorized or Task not found')
+    if (!updated)
+        throw new Error('NotFound: Task not found')
+    
+    return updated
 }
 
 export async function getTasks(userId: string, teamId: string, projectId?: string): Promise<Task[]> {
@@ -160,4 +186,16 @@ export async function getTaskById(userId: string, teamId: string, projectId: str
         .limit(1)
     
     return task
+}
+
+const getNextTaskOrder = async (projectId: string, status: string) => {
+    const [row] = await db
+        .select({ maxOrder: sql<number>`max(${tasks.order})` })
+        .from(tasks)
+        .where(and(
+            eq(tasks.projectId, projectId),
+            eq(tasks.status, status),
+        ))
+    
+    return (row?.maxOrder ?? 0) + 1000
 }

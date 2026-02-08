@@ -1,5 +1,8 @@
 import { Context } from 'hono'
+import { eq, inArray, or } from 'drizzle-orm'
 import auth from '@/services/auth'
+import { db } from '@/db/client'
+import { teamMembers, teams } from '@/db/schema'
 import type { User } from 'better-auth'
 
 export const getCurrentSession = async (c: Context) => {
@@ -24,4 +27,22 @@ export const getCurrentUser = async (c: Context): Promise<User> => {
     
     return session.user
     
+}
+
+/**
+ * Gets IDs of teams accessible to the user
+ */
+export const getAccessibleTeamIds = (userId: string) => {
+    const memberTeamIds = db
+        .select({ id: teamMembers.teamId })
+        .from(teamMembers)
+        .where(eq(teamMembers.userId, userId))
+    
+    return db
+        .select({ id: teams.id })
+        .from(teams)
+        .where(or(
+            eq(teams.ownerId, userId),
+            inArray(teams.id, memberTeamIds),
+        ))
 }
