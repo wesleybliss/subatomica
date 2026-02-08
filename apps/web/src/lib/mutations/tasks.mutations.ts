@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 export const useCreateTaskMutation = (
     localTasks: Task[],
     setLocalTasks: (value: Task[]) => void,
-    activeQueryKey: readonly (string | number | boolean | Record<string, unknown>)[],
+    activeQueryKey: readonly (string | number | boolean | undefined | Record<string, unknown>)[],
     teamId?: string | null,
     projectId?: string | null,
     onRefresh?: () => void,
@@ -86,7 +86,7 @@ export const useCreateTaskMutation = (
 export const useUpdateTaskOrderMutation = (
     localTasks: Task[],
     setLocalTasks: (value: Task[]) => void,
-    activeQueryKey: readonly (string | number | boolean | Record<string, unknown>)[],
+    activeQueryKey: readonly (string | number | boolean | undefined | Record<string, unknown>)[],
     teamId?: string,
     projectId?: string,
     onRefresh?: () => void,

@@ -11,7 +11,7 @@ export interface KanbanBoardProps {
     teamId?: string
     teamMembers: TeamMemberProfile[]
     onRefresh?: () => void
-    queryKey?: ReadonlyArray<string | number | boolean | Record<string, unknown>>
+    queryKey?: ReadonlyArray<string | number | boolean | undefined | Record<string, unknown>>
     onLanesChange?: (lanes: TaskLane[]) => void
 }
 

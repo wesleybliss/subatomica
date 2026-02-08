@@ -21,7 +21,7 @@ const KanbanBoardDndViewModel = (
     tasks: Task[],
     teamId?: string,
     projectId?: string,
-    queryKey?: ReadonlyArray<string | number | boolean | Record<string, unknown>>,
+    queryKey?: ReadonlyArray<string | number | boolean | undefined | Record<string, unknown>>,
     onRefresh?: () => void,
     onLanesChange?: (lanes: TaskLane[]) => void,
 ) => {
