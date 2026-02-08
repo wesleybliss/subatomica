@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Laptop, Moon, Sun } from 'lucide-react'
-import { useTheme } from 'next-themes'
+import { useTheme } from '@/components/ThemeProvider'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,18 +12,12 @@ import { Button } from '@/components/ui/button'
 type ThemeName = 'light' | 'dark' | 'system'
 
 const ThemeToggle = ({ className }: { className?: string }) => {
-    const { theme, resolvedTheme, setTheme } = useTheme()
+    const { theme, setTheme } = useTheme()
     const [mounted, setMounted] = useState(false)
     
     useEffect(() => setMounted(true), [])
     
-    const activeTheme = useMemo(() => {
-        if (theme === 'system') return resolvedTheme ?? 'light'
-        return theme ?? 'light'
-    }, [theme, resolvedTheme])
-    
-    const icon = activeTheme === 'dark' ? Moon : Sun
-    const Icon = icon
+    const Icon = theme === 'dark' ? Moon : Sun
     
     if (!mounted) return null
     
