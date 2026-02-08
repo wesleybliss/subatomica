@@ -2,7 +2,7 @@ import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { APIError, createAuthMiddleware } from 'better-auth/api'
 import { v7 as uuidv7 } from 'uuid'
-import { ensureUserHasTeam } from '@/db/actions'
+import { ensureUserHasTeam } from '@/services/teams'
 import { db } from '@/db/client'
 import * as schema from '@/db/schema'
 

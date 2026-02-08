@@ -257,10 +257,17 @@ export async function removeTeamMember(teamId: string, userId: string) {
 }
 
 export async function canManageTeamMembers(userId: string, teamId: string): Promise<boolean> {
+    
     try {
+        
         await checkUserCanManageMembers(userId, teamId)
+        
         return true
+        
     } catch {
+        
         return false
+        
     }
+    
 }

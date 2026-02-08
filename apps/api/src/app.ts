@@ -32,16 +32,16 @@ export const createApiServer = (auth = defaultAuth) => {
     app.use('*', logger())
     app.use('*', prettyJSON())
     
-    app.get('/', c => c.json({
-        version: (pkg as Package).version,
-    }))
-    
-    app.get('/health', c => c.json({
-        ok: true,
-    }))
+    const api = app
+        .get('/', c => c.json({
+            version: (pkg as Package).version,
+        }))
+        .get('/health', c => c.json({
+            ok: true,
+        }))
     
     // Bind session to context
-    app.use('*', async (c, next) => {
+    api.use('*', async (c, next) => {
         
         const session = await auth.api.getSession({ headers: c.req.raw.headers })
         
@@ -63,11 +63,11 @@ export const createApiServer = (auth = defaultAuth) => {
     })
     
     // Handle all auth routes under /auth/*
-    app.on(['GET', 'POST'], '/auth/*', async c => {
+    api.on(['GET', 'POST'], '/auth/*', async c => {
         return auth.handler(c.req.raw)
     })
     
-    app.get('/session', c => {
+    const finalApi = api.get('/session', c => {
         
         const session = c.get('session')
         const user = c.get('user')
@@ -81,51 +81,43 @@ export const createApiServer = (auth = defaultAuth) => {
         
     })
     
-    const protectedRoutes = new Hono<{
+    const baseProtected = new Hono<{
         Variables: {
             user: typeof auth.$Infer.Session.user;
             session: typeof auth.$Infer.Session.session
         }
     }>()
     
-    protectedRoutes.use('*', async (c, next) => {
+    const protectedRoutes = baseProtected.use('*', async (c, next) => {
         const user = c.get('user')
         if (!user) {
             return c.json({ error: 'Unauthorized' }, 401)
         }
         await next()
     })
+        .route('/health', healthRoutes)
+        .route('/teams', teamsRoutes)
+        .route('/teams/:teamId/projects', projectsRoute)
+        .route('/teams/:teamId/projects/:projectId/tasks', tasksRoute)
     
-    const health = createApp()
-    healthRoutes(health)
-    
-    const teams = createApp()
-    teamsRoutes(teams)
-    protectedRoutes.route('/teams', teams)
-    
-    const projects = createApp()
-    projectsRoute(projects)
-    protectedRoutes.route('/teams/:teamId/projects', projects)
-    
-    const tasks = createApp()
-    tasksRoute(tasks)
-    protectedRoutes.route('/teams/:teamId/projects/:projectId/tasks', tasks)
-    
-    app.route('/', protectedRoutes)
+    const finalApp = finalApi.route('/', protectedRoutes)
     
     //
     
     // 404 handler
-    app.notFound(c => c.json({ error: 'Not Found' }, 404))
+    finalApp.notFound(c => c.json({ error: 'Not Found' }, 404))
     
     // Error handler
-    app.onError((err: Error, c: Context) => {
+    finalApp.onError((err: Error, c: Context) => {
         console.error(err)
         return c.json({ error: 'Internal Server Error' }, 500)
     })
     
-    return app
+    return finalApp
     
 }
 
-export default createApiServer()
+const app = createApiServer()
+export type AppType = typeof app
+
+export default app

@@ -1,11 +1,33 @@
 import * as client from '@/db/client'
 import { and, eq, inArray, or } from 'drizzle-orm'
 import { projects, taskLanes, teamMembers, teams } from '@/db/schema'
-import { ensureProjectLanes } from '@/db/actions/lanes'
 import { Project, TaskLane } from '@repo/shared/types'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db: any = client.db!
+
+export const ensureProjectLanes = async (projectId: string) => {
+    
+    const defaultLanes = [
+        { key: 'todo', name: 'To Do', order: 0 },
+        { key: 'in-progress', name: 'In Progress', order: 1 },
+        { key: 'done', name: 'Done', order: 2 },
+    ]
+    
+    const existingLanes = await db
+        .select()
+        .from(taskLanes)
+        .where(eq(taskLanes.projectId, projectId))
+    
+    if (existingLanes.length === 0)
+        await db.insert(taskLanes).values(
+            defaultLanes.map(lane => ({
+                ...lane,
+                projectId,
+            })),
+        )
+    
+}
 
 export async function createProject(userId: string, teamId: string, name: string): Promise<Project> {
     const memberTeamIds = db

@@ -4,6 +4,7 @@ import * as teamsService from '@/services/teams'
 import * as projectsService from '@/services/projects'
 import * as tasksService from '@/services/tasks'
 import { ApiAppEnv } from '@/env'
+import { createTeam, getUserTeams } from '@/services/teams'
 
 const log = logger('routes/teams')
 
@@ -63,11 +64,21 @@ export const getTeamTasks = async (c: Context) => {
     
 }
 
-export default (app: Hono<ApiAppEnv>) => {
+export async function ensureUserHasTeam(userId: string) {
     
-    app.get('/', getTeams)
-    app.get('/:teamId', getTeamById)
-    app.get('/:teamId/members', getTeamMembers)
-    app.get('/:teamId/tasks', getTeamTasks)
+    const userTeams = await getUserTeams(userId)
+    
+    if (userTeams.length === 0)
+        return createTeam('Personal', userId)
+    
+    return userTeams[0]
     
 }
+
+const routes = new Hono<ApiAppEnv>()
+    .get('/', getTeams)
+    .get('/:teamId', getTeamById)
+    .get('/:teamId/members', getTeamMembers)
+    .get('/:teamId/tasks', getTeamTasks)
+
+export default routes

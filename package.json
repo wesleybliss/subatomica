@@ -15,6 +15,7 @@
         "lint:dry": "pnpm -r lint:dry",
         "lint:fix": "pnpm -r lint:fix",
         "lint:fix:one": "pnpm -r lint:fix:one",
+        "typecheck": "pnpm --filter web exec tsc --noEmit",
         "test:web": "pnpm --filter web test",
         "test:api": "pnpm --filter api test",
         "test": "pnpm -r test"

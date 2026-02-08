@@ -36,9 +36,8 @@ export const getProjectById = async (c: Context) => {
     
 }
 
-export default (app: Hono<ApiAppEnv>) => {
-    
-    app.get('/', getProjects)
-    app.get('/:projectId', getProjectById)
-    
-}
+const routes = new Hono<ApiAppEnv>()
+    .get('/', getProjects)
+    .get('/:projectId', getProjectById)
+
+export default routes

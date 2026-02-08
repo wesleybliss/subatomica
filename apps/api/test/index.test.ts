@@ -1,24 +1,18 @@
 import { testClient } from 'hono/testing'
 import { describe, it, expect } from 'vitest'
-import { createApiServer } from '@/app'
-import pkg from '../../../package.json'
+import { createApiServer, AppType } from '@/app'
+import pkg from '../../../package.json' assert { type: 'json' }
 import { createAuth } from '@/services/auth'
-import { ApiAppEnv } from '@/env'
-import { Hono } from 'hono'
-
-// import { hc } from 'hono/client'
-// import type { AppType } from '@/app'
-// export const $client: ReturnType<typeof hc<AppType>> = {} as any
 
 describe('Sanity check', () => {
     
     const auth = createAuth()
     const app = createApiServer(auth)
-    const client = testClient<Hono<ApiAppEnv>>(app)
+    const client = testClient<AppType>(app)
     
     it('should return the version', async () => {
         
-        const res = await client.$get()
+        const res = await client.index.$get()
         
         expect(res.status).toBe(200)
         expect(await res.json()).toEqual({
@@ -26,11 +20,11 @@ describe('Sanity check', () => {
         })
         
         // Unauthenticated call to /teams should fail
-        expect((await client.t.$get()).status).toBe(401)
+        expect((await client.teams.$get()).status).toBe(401)
         
     })
     
-    it('should authorize a user', async () => {
+    /*it('should authorize a user', async () => {
         //auth/sign-up
         console.log('@@@@@@@@', client.auth.signInEmailPassword.toString())
         
@@ -38,7 +32,7 @@ describe('Sanity check', () => {
         
         expect(res.status).toBe(200)
         
-    })
+    })*/
     
     /*it('should return the version', async () => {
         

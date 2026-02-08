@@ -11,10 +11,11 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "outDir": "dist",
-        "rootDir": "src",
+        "rootDir": ".",
         "paths": {
             "@/*": ["./src/*"]
-        }
+        },
+        "types": []
     },
     "include": ["src", "test"],
     "exclude": ["node_modules", "task/**"]

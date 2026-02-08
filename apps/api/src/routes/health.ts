@@ -1,8 +1,7 @@
 import { Hono } from 'hono'
 import { ApiAppEnv } from '@/env'
 
-export default (app: Hono<ApiAppEnv>) => {
-    
-    app.get('/health', c => c.json({ ok: true }))
-    
-}
+const routes = new Hono<ApiAppEnv>()
+    .get('/', c => c.json({ ok: true }))
+
+export default routes
