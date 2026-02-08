@@ -7,6 +7,7 @@ import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-d
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import { isTaskDragData } from './dragTypes'
 import { TaskDetailDialog } from '@/components/tasks/TaskDetailDialog'
+import { format } from 'date-fns'
 
 interface KanbanCardDndProps {
     task: Task
@@ -46,7 +47,6 @@ export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps)
         )
     }, [task.id, task.status])
     // Format project ID display
-    const projectDisplay = task.projectId?.slice(0, 8).toUpperCase() || 'TASK'
     const teamSegment = teamId ?? task.projectId
     const taskHref = `/t/${teamSegment}/p/${task.projectId}/s/${task.id}`
     return (
@@ -68,7 +68,7 @@ export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps)
                         to={taskHref}
                         className="text-xs text-muted-foreground hover:text-primary transition-colors font-mono"
                         onClick={e => e.stopPropagation()}>
-                        {projectDisplay}
+                        {format(task.createdAt, 'MMM d')}
                     </Link>
                     {task.priority === 'high' || task.priority === 'urgent' ? (
                         <Flag className="w-3 h-3 text-destructive" />
@@ -77,6 +77,9 @@ export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps)
                 <h4 className="text-sm font-medium text-foreground mb-2">
                     {task.title}
                 </h4>
+                <div className="text-xs text-muted-foreground mb-2">
+                    {task.description.substring(0, 100)}
+                </div>
                 <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center gap-2">
                         {task.assigneeId && (

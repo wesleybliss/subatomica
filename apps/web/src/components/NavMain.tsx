@@ -30,7 +30,7 @@ export function NavMain({
                         <Link to={item.url}>
                             
                             <SidebarMenuButton
-                                className="px-3 py-6"
+                                className="px-1 py-6"
                                 isActive={item.isActive}
                                 tooltip={item.title}>
                                 
