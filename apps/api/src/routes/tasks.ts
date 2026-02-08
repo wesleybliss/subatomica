@@ -8,7 +8,7 @@ export const getTasks = async (c: Context) => {
     const teamId = c.req.param('teamId')
     const projectId = c.req.param('projectId')
     
-    const tasks = await tasksService.getTasks(user.id, projectId, teamId)
+    const tasks = await tasksService.getTasks(user.id, teamId, projectId)
     
     return c.json(tasks)
     

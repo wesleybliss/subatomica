@@ -1,28 +1,49 @@
-import * as client from '@/db/client'
+import { db } from '@/db/client'
 import { and, desc, eq, inArray, or } from 'drizzle-orm'
-import { projects, tasks, teamMembers, teams } from '@/db/schema'
+import { projects, teamMembers, teams, tasks } from '@/db/schema'
 import { Task } from '@repo/shared/types'
 
-// @todo this was mostly ai generated, might be incorrect
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db: any = client.db!
-
-export async function createTask(userId: string, teamId: string, name: string): Promise<Task> {
-    const trimmedName = name.trim()
-    if (!trimmedName)
-        throw new Error('Task name is required')
+/**
+ * Gets IDs of teams accessible to the user
+ */
+function getAccessibleTeamIds(userId: string) {
     const memberTeamIds = db
-        .select({ teamId: teamMembers.teamId })
+        .select({ id: teamMembers.teamId })
         .from(teamMembers)
         .where(eq(teamMembers.userId, userId))
-    const accessibleTeamIds = db
+    
+    return db
         .select({ id: teams.id })
         .from(teams)
         .where(or(
             eq(teams.ownerId, userId),
             inArray(teams.id, memberTeamIds),
         ))
+}
+
+/**
+ * Gets IDs of projects in a team that are accessible to the user
+ */
+function getTeamProjectIds(userId: string, teamId: string) {
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
+    
+    return db
+        .select({ id: projects.id })
+        .from(projects)
+        .where(and(
+            eq(projects.teamId, teamId),
+            inArray(projects.teamId, accessibleTeamIds),
+        ))
+}
+
+export async function createTask(userId: string, teamId: string, name: string): Promise<Task> {
+    const trimmedName = name.trim()
+    if (!trimmedName)
+        throw new Error('Task name is required')
+    
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
+    
+    // Check if teamId is actually a projectId
     let [project] = await db
         .select({ id: projects.id })
         .from(projects)
@@ -31,7 +52,9 @@ export async function createTask(userId: string, teamId: string, name: string): 
             inArray(projects.teamId, accessibleTeamIds),
         ))
         .limit(1)
+    
     if (!project) {
+        // Otherwise treat teamId as a teamId and find its first project
         [project] = await db
             .select({ id: projects.id })
             .from(projects)
@@ -42,8 +65,10 @@ export async function createTask(userId: string, teamId: string, name: string): 
             .orderBy(projects.name)
             .limit(1)
     }
+    
     if (!project)
-        throw new Error('Unauthorized')
+        throw new Error('Unauthorized or Project not found')
+    
     const [task] = await db
         .insert(tasks)
         .values({
@@ -53,95 +78,68 @@ export async function createTask(userId: string, teamId: string, name: string): 
             description: '',
         })
         .returning()
+    
     return task
 }
 
-export async function deleteTask(userId: string, projectId: string): Promise<void> {
-    const memberTeamIds = db
-        .select({ teamId: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
-    const accessibleTeamIds = db
-        .select({ id: teams.id })
-        .from(teams)
-        .where(or(
-            eq(teams.ownerId, userId),
-            inArray(teams.id, memberTeamIds),
-        ))
+export async function deleteTask(userId: string, taskId: string): Promise<void> {
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
     const accessibleProjectIds = db
         .select({ id: projects.id })
         .from(projects)
         .where(inArray(projects.teamId, accessibleTeamIds))
+    
     const [task] = await db
         .select({ id: tasks.id })
         .from(tasks)
         .where(and(
-            eq(tasks.id, projectId),
+            eq(tasks.id, taskId),
             inArray(tasks.projectId, accessibleProjectIds),
         ))
         .limit(1)
+    
     if (!task)
-        throw new Error('Unauthorized')
+        throw new Error('Unauthorized or Task not found')
+    
     await db
         .delete(tasks)
-        .where(eq(tasks.id, projectId))
+        .where(eq(tasks.id, taskId))
 }
 
-export async function renameTask(userId: string, projectId: string, name: string): Promise<void> {
+export async function renameTask(userId: string, taskId: string, name: string): Promise<void> {
     const trimmedName = name.trim()
     if (!trimmedName)
         throw new Error('Task name is required')
-    const memberTeamIds = db
-        .select({ teamId: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
-    const accessibleTeamIds = db
-        .select({ id: teams.id })
-        .from(teams)
-        .where(or(
-            eq(teams.ownerId, userId),
-            inArray(teams.id, memberTeamIds),
-        ))
+    
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
     const accessibleProjectIds = db
         .select({ id: projects.id })
         .from(projects)
         .where(inArray(projects.teamId, accessibleTeamIds))
+    
     const updated = await db
         .update(tasks)
         .set({ title: trimmedName })
         .where(and(
-            eq(tasks.id, projectId),
+            eq(tasks.id, taskId),
             inArray(tasks.projectId, accessibleProjectIds),
         ))
         .returning({ id: tasks.id })
+    
     if (updated.length === 0)
-        throw new Error('Unauthorized')
+        throw new Error('Unauthorized or Task not found')
 }
 
-export async function getTasks(userId: string, teamId: string, projectId?: string | undefined): Promise<Task[]> {
-    const memberTeamIds = db
-        .select({ teamId: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
-    const accessibleTeamIds = db
-        .select({ id: teams.id })
-        .from(teams)
-        .where(or(
-            eq(teams.ownerId, userId),
-            inArray(teams.id, memberTeamIds),
-        ))
-    const teamProjectIds = db
-        .select({ id: projects.id })
-        .from(projects)
-        .where(and(
-            eq(projects.teamId, teamId),
-            inArray(projects.teamId, accessibleTeamIds),
-        ))
+export async function getTasks(userId: string, teamId: string, projectId?: string): Promise<Task[]> {
+    const teamProjectIds = getTeamProjectIds(userId, teamId)
+    
     const query = projectId
         ? and(
             eq(tasks.projectId, projectId),
-            inArray(tasks.projectId, teamProjectIds))
+            inArray(tasks.projectId, teamProjectIds),
+        )
         : inArray(tasks.projectId, teamProjectIds)
+    
     return db.select()
         .from(tasks)
         .where(query)
@@ -149,24 +147,8 @@ export async function getTasks(userId: string, teamId: string, projectId?: strin
 }
 
 export async function getTaskById(userId: string, teamId: string, projectId: string, taskId: string): Promise<Task> {
-    const memberTeamIds = db
-        .select({ teamId: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
-    const accessibleTeamIds = db
-        .select({ id: teams.id })
-        .from(teams)
-        .where(or(
-            eq(teams.ownerId, userId),
-            inArray(teams.id, memberTeamIds),
-        ))
-    const teamProjectIds = db
-        .select({ id: projects.id })
-        .from(projects)
-        .where(and(
-            eq(projects.teamId, teamId),
-            inArray(projects.teamId, accessibleTeamIds),
-        ))
+    const teamProjectIds = getTeamProjectIds(userId, teamId)
+    
     const [task] = await db
         .select()
         .from(tasks)
@@ -176,5 +158,6 @@ export async function getTaskById(userId: string, teamId: string, projectId: str
             inArray(tasks.projectId, teamProjectIds),
         ))
         .limit(1)
+    
     return task
 }

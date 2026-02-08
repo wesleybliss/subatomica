@@ -3,11 +3,27 @@ import { teamMembers, teams, users } from '@/db/schema'
 import { eq, desc, and, or, inArray } from 'drizzle-orm'
 import { Team } from '@repo/shared/types'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db: any = client.db!
+const db = client.db
+
+/**
+ * Gets IDs of teams accessible to the user
+ */
+function getAccessibleTeamIds(userId: string) {
+    const memberTeamIds = db
+        .select({ id: teamMembers.teamId })
+        .from(teamMembers)
+        .where(eq(teamMembers.userId, userId))
+    
+    return db
+        .select({ id: teams.id })
+        .from(teams)
+        .where(or(
+            eq(teams.ownerId, userId),
+            inArray(teams.id, memberTeamIds),
+        ))
+}
 
 export async function createTeam(name: string, ownerId: string): Promise<Team> {
-    
     const [team] = await db
         .insert(teams)
         .values({
@@ -25,83 +41,56 @@ export async function createTeam(name: string, ownerId: string): Promise<Team> {
         })
     
     return team
-    
 }
 
 export async function getUserTeams(userId: string): Promise<Team[]> {
-    
-    const memberTeamIds = db
-        .select({ teamId: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
     
     return db.select()
         .from(teams)
-        .where(or(
-            eq(teams.ownerId, userId),
-            inArray(teams.id, memberTeamIds),
-        ))
+        .where(inArray(teams.id, accessibleTeamIds))
         .orderBy(teams.name)
 }
 
 export async function getTeamById(userId: string, teamId: string): Promise<Team> {
-    
-    const memberTeamIds = db
-        .select({ teamId: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
     
     const [team] = await db.select()
         .from(teams)
         .where(and(
             eq(teams.id, teamId),
-            or(
-                eq(teams.ownerId, userId),
-                inArray(teams.id, memberTeamIds),
-            ),
+            inArray(teams.id, accessibleTeamIds),
         ))
         .limit(1)
     
     return team
-    
 }
 
 export async function getTeamByLastUpdated(userId: string): Promise<Team> {
-    
-    const memberTeamIds = db
-        .select({ teamId: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
     
     const [team] = await db.select()
         .from(teams)
-        .where(or(
-            eq(teams.ownerId, userId),
-            inArray(teams.id, memberTeamIds),
-        ))
+        .where(inArray(teams.id, accessibleTeamIds))
         .orderBy(desc(teams.updatedAt))
         .limit(1)
     return team
 }
 
 export async function getTeamMembers(userId: string, teamId: string) {
-    const memberTeamIds = db
-        .select({ teamId: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
+    
     const [team] = await db
         .select({ id: teams.id, ownerId: teams.ownerId })
         .from(teams)
         .where(and(
             eq(teams.id, teamId),
-            or(
-                eq(teams.ownerId, userId),
-                inArray(teams.id, memberTeamIds),
-            ),
+            inArray(teams.id, accessibleTeamIds),
         ))
         .limit(1)
+    
     if (!team)
-        throw new Error('Unauthorized')
+        throw new Error('Unauthorized or Team not found')
     
     // Get members from teamMembers table
     const membersFromTable = await db
@@ -158,14 +147,12 @@ export async function getTeamMembers(userId: string, teamId: string) {
 
 export async function ensureUserHasTeam(userId: string): Promise<Team> {
     const userTeams = await getUserTeams(userId)
-    console.log('ensureUserHasTeam', userTeams)
     if (userTeams.length === 0)
         return createTeam('Personal', userId)
     return userTeams[0]
 }
 
 async function checkUserCanManageMembers(userId: string, teamId: string): Promise<void> {
-    
     // First check if user is the team owner
     const [team] = await db
         .select({ ownerId: teams.ownerId })
@@ -193,7 +180,6 @@ async function checkUserCanManageMembers(userId: string, teamId: string): Promis
 }
 
 export async function addTeamMember(teamId: string, email: string) {
-    
     const [targetUser] = await db
         .select({ id: users.id })
         .from(users)
@@ -205,7 +191,7 @@ export async function addTeamMember(teamId: string, email: string) {
     }
     
     const [existingMembership] = await db
-        .select({ id: teamMembers.userId })
+        .select({ userId: teamMembers.userId })
         .from(teamMembers)
         .where(and(
             eq(teamMembers.teamId, teamId),
@@ -257,17 +243,10 @@ export async function removeTeamMember(teamId: string, userId: string) {
 }
 
 export async function canManageTeamMembers(userId: string, teamId: string): Promise<boolean> {
-    
     try {
-        
         await checkUserCanManageMembers(userId, teamId)
-        
         return true
-        
     } catch {
-        
         return false
-        
     }
-    
 }

@@ -3,11 +3,27 @@ import { and, eq, inArray, or } from 'drizzle-orm'
 import { projects, taskLanes, teamMembers, teams } from '@/db/schema'
 import { Project, TaskLane } from '@repo/shared/types'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db: any = client.db!
+const db = client.db
+
+/**
+ * Gets IDs of teams accessible to the user
+ */
+function getAccessibleTeamIds(userId: string) {
+    const memberTeamIds = db
+        .select({ id: teamMembers.teamId })
+        .from(teamMembers)
+        .where(eq(teamMembers.userId, userId))
+    
+    return db
+        .select({ id: teams.id })
+        .from(teams)
+        .where(or(
+            eq(teams.ownerId, userId),
+            inArray(teams.id, memberTeamIds),
+        ))
+}
 
 export const ensureProjectLanes = async (projectId: string) => {
-    
     const defaultLanes = [
         { key: 'todo', name: 'To Do', order: 0 },
         { key: 'in-progress', name: 'In Progress', order: 1 },
@@ -19,33 +35,30 @@ export const ensureProjectLanes = async (projectId: string) => {
         .from(taskLanes)
         .where(eq(taskLanes.projectId, projectId))
     
-    if (existingLanes.length === 0)
+    if (existingLanes.length === 0) {
         await db.insert(taskLanes).values(
             defaultLanes.map(lane => ({
                 ...lane,
                 projectId,
             })),
         )
-    
+    }
 }
 
 export async function createProject(userId: string, teamId: string, name: string): Promise<Project> {
-    const memberTeamIds = db
-        .select({ teamId: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
+    
     const [team] = await db.select({ id: teams.id })
         .from(teams)
         .where(and(
             eq(teams.id, teamId),
-            or(
-                eq(teams.ownerId, userId),
-                inArray(teams.id, memberTeamIds),
-            ),
+            inArray(teams.id, accessibleTeamIds),
         ))
         .limit(1)
+    
     if (!team)
-        throw new Error('Unauthorized')
+        throw new Error('Unauthorized or Team not found')
+    
     const [project] = await db
         .insert(projects)
         .values({
@@ -54,6 +67,7 @@ export async function createProject(userId: string, teamId: string, name: string
             teamId,
         })
         .returning()
+    
     await ensureProjectLanes(project.id)
     return project
 }
@@ -64,8 +78,10 @@ export async function deleteProject(userId: string, projectId: string): Promise<
         .from(projects)
         .where(eq(projects.id, projectId))
         .limit(1)
+    
     if (!project || project.ownerId !== userId)
-        throw new Error('Unauthorized')
+        throw new Error('Unauthorized or Project not found')
+    
     await db
         .delete(projects)
         .where(eq(projects.id, projectId))
@@ -75,17 +91,9 @@ export async function renameProject(userId: string, projectId: string, name: str
     const trimmedName = name.trim()
     if (!trimmedName)
         throw new Error('Project name is required')
-    const memberTeamIds = db
-        .select({ teamId: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
-    const accessibleTeamIds = db
-        .select({ id: teams.id })
-        .from(teams)
-        .where(or(
-            eq(teams.ownerId, userId),
-            inArray(teams.id, memberTeamIds),
-        ))
+    
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
+    
     const updated = await db
         .update(projects)
         .set({ name: trimmedName })
@@ -94,28 +102,21 @@ export async function renameProject(userId: string, projectId: string, name: str
             inArray(projects.teamId, accessibleTeamIds),
         ))
         .returning({ id: projects.id })
+    
     if (updated.length === 0)
-        throw new Error('Unauthorized')
+        throw new Error('Unauthorized or Project not found')
 }
 
 export async function getProjects(userId: string, teamId?: string): Promise<Project[]> {
-    const memberTeamIds = db
-        .select({ teamId: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
-    const accessibleTeamIds = db
-        .select({ id: teams.id })
-        .from(teams)
-        .where(or(
-            eq(teams.ownerId, userId),
-            inArray(teams.id, memberTeamIds),
-        ))
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
+    
     const query = teamId
         ? and(
             eq(projects.teamId, teamId),
             inArray(projects.teamId, accessibleTeamIds),
         )
         : inArray(projects.teamId, accessibleTeamIds)
+    
     return db.select()
         .from(projects)
         .where(query)
@@ -127,19 +128,7 @@ export async function getProjectById(
     teamId: string,
     projectId: string,
 ): Promise<(Project & { taskLanes: TaskLane[] }) | undefined> {
-    
-    const memberTeamIds = db
-        .select({ teamId: teamMembers.teamId })
-        .from(teamMembers)
-        .where(eq(teamMembers.userId, userId))
-    
-    const accessibleTeamIds = db
-        .select({ id: teams.id })
-        .from(teams)
-        .where(or(
-            eq(teams.ownerId, userId),
-            inArray(teams.id, memberTeamIds),
-        ))
+    const accessibleTeamIds = getAccessibleTeamIds(userId)
     
     const [project] = await db
         .select()
@@ -150,13 +139,16 @@ export async function getProjectById(
             inArray(projects.teamId, accessibleTeamIds),
         ))
         .limit(1)
+    
     if (!project)
-        return project
+        return undefined
+    
     const lanes = await db
         .select()
         .from(taskLanes)
         .where(eq(taskLanes.projectId, project.id))
         .orderBy(taskLanes.order)
+    
     return {
         ...project,
         taskLanes: lanes,
