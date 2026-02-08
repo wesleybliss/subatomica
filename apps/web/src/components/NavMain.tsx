@@ -33,7 +33,8 @@ export function NavMain({
                                 className="px-3 py-6"
                                 isActive={item.isActive}
                                 tooltip={item.title}>
-                                {item.icon && <item.icon className="size-12" />}
+                                
+                                {item.icon && <item.icon className="size-4!" />}
                                 
                                 <span className="group-data-[state=collapsed]/sidebar:hidden">
                                     {item.title}

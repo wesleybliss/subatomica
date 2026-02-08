@@ -58,16 +58,16 @@ export function AppSidebar({
     ]
     return (
         <Sidebar collapsible="icon" {...props}>
-            <SidebarHeader className="p-2">
+            <SidebarHeader className="p-1">
                 <TeamSwitcher
                     teams={teams}
                     activeTeamId={teamId}
                     teamName={teamName} />
             </SidebarHeader>
-            <SidebarContent className="p-2">
+            <SidebarContent className="p-1">
                 <NavMain items={navMain} />
             </SidebarContent>
-            <SidebarFooter>
+            <SidebarFooter className="p-1">
                 <NavUser user={user} />
             </SidebarFooter>
             <SidebarRail />
