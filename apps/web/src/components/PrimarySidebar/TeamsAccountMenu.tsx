@@ -43,7 +43,7 @@ const TeamsAccountMenu = ({ collapsed = false }: TeamsAccountMenuProps) => {
     }
     
     return (
-        <div className={collapsed ? 'projects-3' : 'projects-4'}>
+        <div className={collapsed ? 'p-3' : 'p-4'}>
             <DropdownMenu>
                 <DropdownMenuTrigger
                     render={(
@@ -53,7 +53,7 @@ const TeamsAccountMenu = ({ collapsed = false }: TeamsAccountMenuProps) => {
                             className={cn(
                                 'flex items-center w-full text-left',
                                 collapsed ? 'justify-center' : 'gap-2',
-                                'hover:bg-sidebar-accent rounded-lg projects-2 transition-colors',
+                                'hover:bg-sidebar-accent rounded-lg p-2 transition-colors',
                             )} />
                     )}>
                     <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">

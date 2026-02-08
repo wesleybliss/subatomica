@@ -23,7 +23,7 @@ const TimelineView = ({ projects, tasks }: TimelineViewProps) => {
     return (
         
         <div className={cn(
-            'flex h-full flex-col gap-6 overflow-hidden projects-6',
+            'flex h-full flex-col gap-6 overflow-hidden p-6',
             'bg-[radial-gradient(circle_at_top,var(--color-border),transparent_60%)]',
         )}>
             

@@ -25,7 +25,7 @@ function Command({
         <CommandPrimitive
             data-slot="command"
             className={cn(
-                'bg-popover text-popover-foreground rounded-xl! projects-1 flex size-full flex-col overflow-hidden',
+                'bg-popover text-popover-foreground rounded-xl! p-1 flex size-full flex-col overflow-hidden',
                 className,
             )}
             {...props}/>
@@ -54,7 +54,7 @@ function CommandDialog({
             </DialogHeader>
             <DialogContent
                 className={cn(
-                    'rounded-xl! top-1/3 translate-y-0 overflow-hidden projects-0',
+                    'rounded-xl! top-1/3 translate-y-0 overflow-hidden p-0',
                     className,
                 )}
                 showCloseButton={showCloseButton}>
@@ -120,7 +120,7 @@ function CommandGroup({
     return (
         <CommandPrimitive.Group
             data-slot="command-group"
-            className={cn('text-foreground **:[[cmdk-group-heading]]:text-muted-foreground overflow-hidden projects-1 **:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium', className)}
+            className={cn('text-foreground **:[[cmdk-group-heading]]:text-muted-foreground overflow-hidden p-1 **:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium', className)}
             {...props}/>
     )
 }
