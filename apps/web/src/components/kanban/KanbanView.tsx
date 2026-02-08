@@ -39,8 +39,7 @@ const KanbanView = ({
                 teamId={teamId}
                 teamMembers={teamMembers}
                 queryKey={tasksQueryKey}
-                onLanesChange={setLanes}
-                onRefresh={() => window.location.reload()} />
+                onLanesChange={setLanes} />
         
         </div>
         
