@@ -1,5 +1,7 @@
 import 'dotenv/config'
-import { Context, Hono } from 'hono'
+import { Context } from 'hono'
+import { OpenAPIHono } from '@hono/zod-openapi'
+import { swaggerUI } from '@hono/swagger-ui'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { prettyJSON } from 'hono/pretty-json'
@@ -10,7 +12,7 @@ import teamsRoutes from '@/routes/teams'
 import projectsRoutes from '@/routes/projects'
 import lanesRoutes from '@/routes/lanes'
 import tasksRoutes from '@/routes/tasks'
-import { createApp } from '@/env'
+import { ApiAppEnv, createApp } from '@/env'
 // import { env } from './env'
 
 type Package = {
@@ -32,6 +34,29 @@ export const createApiServer = (auth = defaultAuth) => {
     }))
     app.use('*', logger())
     app.use('*', prettyJSON())
+    
+    const openApiConfig = {
+        openapi: '3.1.0',
+        info: {
+            title: 'Sub-Atomica API',
+            version: (pkg as Package).version,
+        },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+    } as Parameters<typeof app.doc>[1]
+    
+    app.doc('/openapi.json', openApiConfig)
+    
+    app.get('/docs', swaggerUI({ url: '/openapi.json' }))
+    app.get('/doc', c => c.redirect('/openapi.json'))
+    app.get('/ui', c => c.redirect('/docs'))
     
     const api = app
         .get('/', c => c.json({
@@ -82,14 +107,7 @@ export const createApiServer = (auth = defaultAuth) => {
         
     })
     
-    const baseProtected = new Hono<{
-        Variables: {
-            user: typeof auth.$Infer.Session.user;
-            session: typeof auth.$Infer.Session.session
-        }
-    }>()
-    
-    const protectedRoutes = baseProtected.use('*', async (c, next) => {
+    const protectedRoutes = new OpenAPIHono<ApiAppEnv>().use('*', async (c, next) => {
         const user = c.get('user')
         if (!user) {
             return c.json({ error: 'Unauthorized' }, 401)

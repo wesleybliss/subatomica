@@ -1,40 +1,300 @@
-import { Context, Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import { z } from 'zod'
-// import { ProjectSchema } from '@repo/shared/schemas/project'
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
+import type { RouteHandler } from '@hono/zod-openapi'
 import * as projectsService from '@/services/projects'
 import { ApiAppEnv } from '@/env'
-import { zValidator } from '@/lib/honoZodValidator'
+import { ProjectSchema, ProjectWithLanesSchema } from '@/openapi/projects.zod'
+import { ErrorSchema, SuccessSchema } from '@/openapi/shared.zod'
 
 const ProjectParamSchema = z.object({
-    projectId: z.string(),
+    projectId: z.string().openapi({
+        param: { name: 'projectId', in: 'path' },
+        example: '019c416f-d018-721f-b332-e9424030c6a8',
+    }),
 })
 
 const ProjectQuerySchema = z.object({
-    teamId: z.string(),
+    teamId: z.string().openapi({
+        param: { name: 'teamId', in: 'query' },
+        example: '019c416f-d018-721f-b332-e9424030c6a8',
+    }),
 })
 
-const projectParamValidator = zValidator('param', ProjectParamSchema)
-const projectQueryValidator = zValidator('query', ProjectQuerySchema)
+const ProjectCreateSchema = z
+    .object({
+        name: z.string().min(1).openapi({
+            example: 'Sub-Atomica',
+        }),
+    })
+    .openapi('ProjectCreate')
 
-type ProjectContext = Context<ApiAppEnv, string, {
-    out: {
-        query: z.infer<typeof ProjectQuerySchema>,
-        param: z.infer<typeof ProjectParamSchema>,
-    }
-}>
+const ProjectUpdateSchema = z
+    .object({
+        name: z.string().min(1).optional().openapi({
+            example: 'Sub-Atomica',
+        }),
+    })
+    .refine(payload => Object.keys(payload).length > 0, {
+        message: 'At least one update field is required',
+    })
+    .openapi('ProjectUpdate')
 
-const ProjectCreateSchema = z.object({
-    name: z.string().min(1),
+const getProjectsRoute = createRoute({
+    method: 'get',
+    path: '/',
+    tags: ['Projects'],
+    security: [{ bearerAuth: [] }],
+    request: {
+        query: ProjectQuerySchema,
+    },
+    responses: {
+        200: {
+            description: 'Projects list',
+            content: {
+                'application/json': {
+                    schema: z.array(ProjectSchema),
+                },
+            },
+        },
+        401: {
+            description: 'Unauthorized',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        500: {
+            description: 'Server error',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+    },
 })
 
-const ProjectUpdateSchema = z.object({
-    name: z.string().min(1).optional(),
-}).refine(payload => Object.keys(payload).length > 0, {
-    message: 'At least one update field is required',
+const createProjectRoute = createRoute({
+    method: 'post',
+    path: '/',
+    tags: ['Projects'],
+    security: [{ bearerAuth: [] }],
+    request: {
+        query: ProjectQuerySchema,
+        body: {
+            content: {
+                'application/json': {
+                    schema: ProjectCreateSchema,
+                },
+            },
+        },
+    },
+    responses: {
+        201: {
+            description: 'Created project',
+            content: {
+                'application/json': {
+                    schema: ProjectSchema,
+                },
+            },
+        },
+        400: {
+            description: 'Invalid request',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        401: {
+            description: 'Unauthorized',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        403: {
+            description: 'Forbidden',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        404: {
+            description: 'Not found',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        409: {
+            description: 'Conflict',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        500: {
+            description: 'Server error',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+    },
 })
 
-const handleRouteError = (error: unknown) => {
+const getProjectByIdRoute = createRoute({
+    method: 'get',
+    path: '/{projectId}',
+    tags: ['Projects'],
+    security: [{ bearerAuth: [] }],
+    request: {
+        params: ProjectParamSchema,
+        query: ProjectQuerySchema,
+    },
+    responses: {
+        200: {
+            description: 'Project details',
+            content: {
+                'application/json': {
+                    schema: ProjectWithLanesSchema,
+                },
+            },
+        },
+        401: {
+            description: 'Unauthorized',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        404: {
+            description: 'Not found',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        422: {
+            description: 'Missing parameters',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        500: {
+            description: 'Server error',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+    },
+})
+
+const updateProjectRoute = createRoute({
+    method: 'patch',
+    path: '/{projectId}',
+    tags: ['Projects'],
+    security: [{ bearerAuth: [] }],
+    request: {
+        params: ProjectParamSchema,
+        query: ProjectQuerySchema,
+        body: {
+            content: {
+                'application/json': {
+                    schema: ProjectUpdateSchema,
+                },
+            },
+        },
+    },
+    responses: {
+        200: {
+            description: 'Updated project',
+            content: {
+                'application/json': {
+                    schema: ProjectSchema,
+                },
+            },
+        },
+        400: {
+            description: 'Invalid request',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        401: {
+            description: 'Unauthorized',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        403: {
+            description: 'Forbidden',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        404: {
+            description: 'Not found',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        409: {
+            description: 'Conflict',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        422: {
+            description: 'Missing parameter',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        500: {
+            description: 'Server error',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+    },
+})
+
+const deleteProjectRoute = createRoute({
+    method: 'delete',
+    path: '/{projectId}',
+    tags: ['Projects'],
+    security: [{ bearerAuth: [] }],
+    request: {
+        params: ProjectParamSchema,
+        query: ProjectQuerySchema,
+    },
+    responses: {
+        200: {
+            description: 'Deleted project',
+            content: {
+                'application/json': {
+                    schema: SuccessSchema,
+                },
+            },
+        },
+        401: {
+            description: 'Unauthorized',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        403: {
+            description: 'Forbidden',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        404: {
+            description: 'Not found',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+        500: {
+            description: 'Server error',
+            content: {
+                'application/json': { schema: ErrorSchema },
+            },
+        },
+    },
+})
+
+const handleRouteError = (error: unknown): never => {
     if (error instanceof HTTPException)
         throw error
     
@@ -52,8 +312,7 @@ const handleRouteError = (error: unknown) => {
     throw new HTTPException(400, { message })
 }
 
-export const getProjects = async (c: ProjectContext) => {
-    
+const getProjects: RouteHandler<typeof getProjectsRoute, ApiAppEnv> = async c => {
     const user = c.get('user')
     
     if (!user)
@@ -63,12 +322,10 @@ export const getProjects = async (c: ProjectContext) => {
     
     const projects = await projectsService.getProjects(user.id, teamId)
     
-    return c.json(projects)
-    
+    return c.json(projects, 200)
 }
 
-export const getProjectById = async (c: ProjectContext) => {
-    
+const getProjectById: RouteHandler<typeof getProjectByIdRoute, ApiAppEnv> = async c => {
     const user = c.get('user')
     const { teamId } = c.req.valid('query')
     const { projectId } = c.req.valid('param')
@@ -84,11 +341,10 @@ export const getProjectById = async (c: ProjectContext) => {
     
     const project = await projectsService.getProjectById(user.id, teamId, projectId)
     
-    return c.json(project)
-    
+    return c.json(project, 200)
 }
 
-export const createProject = async (c: ProjectContext) => {
+const createProject: RouteHandler<typeof createProjectRoute, ApiAppEnv> = async c => {
     try {
         const user = c.get('user')
         
@@ -96,18 +352,17 @@ export const createProject = async (c: ProjectContext) => {
             throw new HTTPException(401, { message: 'Unauthorized' })
         
         const { teamId } = c.req.valid('query')
-        const body = await c.req.json()
-        const payload = ProjectCreateSchema.parse(body)
+        const payload = c.req.valid('json')
         
         const project = await projectsService.createProject(user.id, teamId, payload.name)
         
         return c.json(project, 201)
     } catch (error) {
-        handleRouteError(error)
+        return handleRouteError(error)
     }
 }
 
-export const updateProject = async (c: ProjectContext) => {
+const updateProject: RouteHandler<typeof updateProjectRoute, ApiAppEnv> = async c => {
     try {
         const user = c.get('user')
         
@@ -119,17 +374,17 @@ export const updateProject = async (c: ProjectContext) => {
         if (!projectId)
             throw new HTTPException(422, { message: 'Param projectId required' })
         
-        const payload = ProjectUpdateSchema.parse(await c.req.json())
+        const payload = c.req.valid('json')
         
         const project = await projectsService.updateProject(user.id, projectId, payload)
         
-        return c.json(project)
+        return c.json(project, 200)
     } catch (error) {
-        handleRouteError(error)
+        return handleRouteError(error)
     }
 }
 
-export const deleteProject = async (c: ProjectContext) => {
+const deleteProject: RouteHandler<typeof deleteProjectRoute, ApiAppEnv> = async c => {
     try {
         const user = c.get('user')
         
@@ -143,17 +398,17 @@ export const deleteProject = async (c: ProjectContext) => {
         
         await projectsService.deleteProject(user.id, projectId)
         
-        return c.json({ success: true })
+        return c.json({ success: true }, 200)
     } catch (error) {
-        handleRouteError(error)
+        return handleRouteError(error)
     }
 }
 
-const routes = new Hono<ApiAppEnv>()
-    .get('/', projectQueryValidator, getProjects)
-    .post('/', projectQueryValidator, createProject)
-    .get('/:projectId', projectParamValidator, projectQueryValidator, getProjectById)
-    .patch('/:projectId', projectParamValidator, projectQueryValidator, updateProject)
-    .delete('/:projectId', projectParamValidator, projectQueryValidator, deleteProject)
+const routes = new OpenAPIHono<ApiAppEnv>()
+    .openapi(getProjectsRoute, getProjects)
+    .openapi(createProjectRoute, createProject)
+    .openapi(getProjectByIdRoute, getProjectById)
+    .openapi(updateProjectRoute, updateProject)
+    .openapi(deleteProjectRoute, deleteProject)
 
 export default routes

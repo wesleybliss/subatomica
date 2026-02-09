@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import auth from '@/services/auth'
-import { Hono } from 'hono'
+import { OpenAPIHono } from '@hono/zod-openapi'
 
 const EnvSchema = z.object({
     DATABASE_URL: z.string().url(),
@@ -16,4 +16,4 @@ export type ApiAppEnv = {
     }
 }
 
-export const createApp = () => new Hono<ApiAppEnv>()
+export const createApp = () => new OpenAPIHono<ApiAppEnv>()

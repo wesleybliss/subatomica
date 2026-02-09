@@ -1,6 +1,25 @@
+import { createSelectSchema } from 'drizzle-zod'
+import { teams } from '@/db/schema'
 import { z } from '@hono/zod-openapi'
 
-export const UserSchema = z
+const TeamBaseSchema = createSelectSchema(teams).extend({
+    id: z.string().openapi({
+        example: '019c416f-d018-721f-b332-e9424030c6a8',
+    }),
+    name: z.string().openapi({
+        example: 'Personal',
+    }),
+    slug: z.string().openapi({
+        example: 'personal',
+    }),
+    ownerId: z.string().openapi({
+        example: '019c416f-d018-721f-b332-e9424030c6a8',
+    }),
+})
+
+export const TeamSchema = TeamBaseSchema.openapi('Team')
+
+export const TeamMemberSchema = z
     .object({
         id: z.string().openapi({
             example: '019c416f-d018-721f-b332-e9424030c6a8',
@@ -11,11 +30,11 @@ export const UserSchema = z
         email: z.string().openapi({
             example: 'john.doe@gmail.com',
         }),
-        emailVerified: z.boolean().openapi({
-            example: true,
-        }),
-        image: z.string().openapi({
+        image: z.string().nullable().openapi({
             example: 'https://example.com/john.doe.png',
         }),
+        role: z.enum(['owner', 'admin', 'member']).openapi({
+            example: 'member',
+        }),
     })
-    .openapi('User')
+    .openapi('TeamMember')
