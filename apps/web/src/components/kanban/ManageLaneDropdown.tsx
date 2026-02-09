@@ -19,6 +19,13 @@ const ManageLaneDropdown = ({
     handleStartRenameLane,
     handleDeleteLane,
 }: ManageLaneDropdownProps) => {
+    const onRenameLane = () => {
+        handleStartRenameLane(lane)
+    }
+
+    const onDeleteLane = () => {
+        void handleDeleteLane(lane.id)
+    }
     
     return (
         
@@ -35,12 +42,12 @@ const ManageLaneDropdown = ({
             </DropdownMenuTrigger>
             
             <DropdownMenuContent align="end">
-                <DropdownMenuItem onSelect={() => handleStartRenameLane(lane)}>
+                <DropdownMenuItem onClick={onRenameLane}>
                     <Pencil className="mr-2 h-4 w-4" />
                     Rename
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                    onClick={() => handleDeleteLane(lane.id)}
+                    onClick={onDeleteLane}
                     disabled={!canDeleteLane || deletingLaneId === lane.id}>
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete
