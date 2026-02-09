@@ -1,11 +1,12 @@
+import { Project } from '@repo/shared/types'
+import { CreditCardIcon, SettingsIcon, UserIcon } from 'lucide-react'
+
+import GlobalCommandProjectViewModel from '@/components/dialogs/GlobalCommand/GlobalCommandProjectViewModel'
 import {
     CommandGroup,
     CommandItem,
     CommandShortcut,
 } from '@/components/ui/command'
-import { CreditCardIcon, SettingsIcon, UserIcon } from 'lucide-react'
-import { Project } from '@repo/shared/types'
-import GlobalCommandProjectViewModel from '@/components/dialogs/GlobalCommand/GlobalCommandProjectViewModel'
 
 interface GlobalCommandProjectParams {
     selectedProject: Project | null

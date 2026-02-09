@@ -1,13 +1,14 @@
-import { useRef, useEffect, useState } from 'react'
-import { Task, TeamMemberProfile } from '@repo/shared/types'
-import { Calendar, Trash2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import {
     draggable,
     dropTargetForElements,
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
+import { Task, TeamMemberProfile } from '@repo/shared/types'
+import { Calendar, Trash2 } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+
 import { TaskDetailDialog } from '@/components/tasks/TaskDetailDialog'
+import { cn } from '@/lib/utils'
 
 interface ListViewRowProps {
     task: Task

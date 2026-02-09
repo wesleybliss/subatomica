@@ -1,5 +1,5 @@
-import tursoDatabase from '@/db/turso/client.turso'
 import postgresDatabase from '@/db/postgres/client.postgres'
+import tursoDatabase from '@/db/turso/client.turso'
 
 if (!process.env.DATABASE_DIALECT)
     throw new Error('client.ts: DATABASE_DIALECT env variable is not set')

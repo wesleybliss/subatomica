@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@repo/shared/types'
+import { useEffect, useState } from 'react'
+
 import KanbanBoardDnd from './KanbanBoardDnd'
 
 interface KanbanViewProps {

@@ -1,5 +1,6 @@
-import * as React from 'react'
+import type { Team } from '@repo/shared/types'
 import { ChevronsUpDown, Plus, SquareTerminal } from 'lucide-react'
+import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import {
@@ -13,7 +14,6 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
-import type { Team } from '@repo/shared/types'
 
 type TeamSwitcherProps = {
     teams: Team[]

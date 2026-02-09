@@ -1,18 +1,21 @@
 import 'dotenv/config'
-import { Context } from 'hono'
-import { OpenAPIHono } from '@hono/zod-openapi'
+
 import { swaggerUI } from '@hono/swagger-ui'
+import { OpenAPIHono } from '@hono/zod-openapi'
+import { Context } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { prettyJSON } from 'hono/pretty-json'
-import pkg from '../../../package.json' assert { type: 'json' }
-import { auth as defaultAuth } from '@/services/auth' // BetterAuth instance
-import healthRoutes from '@/routes/health'
-import teamsRoutes from '@/routes/teams'
-import projectsRoutes from '@/routes/projects'
-import lanesRoutes from '@/routes/lanes'
-import tasksRoutes from '@/routes/tasks'
+
 import { ApiAppEnv, createApp } from '@/env'
+import healthRoutes from '@/routes/health'
+import lanesRoutes from '@/routes/lanes'
+import projectsRoutes from '@/routes/projects'
+import tasksRoutes from '@/routes/tasks'
+import teamsRoutes from '@/routes/teams'
+import { auth as defaultAuth } from '@/services/auth' // BetterAuth instance
+
+import pkg from '../../../package.json' assert { type: 'json' }
 // import { env } from './env'
 
 type Package = {

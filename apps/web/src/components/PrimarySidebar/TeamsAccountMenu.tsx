@@ -1,8 +1,9 @@
-import { useLocation, useNavigate } from 'react-router-dom'
-import { useMemo } from 'react'
 import { useWireValue } from '@forminator/react-wire'
-import { teams as storeTeams } from '@/store/teams'
+import { getUnixTime } from 'date-fns'
 import { ChevronDown, Plus } from 'lucide-react'
+import { useMemo } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -10,8 +11,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { getUnixTime } from 'date-fns'
 import { cn } from '@/lib/utils'
+import { teams as storeTeams } from '@/store/teams'
 
 type TeamsAccountMenuProps = {
     collapsed?: boolean

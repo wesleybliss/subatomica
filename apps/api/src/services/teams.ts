@@ -1,9 +1,10 @@
+import { Team } from '@repo/shared/types'
+import { generateSlug } from '@repo/shared/utils/slugs'
+import { and, eq, inArray, sql } from 'drizzle-orm'
+
 import * as client from '@/db/client'
 import { teamMembers, teams, users } from '@/db/schema'
-import { and, eq, inArray, sql } from 'drizzle-orm'
-import { Team } from '@repo/shared/types'
 import { getAccessibleTeamIds } from '@/services/shared'
-import { generateSlug } from '@repo/shared/utils/slugs'
 
 const db = client.db
 

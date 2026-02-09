@@ -1,8 +1,9 @@
 import { Task, TaskLane, TeamMemberProfile } from '@repo/shared/types'
-import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
-import KanbanTaskLane from '@/components/kanban/KanbanTaskLane'
+
 import useKanbanBoardDndViewModel from '@/components/kanban/KanbanBoardDndViewModel'
+import KanbanTaskLane from '@/components/kanban/KanbanTaskLane'
+import { Button } from '@/components/ui/button'
 
 export interface KanbanBoardProps {
     tasks: Task[]

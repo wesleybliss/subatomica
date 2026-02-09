@@ -1,6 +1,7 @@
-import { z } from 'zod'
-import auth from '@/services/auth'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { z } from 'zod'
+
+import auth from '@/services/auth'
 
 const EnvSchema = z.object({
     DATABASE_URL: z.string().url(),

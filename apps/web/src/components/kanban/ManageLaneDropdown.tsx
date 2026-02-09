@@ -1,8 +1,9 @@
+import { TaskLane } from '@repo/shared/types'
+import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import { memo } from 'react'
+
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
-import { TaskLane } from '@repo/shared/types'
 
 interface ManageLaneDropdownProps {
     lane: TaskLane

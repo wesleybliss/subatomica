@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom'
-import { useMemo } from 'react'
-import { getUnixTime } from 'date-fns'
 import { Project, Task } from '@repo/shared/types'
-import { Table, TableBody, TableRow, TableCell } from '@/components/ui/table'
+import { getUnixTime } from 'date-fns'
+import { MoreHorizontalIcon } from 'lucide-react'
+import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
+
+import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,8 +13,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Progress } from '@/components/ui/progress'
-import { MoreHorizontalIcon } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Table, TableBody, TableCell,TableRow } from '@/components/ui/table'
 import { calculateProjectProgress } from '@/lib/utils'
 
 interface RecentProjectsTableProps {

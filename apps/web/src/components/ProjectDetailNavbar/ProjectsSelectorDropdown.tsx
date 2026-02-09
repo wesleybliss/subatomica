@@ -1,6 +1,7 @@
 import type { Project } from '@repo/shared/types'
-import { useNavigate } from 'react-router-dom'
 import { ChevronDown, FolderKanban, Pencil, Trash2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,

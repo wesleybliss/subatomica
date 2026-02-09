@@ -1,8 +1,9 @@
 import { useWireValue } from '@forminator/react-wire'
-import * as store from '@/store'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useNavigate,useParams } from 'react-router-dom'
+
 import { useGetProjectQuery } from '@/lib/queries/projects.queries'
 import { ProjectDetailClient } from '@/routes/project/ProjectDetailClient'
+import * as store from '@/store'
 
 export default function ProjectDetailPage() {
     

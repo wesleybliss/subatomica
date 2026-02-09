@@ -1,8 +1,8 @@
-import * as React from 'react'
+import type { Team } from '@repo/shared/types'
 import { FolderKanban, Settings2, Shapes } from 'lucide-react'
+import * as React from 'react'
 import { useLocation } from 'react-router-dom'
 
-import type { Team } from '@repo/shared/types'
 import { NavMain } from '@/components/NavMain'
 import { NavUser } from '@/components/NavUser'
 import { TeamSwitcher } from '@/components/TeamSwitcher'

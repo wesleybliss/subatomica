@@ -1,6 +1,7 @@
-import useListViewGroupViewModel from '@/components/list/ListViewGroupViewModel'
 import { Task, TaskLane } from '@repo/shared/types'
 import { ChevronDown } from 'lucide-react'
+
+import useListViewGroupViewModel from '@/components/list/ListViewGroupViewModel'
 import { cn } from '@/lib/utils'
 
 interface ListViewGroupHeaderParams {

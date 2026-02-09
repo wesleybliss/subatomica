@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@repo/shared/types'
+import { useEffect, useMemo, useState } from 'react'
+
 import KanbanView from '@/components/kanban/KanbanView'
-import TimelineView from '@/components/timeline/TimelineView'
 import ListView from '@/components/list/ListView'
 import ProjectDetailNavbar from '@/components/ProjectDetailNavbar'
+import TimelineView from '@/components/timeline/TimelineView'
 import { useGetTasksQuery } from '@/lib/queries/tasks.queries'
 
 interface ProjectDetailClientProps {

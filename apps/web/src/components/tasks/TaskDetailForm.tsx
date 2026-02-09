@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import type { Task, TeamMemberProfile } from '@repo/shared/types'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import type { Task, TeamMemberProfile } from '@repo/shared/types'
-import { updateTask } from '@/lib/queries/tasks.queries'
+import { useEffect, useMemo, useState } from 'react'
+
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
     Combobox,
     ComboboxContent,
@@ -14,6 +12,9 @@ import {
     ComboboxItem,
     ComboboxList,
 } from '@/components/ui/combobox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { updateTask } from '@/lib/queries/tasks.queries'
 type TaskDetailFormProps = {
     task: Task
     teamId: string

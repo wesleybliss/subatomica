@@ -1,7 +1,9 @@
+import { DebugToolsMode } from '@repo/shared/types'
 import { Bug, Expand, Minimize2 } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { DebugToolsMode } from '@repo/shared/types'
+
 import useDebugToolsViewModel from './DebugToolsViewModel'
 
 const DebugTools = () => {

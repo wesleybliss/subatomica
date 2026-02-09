@@ -1,8 +1,9 @@
-import { useParams } from 'react-router-dom'
-import * as store from '@/store'
-import { TaskDetailForm } from '@/components/tasks/TaskDetailForm'
 import { useWireValue } from '@forminator/react-wire'
 import { useMemo } from 'react'
+import { useParams } from 'react-router-dom'
+
+import { TaskDetailForm } from '@/components/tasks/TaskDetailForm'
+import * as store from '@/store'
 
 export default function TaskPage() {
     

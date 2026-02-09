@@ -1,7 +1,9 @@
-import useListViewViewModel from '@/components/list/ListViewViewModel'
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@repo/shared/types'
-import ListViewToolbar from './ListViewToolbar'
+
+import useListViewViewModel from '@/components/list/ListViewViewModel'
+
 import ListViewGroup from './ListViewGroup'
+import ListViewToolbar from './ListViewToolbar'
 
 interface ListViewProps {
     teamId: string

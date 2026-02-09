@@ -1,6 +1,7 @@
-import { ApiAppEnv } from '@/env'
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import type { RouteHandler } from '@hono/zod-openapi'
+import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
+
+import { ApiAppEnv } from '@/env'
 import { ErrorSchema } from '@/openapi/shared.zod'
 
 const healthRoute = createRoute({

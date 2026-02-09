@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { FileSearchCorner } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import useDebounce from '@/hooks/useDebounce'
 
 interface ListViewSearchInputProps {

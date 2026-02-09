@@ -1,7 +1,8 @@
-import { useMemo } from 'react'
 import type { Task } from '@repo/shared/types'
-import { request } from '@/lib/api/client'
 import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+
+import { request } from '@/lib/api/client'
 import * as store from '@/store'
 
 export const useGetTasksQuery = (teamId: string, projectId?: string) => {

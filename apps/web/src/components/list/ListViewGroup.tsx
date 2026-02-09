@@ -1,7 +1,9 @@
-import useListViewGroupViewModel from '@/components/list/ListViewGroupViewModel'
 import { Task, TaskLane, TeamMemberProfile } from '@repo/shared/types'
-import { ListViewRow } from './ListViewRow'
+
 import ListViewGroupHeader from '@/components/list/ListViewGroupHeader'
+import useListViewGroupViewModel from '@/components/list/ListViewGroupViewModel'
+
+import { ListViewRow } from './ListViewRow'
 
 interface ListViewGroupProps {
     lane: TaskLane
