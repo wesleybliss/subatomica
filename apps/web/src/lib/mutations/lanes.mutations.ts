@@ -142,8 +142,9 @@ export const useUpdateTaskLaneMutation = (
             const nextLanes = (previousLanes || localLanes).map(lane =>
                 lane.id === laneId ? { ...lane, ...data } : lane,
             )
-            queryClient.setQueryData(activeQueryKey, nextLanes)
-            setLocalLanes(nextLanes)
+            const sortedLanes = [...nextLanes].sort((a, b) => a.order - b.order)
+            queryClient.setQueryData(activeQueryKey, sortedLanes)
+            setLocalLanes(sortedLanes)
             
             return { previousLanes }
         },
@@ -153,7 +154,9 @@ export const useUpdateTaskLaneMutation = (
         },
         onSuccess: (updated: TaskLane) => {
             queryClient.setQueryData(activeQueryKey, (current?: TaskLane[]) =>
-                (current || []).map((lane: TaskLane) => (lane.id === updated.id ? updated : lane)),
+                (current || [])
+                    .map((lane: TaskLane) => (lane.id === updated.id ? updated : lane))
+                    .sort((a, b) => a.order - b.order),
             )
         },
         onSettled: () => {

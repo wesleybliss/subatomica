@@ -40,7 +40,7 @@ const KanbanBoardDnd = ({
         
         <div className="flex gap-4 h-full overflow-x-auto overflow-y-hidden pb-4">
             
-            {lanes.map(it => (
+            {vm.localLanes.map(it => (
                 <KanbanTaskLane
                     key={it.id}
                     lane={it}
@@ -63,7 +63,8 @@ const KanbanBoardDnd = ({
                     handleStartRenameLane={vm.handleStartRenameLane}
                     handleRenameLane={vm.handleRenameLane}
                     handleCancelRenameLane={vm.handleCancelRenameLane}
-                    handleDeleteLane={vm.handleDeleteLane} />
+                    handleDeleteLane={vm.handleDeleteLane}
+                    handleReorderLane={vm.handleReorderLane} />
             ))}
             
             {vm.canManageLanes && (

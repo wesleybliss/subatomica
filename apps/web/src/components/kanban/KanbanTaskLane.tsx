@@ -1,12 +1,15 @@
 import { KanbanColumn } from './KanbanColumnDnd'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Plus } from 'lucide-react'
+import { GripVertical, Plus } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Task, TaskStatus, TaskLane, DropIndicatorData, TeamMemberProfile } from '@repo/shared/types'
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import ManageLaneDropdown from '@/components/kanban/ManageLaneDropdown'
 import { cn } from '@/lib/utils'
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
+import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { isLaneDragData } from './dragTypes'
 
 interface TaskLaneProps {
     lane: TaskLane
@@ -30,6 +33,7 @@ interface TaskLaneProps {
     handleRenameLane: (laneId: string) => Promise<void>
     handleCancelRenameLane: () => void
     handleDeleteLane: (laneId: string) => Promise<void>
+    handleReorderLane: (sourceLaneId: string, targetLaneId: string) => void
 }
 
 const KanbanTaskLane = ({
@@ -54,7 +58,47 @@ const KanbanTaskLane = ({
     handleRenameLane,
     handleCancelRenameLane,
     handleDeleteLane,
+    handleReorderLane,
 }: TaskLaneProps) => {
+    const laneRef = useRef<HTMLDivElement>(null)
+    const dragHandleRef = useRef<HTMLDivElement>(null)
+    const [isDragging, setIsDragging] = useState(false)
+    const [isDragOver, setIsDragOver] = useState(false)
+    useEffect(() => {
+        if (!canManageLanes) return
+        const laneElement = laneRef.current
+        const dragHandle = dragHandleRef.current
+        if (!laneElement || !dragHandle) return
+        return combine(
+            draggable({
+                element: laneElement,
+                dragHandle,
+                getInitialData: () => ({
+                    type: 'lane',
+                    laneId: lane.id,
+                }),
+                onDragStart: () => setIsDragging(true),
+                onDrop: () => setIsDragging(false),
+            }),
+            dropTargetForElements({
+                element: laneElement,
+                getData: () => ({
+                    type: 'lane',
+                    laneId: lane.id,
+                }),
+                canDrop: (args: { source: { data: Record<string, unknown> } }) =>
+                    isLaneDragData(args.source.data)
+                    && args.source.data.laneId !== lane.id,
+                onDragEnter: () => setIsDragOver(true),
+                onDragLeave: () => setIsDragOver(false),
+                onDrop: (args: { source: { data: Record<string, unknown> } }) => {
+                    setIsDragOver(false)
+                    if (!isLaneDragData(args.source.data)) return
+                    handleReorderLane(args.source.data.laneId, lane.id)
+                },
+            }),
+        )
+    }, [canManageLanes, handleReorderLane, lane.id])
     
     const statusTasks = tasks
         .filter(t => t.status === lane.key)
@@ -62,11 +106,15 @@ const KanbanTaskLane = ({
     
     return (
         
-        <div className={cn('shrink-0 flex flex-col h-full min-h-0 rounded', {
-            'w-[320px]': !isCollapsed,
-            'w-10 overflow-hidden pt-4': isCollapsed,
-            'bg-linear-to-b from-accent/10 to-transparent': isCollapsed,
-        })}>
+        <div
+            ref={laneRef}
+            className={cn('shrink-0 flex flex-col h-full min-h-0 rounded', {
+                'opacity-60': isDragging,
+                'ring-2 ring-primary/60 ring-offset-1 ring-offset-background': isDragOver,
+                'w-[320px]': !isCollapsed,
+                'w-10 overflow-hidden pt-4': isCollapsed,
+                'bg-linear-to-b from-accent/10 to-transparent': isCollapsed,
+            })}>
             
             <div className={cn('flex items-center mb-3', {
                 'justify-center': isCollapsed,
@@ -77,6 +125,16 @@ const KanbanTaskLane = ({
                     'rotate-180 [writing-mode:vertical-rl]': isCollapsed,
                     '[text-orientation:mixed] whitespace-nowrap': isCollapsed,
                 })}>
+                    {canManageLanes && (
+                        <div
+                            ref={dragHandleRef}
+                            className={cn(
+                                'text-muted-foreground/70 cursor-grab active:cursor-grabbing',
+                                { 'hidden': isCollapsed },
+                            )}>
+                            <GripVertical className="h-4 w-4" />
+                        </div>
+                    )}
                     
                     <div className={cn(
                         'w-2 h-2 rounded-full',

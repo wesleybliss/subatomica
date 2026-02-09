@@ -328,12 +328,57 @@ const KanbanBoardDndViewModel = (
             setDeletingLaneId(null)
         }
     }
+    const getLaneOrderForMove = (
+        sortedLanes: TaskLane[],
+        sourceIndex: number,
+        targetIndex: number,
+    ) => {
+        const movingRight = targetIndex > sourceIndex
+        const insertIndex = movingRight ? targetIndex + 1 : targetIndex
+        const prevLane = sortedLanes[insertIndex - 1]
+        const nextLane = sortedLanes[insertIndex]
+        if (prevLane && nextLane)
+            return (prevLane.order + nextLane.order) / 2
+        if (prevLane)
+            return prevLane.order + 1000
+        if (nextLane)
+            return nextLane.order - 1000
+        return 1000
+    }
+    const handleReorderLane = async (sourceLaneId: string, targetLaneId: string) => {
+        if (!canManageLanes || sourceLaneId === targetLaneId) return
+        const sortedLanes = [...localLanes].sort((a, b) => a.order - b.order)
+        const sourceIndex = sortedLanes.findIndex(lane => lane.id === sourceLaneId)
+        const targetIndex = sortedLanes.findIndex(lane => lane.id === targetLaneId)
+        if (sourceIndex < 0 || targetIndex < 0) return
+        const previousLanes = localLanes
+        const nextOrder = getLaneOrderForMove(sortedLanes, sourceIndex, targetIndex)
+        const nextLanes = sortedLanes
+            .map(lane => lane.id === sourceLaneId ? { ...lane, order: nextOrder } : lane)
+            .sort((a, b) => a.order - b.order)
+        setLocalLanes(nextLanes)
+        onLanesChange?.(nextLanes)
+        try {
+            await updateTaskLaneMutation.mutateAsync({
+                laneId: sourceLaneId,
+                data: { order: nextOrder },
+            })
+            const next = queryClient.getQueryData<TaskLane[]>(lanesQueryKey) || nextLanes
+            onLanesChange?.([...next].sort((a, b) => a.order - b.order))
+        } catch (error) {
+            log.e('Failed to reorder lane:', error)
+            setLocalLanes(previousLanes)
+            onLanesChange?.(previousLanes)
+        }
+    }
     
     return {
         
         // State
         localTasks,
         setLocalTasks,
+        localLanes,
+        setLocalLanes,
         isCreating,
         setIsCreating,
         isAddingLane,
@@ -372,6 +417,7 @@ const KanbanBoardDndViewModel = (
         handleCancelRenameLane,
         handleRenameLane,
         handleDeleteLane,
+        handleReorderLane,
         handleCreateTask,
         handleDrop,
         

@@ -17,6 +17,16 @@ export type ColumnDropData = {
     status: TaskStatus
 }
 
+export type LaneDragData = {
+    type: 'lane'
+    laneId: string
+}
+
+export type LaneDropData = {
+    type: 'lane'
+    laneId: string
+}
+
 export const isTaskDragData = (data: Record<string, unknown>): data is TaskDragData =>
     data.type === 'task'
     && typeof data.taskId === 'string'
@@ -30,3 +40,11 @@ export const isTaskDropData = (data: Record<string, unknown>): data is TaskDropD
 export const isColumnDropData = (data: Record<string, unknown>): data is ColumnDropData =>
     data.type === 'column'
     && typeof data.status === 'string'
+
+export const isLaneDragData = (data: Record<string, unknown>): data is LaneDragData =>
+    data.type === 'lane'
+    && typeof data.laneId === 'string'
+
+export const isLaneDropData = (data: Record<string, unknown>): data is LaneDropData =>
+    data.type === 'lane'
+    && typeof data.laneId === 'string'
