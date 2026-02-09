@@ -48,7 +48,7 @@ import * as client from '../src/db/client'
 import { tasks, projects } from '../src/db/schema'
 import { eq, desc, and } from 'drizzle-orm'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 const db: any = client.db!
 
 // Status mapping from ClickUp to our system

@@ -1,5 +1,6 @@
 import { createRequire } from 'node:module'
 import eslintJs from '@eslint/js'
+import oxlint from 'eslint-plugin-oxlint'
 import reactPlugin from 'eslint-plugin-react'
 import reactCompiler from 'eslint-plugin-react-compiler'
 import reactHooksPlugin from 'eslint-plugin-react-hooks'
@@ -211,4 +212,7 @@ export default [
             'no-undef': 'off',
         },
     },
+    
+    // ...oxlint.configs['flat/recommended'], // oxlint should be the last one
+    ...oxlint.buildFromOxlintConfigFile('./.oxlintrc.json'), // oxlint should be the last one
 ]

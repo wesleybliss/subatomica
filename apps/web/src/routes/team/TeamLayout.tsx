@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
 import * as store from '@/store'
-import type React from 'react'
 import { AppSidebar } from '@/components/AppSidebar'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { getGravatarUrl } from '@/lib/gravatar'

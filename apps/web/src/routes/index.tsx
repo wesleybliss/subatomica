@@ -1,7 +1,6 @@
 // @ts-expect-error @todo add types
 import * as reactWirePersisted from 'react-wire-persisted'
 // import { Analytics } from '@vercel/analytics/next'
-import type React from 'react'
 import { preconnect } from 'react-dom'
 import { NS } from '@/lib/constants'
 import { Routes, Route, Outlet, Navigate } from 'react-router-dom'

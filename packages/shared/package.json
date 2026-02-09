@@ -2,6 +2,14 @@
     "name": "@repo/shared",
     "version": "0.0.0",
     "type": "module",
+    "scripts": {
+        "lint": "oxlint && eslint .",
+        "lint:dry": "oxlint && eslint --fix-dry-run .",
+        "lint:fix": "oxlint --fix && eslint --fix .",
+        "eslint": "eslint .",
+        "eslint:dry": "eslint --fix-dry-run .",
+        "eslint:fix": "eslint --fix ."
+    },
     "exports": {
         "./types": "./src/types/index.ts",
         "./types/*": "./src/types/*.ts",
@@ -13,8 +21,12 @@
         "@forminator/react-wire": "^0.7.0",
         "@stdlib/string-acronym": "^0.3.3",
         "@types/react": "^19.2.13",
+        "eslint-plugin-oxlint": "^1.43.0",
         "short-unique-id": "^5.3.2",
         "slugify": "^1.6.6",
         "zod": "^4.3.6"
+    },
+    "devDependencies": {
+        "oxlint": "^1.43.0"
     }
 }

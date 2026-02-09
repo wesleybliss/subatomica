@@ -28,9 +28,9 @@ const ThemeProvider = ({ children, defaultTheme = 'dark' }: ThemeProviderProps) 
     
     useEffect(() => {
         
-        // eslint-disable-next-line no-restricted-globals
+        // oxlint-disable-next-line no-restricted-globals
         document.documentElement.classList.remove('light', 'dark')
-        // eslint-disable-next-line no-restricted-globals
+        // oxlint-disable-next-line no-restricted-globals
         document.documentElement.classList.add(theme)
         
     }, [theme])

@@ -42,7 +42,7 @@ const useGlobalHotkeys = () => {
         log.d('ctrl/')
         try {
             // @ts-expect-error expected
-            // eslint-disable-next-line no-restricted-globals
+            // oxlint-disable-next-line no-restricted-globals
             document
                 .getElementById('list-view-search-input')
                 .focus()

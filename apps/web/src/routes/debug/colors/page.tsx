@@ -84,7 +84,7 @@ function ColorSwatch({
     const [color, setColor] = useState<string>('')
     
     useEffect(() => {
-        // eslint-disable-next-line no-restricted-globals
+        // oxlint-disable-next-line no-restricted-globals
         const value = getComputedStyle(document.documentElement).getPropertyValue(variable).trim()
         setColor(value)
     }, [variable])

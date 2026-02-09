@@ -22,7 +22,7 @@ export const tursoTable = <
 >(
         name: TTableName,
         columns: TColumnsMap,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line typescript-eslint(no-explicit-any)
         extraConfig?: (table: any) => Record<string, any>,
     ) => {
     
@@ -41,7 +41,7 @@ export const tursoTable = <
             .$defaultFn(() => new Date().toISOString()),
         deletedAt: timestamp('deletedAt'),
         ...columns,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line typescript-eslint(no-explicit-any)
     } as any, extraConfig as any)
     
 }
@@ -63,7 +63,7 @@ export const postgresTable = <
 >(
         name: TTableName,
         columns: TColumnsMap,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line typescript-eslint(no-explicit-any)
         extraConfig?: (table: any) => Record<string, any>,
     ) => {
     
@@ -78,7 +78,7 @@ export const postgresTable = <
         createdAt: timestamp('createdAt').notNull().defaultNow(),
         deletedAt: timestamp('deletedAt'),
         ...columns,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // oxlint-disable-next-line typescript-eslint(no-explicit-any)
     } as any, extraConfig as any)
     
 }

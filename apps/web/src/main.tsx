@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from '@/routes'
 import './globals.css'
 
-// eslint-disable-next-line no-restricted-globals
+// oxlint-disable-next-line no-restricted-globals
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <BrowserRouter>

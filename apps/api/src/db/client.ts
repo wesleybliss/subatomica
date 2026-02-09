@@ -15,7 +15,7 @@ if (!database)
 // We cast to any because Drizzle's multi-dialect union types for the database object
 // have conflicting method signatures (e.g., select, insert, update) that TypeScript
 // cannot reconcile automatically, especially when combined with union types for schema columns.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line typescript-eslint(no-explicit-any)
 export const db = database as any
 
 export default db

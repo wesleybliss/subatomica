@@ -2,7 +2,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
 import { useGetProjectsQuery } from '@/lib/queries/projects.queries'
 import { useGetTasksQuery } from '@/lib/queries/tasks.queries'
-import type React from 'react'
 import { Outlet } from 'react-router-dom'
 
 export default function ProjectsLayout() {
