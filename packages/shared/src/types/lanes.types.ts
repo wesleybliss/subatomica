@@ -8,3 +8,11 @@ export type TaskLane = {
     order: number
     isDefault: boolean
 }
+
+export type CreateLaneInput = {
+    key: string
+    name: string
+    color?: string | null
+    order?: number
+    tempId: string
+}

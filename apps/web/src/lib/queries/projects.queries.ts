@@ -15,7 +15,7 @@ export const useGetProjectsQuery = (teamId: string) => {
         queryKey: projectsQueryKey,
         queryFn: async () => {
             try {
-                const res = await request<Project[]>(`/teams/${teamId}/projects`)
+                const res = await request<Project[]>(`/projects?teamId=${teamId}`)
                 
                 store.projects.setValue(res || [])
                 
@@ -54,7 +54,7 @@ export const useGetProjectQuery = (teamId: string, projectId: string) => {
         queryKey: projectQueryKey,
         queryFn: async () => {
             try {
-                const res = (await request(`/teams/${teamId}/projects/${projectId}`) as Project) || null
+                const res = (await request(`/projects/${projectId}?teamId=${teamId}`) as Project) || null
                 
                 if (res?.id) {
                     const next = store.projects.getValue() || []
@@ -81,23 +81,4 @@ export const useGetProjectQuery = (teamId: string, projectId: string) => {
         projectQueryKey,
     }
     
-}
-
-export const getProjects = async (teamId: string): Promise<Project[]> => {
-    const params = new URLSearchParams({ teamId })
-    return await request(`/api/projects?${params.toString()}`) as Project[]
-}
-
-export const getProjectById = async (projectId: string): Promise<Project | null> => {
-    const response = await fetch(`/api/projects/${projectId}`, {
-        credentials: 'include',
-    })
-    
-    if (response.status === 404)
-        return null
-    
-    if (!response.ok)
-        throw new Error('Failed to fetch project')
-    
-    return await response.json() as Project
 }

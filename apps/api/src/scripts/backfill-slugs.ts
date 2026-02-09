@@ -3,9 +3,10 @@
  * Run with: tsx src/scripts/backfill-slugs.ts
  */
 
+import 'dotenv/config'
 import { db } from '@/db/client'
 import { teams, projects } from '@/db/schema'
-import { generateSlug } from '@/lib/slugs'
+import { generateSlug } from '@repo/shared/utils/slugs'
 import { eq } from 'drizzle-orm'
 
 async function backfillTeamSlugs() {

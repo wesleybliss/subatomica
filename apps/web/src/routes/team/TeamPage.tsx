@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { SyntheticEvent, useMemo } from 'react'
 import { useWireValue } from '@forminator/react-wire'
 import * as store from '@/store'
 import { Link } from 'react-router-dom'
@@ -10,6 +10,11 @@ import { FolderKanban, LayoutGrid, Users } from 'lucide-react'
 import RecentProjectsTable from '@/components/projects/RecentProjectsTable'
 import { useParams } from 'react-router-dom'
 import { Team } from '@repo/shared/types'
+import { useCreateProjectMutation } from '@/lib/mutations/projects'
+import { toast } from 'sonner'
+import { v7 as uuidv7 } from 'uuid'
+
+const activeProjectsQueryKey = ['projects']
 
 export default function TeamPage() {
     
@@ -26,6 +31,27 @@ export default function TeamPage() {
     const { isPending: tasksIsPending, error: tasksError, data: tasks = [] } = useGetTasksQuery(teamId)
     const { isPending: teamMembersIsPending, error: teamMembersError, data: teamMembers = [] } =
         useGetTeamMembersQuery(teamId)
+    
+    const createProjectMutation = useCreateProjectMutation(teamId, activeProjectsQueryKey)
+    
+    const handleCreateProject = async (e: SyntheticEvent) => {
+        
+        e.preventDefault()
+        
+        const name = prompt('Project name', '')
+        
+        if (!name?.trim())
+            return toast.warning('No project name provided')
+        
+        try {
+            const tempId = uuidv7()
+            await createProjectMutation.mutateAsync({ name, tempId })
+        } catch (e) {
+            console.error('TeamsPage#handleCreateProject', e)
+            
+        }
+        
+    }
     
     const isPending = useMemo(() => (
         projectsIsPending || tasksIsPending || teamMembersIsPending
@@ -103,6 +129,11 @@ export default function TeamPage() {
                     <div className="flex justify-end items-center">
                         <Link className="text-sm" to={`/t/${teamId}/p`}>
                             View All Projects
+                        </Link>
+                    </div>
+                    <div className="flex justify-end items-center">
+                        <Link className="text-sm" to="#" onClick={handleCreateProject}>
+                            New Project
                         </Link>
                     </div>
                 </header>

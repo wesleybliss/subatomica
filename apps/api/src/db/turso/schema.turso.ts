@@ -56,12 +56,13 @@ export const verifications = table('verifications', {
 // Teams table
 export const teams = table('teams', {
     name: text('name').notNull(),
-    slug: text('slug').notNull().unique(),
+    slug: text('slug').notNull(),
     ownerId: text('ownerId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
 }, table => ({
     ownerNameUnique: uniqueIndex('teams_owner_name_unique').on(table.ownerId, table.name),
+    ownerSlugUnique: uniqueIndex('teams_owner_slug_unique').on(table.ownerId, table.slug),
     ownerIdIndex: index('teams_owner_id_idx').on(table.ownerId),
 }))
 

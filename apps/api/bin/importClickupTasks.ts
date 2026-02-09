@@ -44,8 +44,8 @@ import 'dotenv/config'
 
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
-import * as client from '../lib/db/client'
-import { tasks, projects } from '@/lib/db/schema'
+import * as client from '../src/db/client'
+import { tasks, projects } from '../src/db/schema'
 import { eq, desc, and } from 'drizzle-orm'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -96,7 +96,10 @@ async function importTasks(
     
     console.log(`Importing tasks into project: ${project.name}`)
     console.log(`User ID: ${userId}\n`)
-    
+
+    // Get starting localId from project's taskSequence
+    let nextLocalId = project.taskSequence || 1
+
     let imported = 0
     let skipped = 0
     
@@ -133,20 +136,23 @@ async function importTasks(
         const description = `Imported from ClickUp\n\nOriginal URL: ${url}`
         
         if (dryRun) {
-            console.log(`[DRY RUN] Would import: ${title} (${status}, order: ${order})`)
+            console.log(`[DRY RUN] Would import: ${title} (${status}, order: ${order}, localId: ${nextLocalId})`)
+            nextLocalId++
             imported++
         } else {
             try {
                 await db.insert(tasks).values({
                     projectId,
                     userId,
+                    localId: nextLocalId,
                     title: title.trim(),
                     description,
                     status,
                     order,
                     priority: 'medium',
                 })
-                
+
+                nextLocalId++
                 imported++
                 console.log(`✓ Imported: ${title} (${status})`)
             } catch (error) {
@@ -156,6 +162,15 @@ async function importTasks(
         }
     }
     
+    // Update project's taskSequence to the next available number
+    if (!dryRun && imported > 0) {
+        await db
+            .update(projects)
+            .set({ taskSequence: nextLocalId })
+            .where(eq(projects.id, projectId))
+        console.log(`Updated project taskSequence to ${nextLocalId}`)
+    }
+
     console.log('\nImport complete:')
     console.log(`  ${dryRun ? 'Would import' : 'Imported'}: ${imported}`)
     console.log(`  Skipped: ${skipped}`)

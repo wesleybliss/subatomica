@@ -3,7 +3,7 @@ import { and, desc, eq, inArray, sql } from 'drizzle-orm'
 import { projects, tasks } from '@/db/schema'
 import { Task } from '@repo/shared/types'
 import { getAccessibleTeamIds } from '@/services/shared'
-import { generateProjectAcronym, formatTaskKey } from '@/lib/slugs'
+import { generateProjectAcronym, formatTaskKey } from '@repo/shared/utils/slugs'
 
 /**
  * Gets IDs of projects in a team that are accessible to the user

@@ -20,10 +20,10 @@ export const useCreateTaskMutation = (
         { previousTasks?: Task[] }
     >({
         mutationFn: async ({ status, tempId }: CreateTaskInput) => {
-            const created = await request<Task>(`/teams/${teamId}/projects/${projectId}/tasks/${tempId}`, {
+            const created = await request<Task>(`/tasks/${tempId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status, tempId, projectId }),
+                body: JSON.stringify({ status, tempId, teamId, projectId }),
             })
             return { created, tempId }
         },
@@ -94,10 +94,10 @@ export const useUpdateTaskOrderMutation = (
     
     return useMutation<Task, Error, UpdateTaskOrderInput, { previousTasks?: Task[] }>({
         mutationFn: async ({ taskId, status, order }: UpdateTaskOrderInput) => {
-            const response = await request<Task>(`/teams/${teamId}/projects/${projectId}/tasks/${taskId}`, {
+            const response = await request<Task>(`/tasks/${taskId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status, order }),
+                body: JSON.stringify({ teamId, projectId, status, order }),
             })
             return response as Task
         },

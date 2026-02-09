@@ -1,11 +1,13 @@
-import type { TaskLane } from '@repo/shared/types'
+import { CreateLaneInput, TaskLane } from '@repo/shared/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { request } from '@/lib/api/client'
 
 export const useCreateTaskLaneMutation = (
+    teamId: string | null | undefined,
+    projectId: string | null | undefined,
     localLanes: TaskLane[],
     setLocalLanes: (value: TaskLane[]) => void,
     activeQueryKey: readonly (string | number | boolean | Record<string, unknown>)[],
-    projectId?: string | null | undefined,
     onRefresh?: () => void,
 ) => {
     const queryClient = useQueryClient()
@@ -13,21 +15,21 @@ export const useCreateTaskLaneMutation = (
     return useMutation<
         { created: TaskLane; tempId: string },
         Error,
-        { name?: string; color?: string | null; tempId: string },
+        CreateLaneInput,
         { previousLanes?: TaskLane[] }
     >({
-        mutationFn: async ({ name, color, tempId }) => {
+        mutationFn: async ({ key, name, color, order, tempId }: CreateLaneInput) => {
+            if (!teamId)
+                throw new Error('Missing team id')
             if (!projectId)
                 throw new Error('Missing project id')
-            const response = await fetch('/lanes', {
+            const response = await request<TaskLane>(`/lanes?teamId=${teamId}&projectId=${projectId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ projectId, name, color, tempId }),
+                body: JSON.stringify({ key, name, color, order, tempId }),
             })
-            if (!response.ok)
-                throw new Error('Failed to fetch lanes')
-            const created = await response.json() as TaskLane
-            return { created, tempId }
+            
+            return { created: response, tempId }
         },
         onMutate: async ({ name, color, tempId }) => {
             if (!projectId)
@@ -69,6 +71,8 @@ export const useCreateTaskLaneMutation = (
 }
 
 export const useDeleteTaskLaneMutation = (
+    teamId: string | null | undefined,
+    projectId: string | null | undefined,
     localLanes: TaskLane[],
     setLocalLanes: (value: TaskLane[]) => void,
     activeQueryKey: readonly (string | number | boolean | Record<string, unknown>)[],
@@ -83,11 +87,9 @@ export const useDeleteTaskLaneMutation = (
         { previousLanes?: TaskLane[] }
     >({
         mutationFn: async ({ laneId }) => {
-            const response = await fetch(`/api/lanes/${laneId}`, {
+            await request(`/lanes/${laneId}?teamId=${teamId}&projectId=${projectId}`, {
                 method: 'DELETE',
             })
-            if (!response.ok)
-                throw new Error('Failed to fetch lanes')
             return { deletedId: laneId }
         },
         onMutate: async ({ laneId }) => {
@@ -111,6 +113,8 @@ export const useDeleteTaskLaneMutation = (
 }
 
 export const useUpdateTaskLaneMutation = (
+    teamId: string | null | undefined,
+    projectId: string | null | undefined,
     localLanes: TaskLane[],
     setLocalLanes: (value: TaskLane[]) => void,
     activeQueryKey: readonly (string | number | boolean | Record<string, unknown>)[],
@@ -125,14 +129,11 @@ export const useUpdateTaskLaneMutation = (
         { previousLanes?: TaskLane[] }
     >({
         mutationFn: async ({ laneId, data }) => {
-            const response = await fetch(`/api/lanes/${laneId}`, {
+            return await request<TaskLane>(`/lanes/${laneId}?teamId=${teamId}&projectId=${projectId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
             })
-            if (!response.ok)
-                throw new Error('Failed to fetch lanes')
-            return await response.json() as TaskLane
         },
         onMutate: async ({ laneId, data }) => {
             await queryClient.cancelQueries({ queryKey: activeQueryKey })

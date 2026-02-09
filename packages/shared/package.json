@@ -11,7 +11,10 @@
     },
     "dependencies": {
         "@forminator/react-wire": "^0.7.0",
+        "@stdlib/string-acronym": "^0.3.3",
         "@types/react": "^19.2.13",
+        "short-unique-id": "^5.3.2",
+        "slugify": "^1.6.6",
         "zod": "^4.3.6"
     }
 }

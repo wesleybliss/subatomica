@@ -11,6 +11,7 @@
         "dev:web": "pnpm --filter web dev",
         "dev:api": "pnpm --filter api dev",
         "dev": "pnpm -r dev",
+        "check": "pnpm -r check",
         "lint": "pnpm -r lint",
         "lint:dry": "pnpm -r lint:dry",
         "lint:fix": "pnpm -r lint:fix",

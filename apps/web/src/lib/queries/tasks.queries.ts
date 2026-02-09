@@ -15,8 +15,8 @@ export const useGetTasksQuery = (teamId: string, projectId?: string) => {
         queryFn: async () => {
             try {
                 const url = projectId
-                    ? `/teams/${teamId}/projects/${projectId}/tasks`
-                    : `/teams/${teamId}/tasks`
+                    ? `/tasks?teamId=${teamId}&projectId=${projectId}`
+                    : `/tasks?teamId=${teamId}`
                 const res = await request<Task[]>(url)
                 
                 store.tasks.setValue(res || [])
@@ -38,9 +38,9 @@ export const useGetTasksQuery = (teamId: string, projectId?: string) => {
     
 }
 
-export const updateTask = (taskId: string, data: Partial<Task>): Promise<Task> => {
+export const updateTask = (teamId: string, projectId: string, taskId: string, data: Partial<Task>): Promise<Task> => {
     
-    return request(`/tasks/${taskId}`, {
+    return request(`/tasks/${taskId}?teamId=${teamId}&projectId=${projectId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

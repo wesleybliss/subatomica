@@ -7,8 +7,9 @@ import pkg from '../../../package.json' assert { type: 'json' }
 import { auth as defaultAuth } from '@/services/auth' // BetterAuth instance
 import healthRoutes from '@/routes/health'
 import teamsRoutes from '@/routes/teams'
-import projectsRoute from '@/routes/projects'
-import tasksRoute from '@/routes/tasks'
+import projectsRoutes from '@/routes/projects'
+import lanesRoutes from '@/routes/lanes'
+import tasksRoutes from '@/routes/tasks'
 import { createApp } from '@/env'
 // import { env } from './env'
 
@@ -97,8 +98,9 @@ export const createApiServer = (auth = defaultAuth) => {
     })
         .route('/health', healthRoutes)
         .route('/teams', teamsRoutes)
-        .route('/teams/:teamId/projects', projectsRoute)
-        .route('/teams/:teamId/projects/:projectId/tasks', tasksRoute)
+        .route('/projects', projectsRoutes)
+        .route('/lanes', lanesRoutes)
+        .route('/tasks', tasksRoutes)
     
     const finalApp = finalApi.route('/', protectedRoutes)
     

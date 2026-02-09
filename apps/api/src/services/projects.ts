@@ -3,7 +3,7 @@ import { and, eq, inArray } from 'drizzle-orm'
 import { projects, taskLanes, teamMembers, teams } from '@/db/schema'
 import { Project, TaskLane } from '@repo/shared/types'
 import { getAccessibleTeamIds } from '@/services/shared'
-import { generateSlug } from '@/lib/slugs'
+import { generateSlug } from '@repo/shared/utils/slugs'
 
 const db = client.db
 
@@ -105,10 +105,21 @@ export async function deleteProject(userId: string, projectId: string): Promise<
         .where(eq(projects.id, projectId))
 }
 
-export async function renameProject(userId: string, projectId: string, name: string): Promise<Project> {
-    const trimmedName = name.trim()
-    if (!trimmedName)
-        throw new Error('Project name is required')
+export async function updateProject(
+    userId: string,
+    projectId: string,
+    updates: { name?: string },
+): Promise<Project> {
+    const updateValues: Partial<typeof projects.$inferInsert> = {}
+    if (updates.name !== undefined) {
+        const trimmedName = updates.name.trim()
+        if (!trimmedName)
+            throw new Error('Project name is required')
+        updateValues.name = trimmedName
+        updateValues.slug = generateSlug(trimmedName)
+    }
+    if (Object.keys(updateValues).length === 0)
+        throw new Error('At least one update field is required')
     
     const [project] = await db
         .select({ teamId: projects.teamId })
@@ -123,16 +134,11 @@ export async function renameProject(userId: string, projectId: string, name: str
     if (!role)
         throw new Error('NotFound: Project not found')
     if (role !== 'owner' && role !== 'admin')
-        throw new Error('Forbidden: Only owners or admins can rename projects')
-    
-    const newSlug = generateSlug(trimmedName)
+        throw new Error('Forbidden: Only owners or admins can update projects')
     
     const [updated] = await db
         .update(projects)
-        .set({
-            name: trimmedName,
-            slug: newSlug,
-        })
+        .set(updateValues)
         .where(eq(projects.id, projectId))
         .returning()
     

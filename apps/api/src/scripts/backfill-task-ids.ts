@@ -4,6 +4,7 @@
  * Run with: tsx src/scripts/backfill-task-ids.ts
  */
 
+import 'dotenv/config'
 import { db } from '@/db/client'
 import { tasks, projects } from '@/db/schema'
 import { eq, asc } from 'drizzle-orm'

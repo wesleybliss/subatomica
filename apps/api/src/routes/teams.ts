@@ -7,8 +7,23 @@ import * as projectsService from '@/services/projects'
 import * as tasksService from '@/services/tasks'
 import { ApiAppEnv } from '@/env'
 import { createTeam, getUserTeams } from '@/services/teams'
+import { zValidator } from '@/lib/honoZodValidator'
 
 const log = logger('routes/teams')
+
+const TeamParamSchema = z.object({
+    teamId: z.string(),
+    targetUserId: z.string().optional(),
+})
+
+const teamParamValidator = zValidator('param', TeamParamSchema)
+
+type TeamContext = Context<ApiAppEnv, string, {
+    out: {
+        // query: z.infer<typeof TeamQuerySchema>,
+        param: z.infer<typeof TeamParamSchema>,
+    }
+}>
 
 const TeamCreateSchema = z.object({
     name: z.string().min(1),
@@ -36,11 +51,14 @@ const handleRouteError = (error: unknown) => {
     throw new HTTPException(400, { message })
 }
 
-export const getTeams = async (c: Context) => {
+export const getTeams = async (c: TeamContext) => {
     
     log.d('getTeams', c.get('user'))
     
     const user = c.get('user')
+    
+    if (!user)
+        throw new HTTPException(401, { message: 'Unauthorized' })
     
     const teams = await teamsService.getUserTeams(user.id)
     
@@ -48,10 +66,14 @@ export const getTeams = async (c: Context) => {
     
 }
 
-export const getTeamById = async (c: Context) => {
+export const getTeamById = async (c: TeamContext) => {
     
     const user = c.get('user')
-    const teamId = c.req.param('teamId')
+    
+    if (!user)
+        throw new HTTPException(401, { message: 'Unauthorized' })
+    
+    const { teamId } = c.req.valid('param')
     
     const team = await teamsService.getTeamById(user.id, teamId)
     
@@ -59,10 +81,14 @@ export const getTeamById = async (c: Context) => {
     
 }
 
-export const getTeamMembers = async (c: Context) => {
+export const getTeamMembers = async (c: TeamContext) => {
     
     const user = c.get('user')
-    const teamId = c.req.param('teamId')
+    
+    if (!user)
+        throw new HTTPException(401, { message: 'Unauthorized' })
+    
+    const { teamId } = c.req.valid('param')
     
     const teamMembers = await teamsService.getTeamMembers(user.id, teamId)
     
@@ -70,10 +96,14 @@ export const getTeamMembers = async (c: Context) => {
     
 }
 
-export const getTeamProjects = async (c: Context) => {
+export const getTeamProjects = async (c: TeamContext) => {
     
     const user = c.get('user')
-    const teamId = c.req.param('teamId')
+    
+    if (!user)
+        throw new HTTPException(401, { message: 'Unauthorized' })
+    
+    const { teamId } = c.req.valid('param')
     
     const teamProjects = await projectsService.getProjects(user.id, teamId)
     
@@ -81,10 +111,14 @@ export const getTeamProjects = async (c: Context) => {
     
 }
 
-export const getTeamTasks = async (c: Context) => {
+export const getTeamTasks = async (c: TeamContext) => {
     
     const user = c.get('user')
-    const teamId = c.req.param('teamId')
+    
+    if (!user)
+        throw new HTTPException(401, { message: 'Unauthorized' })
+    
+    const { teamId } = c.req.valid('param')
     
     const teamTasks = await tasksService.getTasks(user.id, teamId)
     
@@ -92,9 +126,13 @@ export const getTeamTasks = async (c: Context) => {
     
 }
 
-export const createTeamRoute = async (c: Context) => {
+export const createTeamRoute = async (c: TeamContext) => {
     try {
         const user = c.get('user')
+        
+        if (!user)
+            throw new HTTPException(401, { message: 'Unauthorized' })
+        
         const payload = TeamCreateSchema.parse(await c.req.json())
         
         const team = await teamsService.createTeam(payload.name, user.id)
@@ -105,10 +143,14 @@ export const createTeamRoute = async (c: Context) => {
     }
 }
 
-export const addTeamMember = async (c: Context) => {
+export const addTeamMember = async (c: TeamContext) => {
     try {
         const user = c.get('user')
-        const teamId = c.req.param('teamId')
+        
+        if (!user)
+            throw new HTTPException(401, { message: 'Unauthorized' })
+        
+        const { teamId } = c.req.valid('param')
         const payload = TeamMemberAddSchema.parse(await c.req.json())
         
         const result = await teamsService.addTeamMember(teamId, user.id, payload.email)
@@ -119,11 +161,18 @@ export const addTeamMember = async (c: Context) => {
     }
 }
 
-export const removeTeamMember = async (c: Context) => {
+export const removeTeamMember = async (c: TeamContext) => {
     try {
         const user = c.get('user')
-        const teamId = c.req.param('teamId')
+        
+        if (!user)
+            throw new HTTPException(401, { message: 'Unauthorized' })
+        
+        const { teamId } = c.req.valid('param')
         const targetUserId = c.req.param('userId')
+        
+        if (!targetUserId)
+            throw new HTTPException(422, { message: 'Param userId required' })
         
         const result = await teamsService.removeTeamMember(teamId, user.id, targetUserId)
         
@@ -147,10 +196,10 @@ export async function ensureUserHasTeam(userId: string) {
 const routes = new Hono<ApiAppEnv>()
     .get('/', getTeams)
     .post('/', createTeamRoute)
-    .get('/:teamId', getTeamById)
-    .get('/:teamId/members', getTeamMembers)
-    .post('/:teamId/members', addTeamMember)
-    .delete('/:teamId/members/:userId', removeTeamMember)
-    .get('/:teamId/tasks', getTeamTasks)
+    .get('/:teamId', teamParamValidator, getTeamById)
+    .get('/:teamId/members', teamParamValidator, getTeamMembers)
+    .post('/:teamId/members', teamParamValidator, addTeamMember)
+    .delete('/:teamId/members/:userId', teamParamValidator, removeTeamMember)
+    .get('/:teamId/tasks', teamParamValidator, getTeamTasks)
 
 export default routes

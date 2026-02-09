@@ -14,6 +14,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { type ColumnDropData, type TaskDropData, isColumnDropData, isTaskDragData, isTaskDropData } from './dragTypes'
 import { DropIndicatorData } from '@repo/shared/types'
 import { useCreateTaskMutation, useUpdateTaskOrderMutation } from '@/lib/mutations/tasks.mutations'
+import { generateSlug } from '@repo/shared/utils/slugs'
 
 const log = logger('KanbanBoardDndViewModel')
 
@@ -69,14 +70,17 @@ const KanbanBoardDndViewModel = (
     )
     
     const createTaskLaneMutation = useCreateTaskLaneMutation(
+        teamId,
+        projectId,
         localLanes,
         setLocalLanes,
         lanesQueryKey,
-        projectId,
         onRefresh,
     )
     
     const updateTaskLaneMutation = useUpdateTaskLaneMutation(
+        teamId,
+        projectId,
         localLanes,
         setLocalLanes,
         lanesQueryKey,
@@ -84,6 +88,8 @@ const KanbanBoardDndViewModel = (
     )
     
     const deleteTaskLaneMutation = useDeleteTaskLaneMutation(
+        teamId,
+        projectId,
         localLanes,
         setLocalLanes,
         lanesQueryKey,
@@ -105,6 +111,7 @@ const KanbanBoardDndViewModel = (
         try {
             const tempId = uuidv7()
             await createTaskLaneMutation.mutateAsync({
+                key: generateSlug('New Lane'),
                 name: 'New Lane',
                 color: 'bg-muted',
                 tempId,

@@ -44,6 +44,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.19.9
         version: 1.19.9(hono@4.11.8)
+      '@hono/zod-validator':
+        specifier: ^0.7.6
+        version: 0.7.6(hono@4.11.8)(zod@4.3.6)
       '@libsql/client':
         specifier: ^0.17.0
         version: 0.17.0
@@ -53,9 +56,6 @@ importers:
       '@repo/shared':
         specifier: workspace:*
         version: link:../../packages/shared
-      '@stdlib/string-acronym':
-        specifier: ^0.3.3
-        version: 0.3.3
       '@types/pg':
         specifier: ^8.16.0
         version: 8.16.0
@@ -71,12 +71,6 @@ importers:
       hono:
         specifier: ^4.11.8
         version: 4.11.8
-      short-unique-id:
-        specifier: ^5.3.2
-        version: 5.3.2
-      slugify:
-        specifier: ^1.6.6
-        version: 1.6.6
       uuid:
         specifier: ^13.0.0
         version: 13.0.0
@@ -259,9 +253,18 @@ importers:
       '@forminator/react-wire':
         specifier: ^0.7.0
         version: 0.7.0(react@19.2.4)
+      '@stdlib/string-acronym':
+        specifier: ^0.3.3
+        version: 0.3.3
       '@types/react':
         specifier: ^19.2.13
         version: 19.2.13
+      short-unique-id:
+        specifier: ^5.3.2
+        version: 5.3.2
+      slugify:
+        specifier: ^1.6.6
+        version: 1.6.6
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -1121,6 +1124,12 @@ packages:
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: ^4
+
+  '@hono/zod-validator@0.7.6':
+    resolution: {integrity: sha512-Io1B6d011Gj1KknV4rXYz4le5+5EubcWEU/speUjuw9XMMIaP3n78yXLhjd2A3PXaXaUwEAluOiAyLqhBEJgsw==}
+    peerDependencies:
+      hono: '>=3.9.0'
+      zod: ^3.25.0 || ^4.0.0
 
   '@hookform/resolvers@5.2.2':
     resolution: {integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==}
@@ -7149,6 +7158,11 @@ snapshots:
   '@hono/node-server@1.19.9(hono@4.11.8)':
     dependencies:
       hono: 4.11.8
+
+  '@hono/zod-validator@0.7.6(hono@4.11.8)(zod@4.3.6)':
+    dependencies:
+      hono: 4.11.8
+      zod: 4.3.6
 
   '@hookform/resolvers@5.2.2(react-hook-form@7.71.1(react@19.2.4))':
     dependencies:
