@@ -9,6 +9,8 @@ export default function TaskPage() {
     const params = useParams()
     
     const taskId = params.taskId as string
+    const teamId = params.teamId as string
+    const projectId = params.projectId as string
     
     const tasks = useWireValue(store.tasks)
     const teamMembers = useWireValue(store.teamMembers)
@@ -23,7 +25,7 @@ export default function TaskPage() {
     return (
         <div className="flex flex-1 overflow-hidden">
             <div className="flex-1 overflow-hidden bg-background p-6">
-                <TaskDetailForm task={task} teamMembers={teamMembers} />
+                <TaskDetailForm task={task} teamId={teamId} teamMembers={teamMembers} projectId={projectId} />
             </div>
         </div>
     )

@@ -96,10 +96,10 @@ async function importTasks(
     
     console.log(`Importing tasks into project: ${project.name}`)
     console.log(`User ID: ${userId}\n`)
-
+    
     // Get starting localId from project's taskSequence
     let nextLocalId = project.taskSequence || 1
-
+    
     let imported = 0
     let skipped = 0
     
@@ -151,7 +151,7 @@ async function importTasks(
                     order,
                     priority: 'medium',
                 })
-
+                
                 nextLocalId++
                 imported++
                 console.log(`✓ Imported: ${title} (${status})`)
@@ -170,7 +170,7 @@ async function importTasks(
             .where(eq(projects.id, projectId))
         console.log(`Updated project taskSequence to ${nextLocalId}`)
     }
-
+    
     console.log('\nImport complete:')
     console.log(`  ${dryRun ? 'Would import' : 'Imported'}: ${imported}`)
     console.log(`  Skipped: ${skipped}`)

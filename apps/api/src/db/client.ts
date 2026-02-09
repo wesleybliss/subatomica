@@ -9,11 +9,13 @@ const database = process.env.DATABASE_DIALECT === 'turso'
     : postgresDatabase
 
 if (!database)
-    throw new Error(`client.ts: Database client for ${process.env.DATABASE_DIALECT} is not initialized. Check your environment variables.`)
+    throw new Error(`client.ts: Database client for ${process.env.DATABASE_DIALECT} ` +
+        'is not initialized. Check your environment variables.')
 
-// We cast to any because Drizzle's multi-dialect union types for the database object 
-// have conflicting method signatures (e.g., select, insert, update) that TypeScript 
+// We cast to any because Drizzle's multi-dialect union types for the database object
+// have conflicting method signatures (e.g., select, insert, update) that TypeScript
 // cannot reconcile automatically, especially when combined with union types for schema columns.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const db = database as any
 
 export default db

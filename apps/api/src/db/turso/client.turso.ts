@@ -12,7 +12,7 @@ export const turso = process.env.DATABASE_DIALECT === 'turso' ? createClient({
     authToken: process.env.TURSO_AUTH_TOKEN,
 }) : undefined
 
-export const db: LibSQLDatabase<Record<string, never>> | undefined = process.env.DATABASE_DIALECT === 'turso'
+export const db: LibSQLDatabase | undefined = process.env.DATABASE_DIALECT === 'turso'
     ? drizzle(turso!)
     : undefined
 

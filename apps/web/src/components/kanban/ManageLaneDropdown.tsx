@@ -22,7 +22,7 @@ const ManageLaneDropdown = ({
     const onRenameLane = () => {
         handleStartRenameLane(lane)
     }
-
+    
     const onDeleteLane = () => {
         void handleDeleteLane(lane.id)
     }

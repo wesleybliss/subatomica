@@ -7,7 +7,7 @@
         "dev": "vite --port 3001 --strictPort",
         "build": "vite build",
         "preview": "vite preview",
-        "check": "pn tsc --noEmit --skipLibCheck",
+        "check": "pnpm tsc --noEmit --skipLibCheck",
         "lint": "eslint .",
         "lint:dry": "eslint --fix-dry-run .",
         "lint:fix": "eslint --fix .",

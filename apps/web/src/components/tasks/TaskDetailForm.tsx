@@ -16,11 +16,13 @@ import {
 } from '@/components/ui/combobox'
 type TaskDetailFormProps = {
     task: Task
+    teamId: string
     teamMembers: TeamMemberProfile[]
+    projectId: string
     onSaved?: (task: Task) => void
     onClose?: () => void
 }
-export function TaskDetailForm({ task, teamMembers, onSaved, onClose }: TaskDetailFormProps) {
+export function TaskDetailForm({ task, teamId, teamMembers, projectId, onSaved, onClose }: TaskDetailFormProps) {
     const [title, setTitle] = useState(task.title)
     const [assigneeId, setAssigneeId] = useState<string>(task.assigneeId ?? '')
     const [isSaving, setIsSaving] = useState(false)
@@ -50,7 +52,7 @@ export function TaskDetailForm({ task, teamMembers, onSaved, onClose }: TaskDeta
             return
         setIsSaving(true)
         try {
-            const updated = await updateTask(task.id, {
+            const updated = await updateTask(teamId, projectId, task.id, {
                 title: nextTitle,
                 description: editor.getHTML(),
                 assigneeId: assigneeId || undefined,

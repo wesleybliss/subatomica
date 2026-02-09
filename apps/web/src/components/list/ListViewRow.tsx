@@ -124,7 +124,7 @@ export function ListViewRow({
                                 className={cn(
                                     'w-6 h-6 rounded-full',
                                     'bg-primary/20 flex items-center',
-                                    'justify-center flex-shrink-0',
+                                    'justify-center shrink-0',
                                 )}>
                                 <span
                                     className={cn(
