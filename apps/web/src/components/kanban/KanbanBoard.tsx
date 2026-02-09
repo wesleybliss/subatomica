@@ -1,5 +1,6 @@
 import { useState } from 'react'
-
+import { useWireValue } from '@forminator/react-wire'
+import * as store from '@/store'
 import { KanbanCard } from './KanbanCard'
 import { KanbanColumn } from './KanbanColumn'
 
@@ -24,15 +25,10 @@ interface KanbanBoardProps {
     onTaskToggle?: (taskId: string, checked: boolean) => void
 }
 
-const COLUMNS = [
-    { id: 'backlog', title: 'Backlog', count: 0 },
-    { id: 'todo', title: 'Todo', count: 0 },
-    { id: 'in-progress', title: 'In Progress', count: 0 },
-    { id: 'done', title: 'Done', count: 0 },
-]
-
 export function KanbanBoard({ tasks, onTaskClick, onTaskToggle }: KanbanBoardProps) {
     const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set())
+    
+    const lanes = useWireValue(store.lanes)
     
     const toggleCard = (taskId: string) => {
         const newSelected = new Set(selectedCards)
@@ -47,23 +43,23 @@ export function KanbanBoard({ tasks, onTaskClick, onTaskToggle }: KanbanBoardPro
     
     // Group tasks by status
     const tasksByStatus = tasks.reduce((acc, task) => {
-        if (!acc[task.status]) {
+        if (!acc[task.status])
             acc[task.status] = []
-        }
+        console.log(task.title, '->', task.status)
         acc[task.status].push(task)
         return acc
     }, {} as Record<string, KanbanTask[]>)
     
     // Update column counts
-    const columnsWithCounts = COLUMNS.map(col => ({
-        ...col,
-        count: tasksByStatus[col.id]?.length || 0,
+    const columnsWithCounts = lanes.map(it => ({
+        ...it,
+        count: tasksByStatus[it.key]?.length || 0,
     }))
     
     return (
         <div className="flex gap-4 h-full overflow-x-auto pb-4">
             {columnsWithCounts.map(column => (
-                <KanbanColumn key={column.id} title={column.title} count={column.count}>
+                <KanbanColumn key={column.id} title={column.name} count={column.count}>
                     {tasksByStatus[column.id]?.map(task => (
                         <KanbanCard
                             key={task.id}

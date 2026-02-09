@@ -26,7 +26,7 @@ export default function DashboardPage() {
         )
     
     // Redirect to the most recent team page
-    setTimeout(() => navigate(`/t/${lastUpdatedTeam.id}`), 300)
+    setTimeout(() => navigate(`/t/${lastUpdatedTeam.slug}`), 300)
     
     // @todo loader
     return (

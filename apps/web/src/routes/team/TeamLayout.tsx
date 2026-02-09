@@ -41,6 +41,7 @@ export default function TeamLayout() {
         <SidebarProvider>
             <AppSidebar
                 teamId={team.id}
+                teamSlug={team.slug}
                 teamName={team.name}
                 teams={teams}
                 user={avatarUser} />

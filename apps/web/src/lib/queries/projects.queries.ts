@@ -58,13 +58,26 @@ export const useGetProjectQuery = (teamId: string, projectId: string) => {
                 const res = (await request(`/projects/${projectId}?teamId=${teamId}`) as Project) || null
                 
                 if (res?.id) {
+                    
                     const next = store.projects.getValue() || []
                     const idx = next.findIndex(it => it.id === res.id)
+                    
                     if (idx >= 0)
                         next[idx] = res
                     else
                         next.push(res)
+                    
                     store.projects.setValue(next)
+                    
+                    if (res.taskLanes?.length) {
+                        const taskLanes = new Map<string, TaskLane[]>()
+                        res.taskLanes.forEach(it => taskLanes.set(it.id, [it]))
+                        store.lanes.setValue([
+                            ...store.lanes.getValue(),
+                            ...Array.from(taskLanes.values()).flat(),
+                        ])
+                    }
+                    
                 }
                 
                 return res

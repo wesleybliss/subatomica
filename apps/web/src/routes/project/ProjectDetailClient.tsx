@@ -38,11 +38,14 @@ export function ProjectDetailClient({
     }, [tasksQuery])
     
     const filteredTasks = useMemo(() => {
-        if (!tasksQuery.length) {
+        if (!tasksQuery.length)
             return tasks
-        }
         
-        const query = tasksQuery.toLowerCase()
+        const query = tasksQuery.trim().toLowerCase()
+        
+        if (!query)
+            return tasks
+        
         return tasks.filter(it => it.title
             .toLowerCase()
             .includes(query))

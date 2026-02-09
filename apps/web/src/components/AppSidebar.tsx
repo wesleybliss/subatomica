@@ -22,6 +22,7 @@ type AvatarUser = {
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
     teamId: string
+    teamSlug: string
     teamName: string
     teams: Team[]
     user: AvatarUser
@@ -29,6 +30,7 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
 
 export function AppSidebar({
     teamId,
+    teamSlug,
     teamName,
     teams,
     user,
@@ -39,21 +41,21 @@ export function AppSidebar({
     const navMain = [
         {
             title: 'Overview',
-            url: `/t/${teamId}`,
+            url: `/t/${teamSlug}`,
             icon: FolderKanban,
-            isActive: pathname === `/t/${teamId}`,
+            isActive: pathname === `/t/${teamSlug}`,
         },
         {
             title: 'All Projects',
-            url: `/t/${teamId}/p`,
+            url: `/t/${teamSlug}/p`,
             icon: Shapes,
-            isActive: pathname.startsWith(`/t/${teamId}/p`),
+            isActive: pathname.startsWith(`/t/${teamSlug}/p`),
         },
         {
             title: 'Settings',
-            url: `/t/${teamId}/settings`,
+            url: `/t/${teamSlug}/settings`,
             icon: Settings2,
-            isActive: pathname.startsWith(`/t/${teamId}/settings`),
+            isActive: pathname.startsWith(`/t/${teamSlug}/settings`),
         },
     ]
     return (

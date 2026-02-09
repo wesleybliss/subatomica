@@ -27,20 +27,20 @@ const useMonitorNavigation = () => {
     
     useEffect(() => {
         
-        const teamId = normalizeParam(params?.teamId as string | string[] | undefined)
-        const projectId = normalizeParam(params?.projectId as string | string[] | undefined)
-        const taskId = normalizeParam(params?.taskId as string | string[] | undefined)
+        const teamSlug = normalizeParam(params?.teamSlug as string | string[] | undefined)
+        const projectSlug = normalizeParam(params?.projectSlug as string | string[] | undefined)
+        const taskSlug = normalizeParam(params?.taskSlug as string | string[] | undefined)
         
         console.log('useMonitorNavigation', {
-            teamId,
-            projectId,
-            taskId,
+            teamSlug,
+            projectSlug,
+            taskSlug,
             params: params,
         })
         
-        selectedTeamId.setValue(teamId)
-        selectedProjectId.setValue(projectId)
-        selectedTaskId.setValue(taskId)
+        selectedTeamSlug.setValue(teamSlug)
+        selectedProjectSlug.setValue(projectSlug)
+        selectedTaskSlug.setValue(taskSlug)
         
     }, [params, pathname])
     

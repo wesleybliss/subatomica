@@ -16,7 +16,7 @@ export default function WorkspaceSettingsPage() {
     const navigate = useNavigate()
     const { data: session } = useSession()
     
-    const teamId = params.teamId
+    const teamSlug = params.teamSlug
     
     const teams = useWireValue(store.teams)
     const members = useWireValue(store.teamMembers)
@@ -25,12 +25,14 @@ export default function WorkspaceSettingsPage() {
     const canManage = true
     
     const team = useMemo(() => (
-        teams?.find(it => it.id === teamId)
-    ), [teams, teamId])
+        teams?.find(it => it.slug === teamSlug)
+    ), [teams, teamSlug])
+    
+    const teamId = team?.id
     
     if (!session) return navigate('/sign-in', { replace: true })
     
-    if (!teamId || !team) return navigate('/')
+    if (!teamSlug || !team) return navigate('/')
     
     // @todo check canManageTeamMembers(teamId),
     

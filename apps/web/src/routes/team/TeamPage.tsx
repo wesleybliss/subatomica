@@ -20,13 +20,15 @@ const activeProjectsQueryKey = ['projects']
 export default function TeamPage() {
     
     const params = useParams()
-    const teamId = params.teamId as string
+    const teamSlug = params.teamSlug as string
     
     const teams = useWireValue(store.teams)
     
     const team = useMemo<Team | undefined>(() => (
-        teams?.find(it => it.id === teamId)
-    ), [teams, teamId])
+        teams?.find(it => it.slug === teamSlug)
+    ), [teams, teamSlug])
+    
+    const teamId = team?.id
     
     const { isPending: projectsIsPending, error: projectsError, data: projects = [] } = useGetProjectsQuery(teamId)
     const { isPending: tasksIsPending, error: tasksError, data: tasks = [] } = useGetTasksQuery(teamId)
@@ -128,7 +130,7 @@ export default function TeamPage() {
                         Recent Projects
                     </h2>
                     <div className="flex justify-end items-center">
-                        <Link className="text-sm" to={`/t/${teamId}/p`}>
+                        <Link className="text-sm" to={`/t/${team.slug}/p`}>
                             View All Projects
                         </Link>
                     </div>

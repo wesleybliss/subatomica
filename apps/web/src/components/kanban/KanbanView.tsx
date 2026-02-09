@@ -25,9 +25,24 @@ const KanbanView = ({
     
     const [lanes, setLanes] = useState<TaskLane[]>(initialLanes)
     
-    useEffect(() => {
+    // Group tasks by status
+    /*const tasksByStatus = tasks.reduce((acc, task) => {
+        if (!acc[task.status])
+            acc[task.status] = []
+        console.log(task.title, '->', task.status)
+        acc[task.status].push(task)
+        return acc
+    }, {} as Record<string, Task[]>)
+    
+    // Update column counts
+    const columnsWithCounts = lanes.map(it => ({
+        ...it,
+        count: tasksByStatus[it.key]?.length || 0,
+    }))*/
+    
+    /*useEffect(() => {
         setLanes(initialLanes)
-    }, [initialLanes])
+    }, [initialLanes])*/
     
     return (
         

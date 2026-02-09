@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "tsx watch src/server.ts",
+        "dev": "tsx watch src/index.ts",
         "start": "node dist/server.js",
         "build": "tsc",
         "check": "pnpm tsc --noEmit --skipLibCheck",

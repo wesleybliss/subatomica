@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label'
 import { updateTask } from '@/lib/queries/tasks.queries'
 type TaskDetailFormProps = {
     task: Task
-    teamId: string
+    teamId: string | null
     teamMembers: TeamMemberProfile[]
     projectId: string
     onSaved?: (task: Task) => void
@@ -53,6 +53,8 @@ export function TaskDetailForm({ task, teamId, teamMembers, projectId, onSaved, 
             return
         setIsSaving(true)
         try {
+            if (!teamId)
+                return console.warn('TaskDetailForm missing teamId')
             const updated = await updateTask(teamId, projectId, task.id, {
                 title: nextTitle,
                 description: editor.getHTML(),

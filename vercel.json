@@ -1,0 +1,20 @@
+{
+    "builds": [
+        {
+            "src": "apps/api/src/index.ts",
+            "use": "@vercel/edge"
+        },
+        {
+            "src": "apps/web/package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "dist"
+            }
+        }
+    ],
+    "routes": [
+        { "src": "/api/(.*)", "dest": "apps/api/src/index.ts" },
+        { "handle": "filesystem" },
+        { "src": "/(.*)", "dest": "/apps/web/$1" }
+    ]
+}

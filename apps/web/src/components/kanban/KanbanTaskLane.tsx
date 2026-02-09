@@ -103,7 +103,7 @@ const KanbanTaskLane = ({
     }, [canManageLanes, handleReorderLane, lane.id])
     
     const statusTasks = tasks
-        .filter(t => t.status === lane.key)
+        .filter(t => (console.log(t.status, 'vs', lane.key)) || (t.status === lane.key))
         .sort((a, b) => a.order - b.order)
     
     return (
