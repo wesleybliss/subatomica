@@ -338,7 +338,7 @@ const KanbanBoardDndViewModel = (
         const prevLane = sortedLanes[insertIndex - 1]
         const nextLane = sortedLanes[insertIndex]
         if (prevLane && nextLane)
-            return (prevLane.order + nextLane.order) / 2
+            return Math.round((prevLane.order + nextLane.order) / 2)
         if (prevLane)
             return prevLane.order + 1000
         if (nextLane)
