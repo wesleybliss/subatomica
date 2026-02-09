@@ -1,6 +1,7 @@
 import type { TaskLane } from '@repo/shared/types'
+import { Tag,Trash2 } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
-import { Trash2, Tag } from 'lucide-react'
 import {
     DropdownMenu,
     DropdownMenuContent,

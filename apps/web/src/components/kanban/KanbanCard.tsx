@@ -1,6 +1,8 @@
 import { Flag } from 'lucide-react'
-import { KanbanTask } from './KanbanBoard'
+
 import { cn } from '@/lib/utils'
+
+import { KanbanTask } from './KanbanBoard'
 
 interface KanbanCardProps {
     task: KanbanTask

@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react'
 import { Laptop, Moon, Sun } from 'lucide-react'
+import { useEffect, useState } from 'react'
+
 import { useTheme } from '@/components/ThemeProvider'
+import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
 
 type ThemeName = 'light' | 'dark' | 'system'
 

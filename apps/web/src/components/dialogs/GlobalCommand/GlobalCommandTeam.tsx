@@ -1,10 +1,11 @@
+import { Team } from '@repo/shared/types'
+import { CreditCardIcon, SettingsIcon, UserIcon } from 'lucide-react'
+
 import {
     CommandGroup,
     CommandItem,
     CommandShortcut,
 } from '@/components/ui/command'
-import { CreditCardIcon, SettingsIcon, UserIcon } from 'lucide-react'
-import { Team } from '@repo/shared/types'
 
 interface GlobalCommandTeamParams {
     selectedTeam: Team | null

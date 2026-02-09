@@ -1,6 +1,6 @@
-import slugify from 'slugify'
 import acronym from '@stdlib/string-acronym'
 import ShortUniqueId from 'short-unique-id'
+import slugify from 'slugify'
 
 const uid = new ShortUniqueId({ length: 6 })
 

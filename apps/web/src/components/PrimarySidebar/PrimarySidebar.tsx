@@ -1,10 +1,12 @@
-import { Link } from 'react-router-dom'
 import {
     PanelLeftClose,
     PanelLeftOpen,
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+
 import TeamsAccountMenu from '@/components/PrimarySidebar/TeamsAccountMenu'
 import { Button } from '@/components/ui/button'
+
 import PrimarySidebarViewModel from './PrimarySidebarViewModel'
 
 // @todo @deprecated - don'teams delete yet, might merge some things into the AppSidebar

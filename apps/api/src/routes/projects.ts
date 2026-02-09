@@ -1,10 +1,11 @@
-import { HTTPException } from 'hono/http-exception'
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import type { RouteHandler } from '@hono/zod-openapi'
-import * as projectsService from '@/services/projects'
+import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
+import { HTTPException } from 'hono/http-exception'
+
 import { ApiAppEnv } from '@/env'
 import { ProjectSchema, ProjectWithLanesSchema } from '@/openapi/projects.zod'
 import { ErrorSchema, SuccessSchema } from '@/openapi/shared.zod'
+import * as projectsService from '@/services/projects'
 
 const ProjectParamSchema = z.object({
     projectId: z.string().openapi({

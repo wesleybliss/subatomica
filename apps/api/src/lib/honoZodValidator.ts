@@ -1,7 +1,7 @@
+import { zValidator as zv } from '@hono/zod-validator'
 import { ValidationTargets } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import { ZodSchema } from 'zod'
-import { zValidator as zv } from '@hono/zod-validator'
 
 export const zValidator = <
     T extends ZodSchema,

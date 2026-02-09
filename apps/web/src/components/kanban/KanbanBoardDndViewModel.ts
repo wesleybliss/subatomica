@@ -1,20 +1,22 @@
-import logger from '@repo/shared/utils/logger'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { useWireState } from '@forminator/react-wire'
-import * as store from '@/store'
 import { Task, TaskLane, TaskStatus } from '@repo/shared/types'
+import { DropIndicatorData } from '@repo/shared/types'
+import logger from '@repo/shared/utils/logger'
+import { generateSlug } from '@repo/shared/utils/slugs'
+import { useQueryClient } from '@tanstack/react-query'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { v7 as uuidv7 } from 'uuid'
+
 import {
     useCreateTaskLaneMutation,
     useDeleteTaskLaneMutation,
     useUpdateTaskLaneMutation,
 } from '@/lib/mutations/lanes.mutations'
-import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { useQueryClient } from '@tanstack/react-query'
-import { type ColumnDropData, type TaskDropData, isColumnDropData, isTaskDragData, isTaskDropData } from './dragTypes'
-import { DropIndicatorData } from '@repo/shared/types'
 import { useCreateTaskMutation, useUpdateTaskOrderMutation } from '@/lib/mutations/tasks.mutations'
-import { generateSlug } from '@repo/shared/utils/slugs'
+import * as store from '@/store'
+
+import { type ColumnDropData, isColumnDropData, isTaskDragData, isTaskDropData,type TaskDropData } from './dragTypes'
 
 const log = logger('KanbanBoardDndViewModel')
 

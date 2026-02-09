@@ -1,6 +1,8 @@
 import 'dotenv/config'
-import app from './app'
+
 import { serve } from '@hono/node-server'
+
+import app from './app'
 
 /*const globalForServer = globalThis as unknown as {
     __honoServer?: ReturnType<typeof serve>

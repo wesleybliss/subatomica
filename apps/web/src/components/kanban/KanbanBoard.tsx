@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { KanbanColumn } from './KanbanColumn'
+
 import { KanbanCard } from './KanbanCard'
+import { KanbanColumn } from './KanbanColumn'
 
 export interface KanbanTask {
     id: string

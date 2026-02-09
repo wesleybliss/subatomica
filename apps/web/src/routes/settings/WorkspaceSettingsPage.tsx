@@ -1,10 +1,11 @@
-import { useNavigate, useParams } from 'react-router-dom'
-import * as store from '@/store'
-import SettingsAccountHeader from '@/components/settings/SettingsAccountHeader'
-import { MembersSection } from '@/components/settings/MembersSection'
-import { useSession } from '@/lib/auth-client'
 import { useWireValue } from '@forminator/react-wire'
 import { useMemo } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+
+import { MembersSection } from '@/components/settings/MembersSection'
+import SettingsAccountHeader from '@/components/settings/SettingsAccountHeader'
+import { useSession } from '@/lib/auth-client'
+import * as store from '@/store'
 
 const avatarUrlFor = (name: string, email: string) =>
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`

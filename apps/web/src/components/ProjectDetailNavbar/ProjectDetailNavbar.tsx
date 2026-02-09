@@ -1,9 +1,10 @@
 import type { Project, ProjectDetailView } from '@repo/shared/types'
+
+import TasksSearchInput from '@/components/list/TasksSearchInput'
+import ProjectsSelectorDropdown from '@/components/ProjectDetailNavbar/ProjectsSelectorDropdown'
+import ThemeToggle from '@/components/ThemeToggle'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import ThemeToggle from '@/components/ThemeToggle'
-import ProjectsSelectorDropdown from '@/components/ProjectDetailNavbar/ProjectsSelectorDropdown'
-import TasksSearchInput from '@/components/list/TasksSearchInput'
 
 interface ProjectDetailNavbarProps {
     teamId: string

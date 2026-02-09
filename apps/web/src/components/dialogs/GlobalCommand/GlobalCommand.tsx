@@ -1,5 +1,9 @@
 import { useWireState, useWireValue } from '@forminator/react-wire'
-import * as store from '@/store'
+import { CalculatorIcon, CalendarIcon, CreditCardIcon, SettingsIcon, SmileIcon, UserIcon } from 'lucide-react'
+
+import GlobalCommandProject from '@/components/dialogs/GlobalCommand/GlobalCommandProject'
+import GlobalCommandTask from '@/components/dialogs/GlobalCommand/GlobalCommandTask'
+import GlobalCommandTeam from '@/components/dialogs/GlobalCommand/GlobalCommandTeam'
 import {
     Command,
     CommandDialog,
@@ -11,10 +15,7 @@ import {
     CommandSeparator,
     CommandShortcut,
 } from '@/components/ui/command'
-import { CalculatorIcon, CalendarIcon, CreditCardIcon, SettingsIcon, SmileIcon, UserIcon } from 'lucide-react'
-import GlobalCommandTask from '@/components/dialogs/GlobalCommand/GlobalCommandTask'
-import GlobalCommandTeam from '@/components/dialogs/GlobalCommand/GlobalCommandTeam'
-import GlobalCommandProject from '@/components/dialogs/GlobalCommand/GlobalCommandProject'
+import * as store from '@/store'
 
 const GlobalCommand = () => {
     

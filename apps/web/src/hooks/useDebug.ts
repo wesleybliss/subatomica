@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
-import * as store from '@/store'
-import { signOut } from '@/lib/auth-client'
 import { useNavigate } from 'react-router-dom'
+
+import { signOut } from '@/lib/auth-client'
+import * as store from '@/store'
 
 type WindowDebug = typeof window & {
     app?: {

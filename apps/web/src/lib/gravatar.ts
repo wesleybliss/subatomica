@@ -1,5 +1,5 @@
-import { cache } from 'react'
 import { MD5 } from 'crypto-js'
+import { cache } from 'react'
 
 const normalizeEmail = (email: string) => email.trim().toLowerCase()
 

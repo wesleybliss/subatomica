@@ -1,6 +1,8 @@
-import { format } from 'date-fns'
 import type { Project, Task } from '@repo/shared/types'
+import { format } from 'date-fns'
+
 import { cn } from '@/lib/utils'
+
 import TimelineViewModel from './TimelineViewViewModel'
 
 type TimelineViewProps = {

@@ -1,7 +1,8 @@
 import { useWireState } from '@forminator/react-wire'
-import * as store from '@/store'
-import { useTheme } from '@/components/ThemeProvider'
 import { DebugToolsMode } from '@repo/shared/types'
+
+import { useTheme } from '@/components/ThemeProvider'
+import * as store from '@/store'
 
 const DebugToolsViewModel = () => {
     

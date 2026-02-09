@@ -1,7 +1,8 @@
-import { useParams, useNavigate, Outlet } from 'react-router-dom'
-import * as store from '@/store'
-import React, { useMemo } from 'react'
 import { useWireValue } from '@forminator/react-wire'
+import React, { useMemo } from 'react'
+import { Outlet,useNavigate, useParams } from 'react-router-dom'
+
+import * as store from '@/store'
 
 export default function WorkspaceSettingsLayout() {
     

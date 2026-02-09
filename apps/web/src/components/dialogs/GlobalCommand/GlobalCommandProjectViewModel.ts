@@ -1,11 +1,12 @@
+import { useWireValue } from '@forminator/react-wire'
+import { Task } from '@repo/shared/types'
 import logger from '@repo/shared/utils/logger'
 import { useState } from 'react'
-import { useWireValue } from '@forminator/react-wire'
-import * as store from '@/store'
-import { useCreateTaskMutation } from '@/lib/mutations/tasks.mutations'
-import { Task } from '@repo/shared/types'
 import { toast } from 'sonner'
 import { v7 as uuidv7 } from 'uuid'
+
+import { useCreateTaskMutation } from '@/lib/mutations/tasks.mutations'
+import * as store from '@/store'
 
 const log = logger('GlobalCommandProjectViewModel')
 

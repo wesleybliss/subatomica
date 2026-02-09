@@ -1,15 +1,16 @@
+import type { RouteHandler } from '@hono/zod-openapi'
+import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import logger from '@repo/shared/utils/logger'
 import { HTTPException } from 'hono/http-exception'
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
-import type { RouteHandler } from '@hono/zod-openapi'
-import * as teamsService from '@/services/teams'
+
+import { ApiAppEnv } from '@/env'
+import { ProjectSchema } from '@/openapi/projects.zod'
+import { ErrorSchema, SuccessSchema } from '@/openapi/shared.zod'
+import { TaskSchema } from '@/openapi/tasks.zod'
+import { TeamMemberSchema, TeamSchema } from '@/openapi/teams.zod'
 import * as projectsService from '@/services/projects'
 import * as tasksService from '@/services/tasks'
-import { ApiAppEnv } from '@/env'
-import { TeamMemberSchema, TeamSchema } from '@/openapi/teams.zod'
-import { ProjectSchema } from '@/openapi/projects.zod'
-import { TaskSchema } from '@/openapi/tasks.zod'
-import { ErrorSchema, SuccessSchema } from '@/openapi/shared.zod'
+import * as teamsService from '@/services/teams'
 
 const log = logger('routes/teams')
 

@@ -1,4 +1,4 @@
-export { KanbanBoard } from './KanbanBoard'
-export { KanbanColumn } from './KanbanColumn'
-export { KanbanCard } from './KanbanCard'
 export type { KanbanTask } from './KanbanBoard'
+export { KanbanBoard } from './KanbanBoard'
+export { KanbanCard } from './KanbanCard'
+export { KanbanColumn } from './KanbanColumn'

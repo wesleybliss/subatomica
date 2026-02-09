@@ -1,8 +1,9 @@
 import { useWireValue } from '@forminator/react-wire'
-import * as store from '@/store'
-import { Link } from 'react-router-dom'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FolderKanban, LayoutGrid } from 'lucide-react'
+import { Link } from 'react-router-dom'
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import * as store from '@/store'
 
 export default function TeamProjectsPage() {
     

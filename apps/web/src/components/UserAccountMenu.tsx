@@ -1,6 +1,8 @@
-import { memo, useMemo } from 'react'
 import { useWireValue } from '@forminator/react-wire'
-import { teams as storeTeams } from '@/store/teams'
+import { getUnixTime } from 'date-fns'
+import { memo, useMemo } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
@@ -12,8 +14,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { signOut, useSession } from '@/lib/auth-client'
-import { getUnixTime } from 'date-fns'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { teams as storeTeams } from '@/store/teams'
 
 const avatarUrlFor = (name: string, email: string) =>
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`

@@ -1,15 +1,17 @@
-import { KanbanColumn } from './KanbanColumnDnd'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { GripVertical, Plus } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Task, TaskStatus, TaskLane, DropIndicatorData, TeamMemberProfile } from '@repo/shared/types'
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
-import ManageLaneDropdown from '@/components/kanban/ManageLaneDropdown'
-import { cn } from '@/lib/utils'
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { DropIndicatorData, Task, TaskLane, TaskStatus, TeamMemberProfile } from '@repo/shared/types'
+import { GripVertical, Plus } from 'lucide-react'
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+
+import ManageLaneDropdown from '@/components/kanban/ManageLaneDropdown'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
+
 import { isLaneDragData } from './dragTypes'
+import { KanbanColumn } from './KanbanColumnDnd'
 
 interface TaskLaneProps {
     lane: TaskLane

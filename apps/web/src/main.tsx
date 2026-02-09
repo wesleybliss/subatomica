@@ -1,8 +1,10 @@
+import './globals.css'
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+
 import App from '@/routes'
-import './globals.css'
 
 // oxlint-disable-next-line no-restricted-globals
 createRoot(document.getElementById('root')!).render(

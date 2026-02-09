@@ -1,5 +1,5 @@
-import * as tursoSchema from '@/db/turso/schema.turso'
 import * as postgresSchema from '@/db/postgres/schema.postgres'
+import * as tursoSchema from '@/db/turso/schema.turso'
 
 if (!process.env.DATABASE_DIALECT)
     throw new Error('schema.ts: DATABASE_DIALECT env variable is not set')

@@ -1,8 +1,9 @@
-import { Fragment, useRef, useEffect } from 'react'
-import { Task, TaskStatus, TeamMemberProfile } from '@repo/shared/types'
-import { KanbanCardDnd } from './KanbanCardDnd'
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { Task, TaskStatus, TeamMemberProfile } from '@repo/shared/types'
+import { Fragment, useEffect,useRef } from 'react'
+
 import { isTaskDragData } from './dragTypes'
+import { KanbanCardDnd } from './KanbanCardDnd'
 
 interface KanbanColumnProps {
     status: TaskStatus

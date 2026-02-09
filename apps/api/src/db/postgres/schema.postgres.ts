@@ -1,5 +1,6 @@
-import { postgresTable as table, postgresTimestamp as timestamp } from '@/db/shared'
 import { boolean, index, integer, text, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core'
+
+import { postgresTable as table, postgresTimestamp as timestamp } from '@/db/shared'
 
 // Users table (managed by BetterAuth)
 export const users = table('users', {

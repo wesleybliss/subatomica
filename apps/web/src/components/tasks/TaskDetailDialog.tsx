@@ -1,9 +1,10 @@
-import logger from '@repo/shared/utils/logger'
-import * as store from '@/store'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import type { Task, TeamMemberProfile } from '@repo/shared/types'
-import { TaskDetailForm } from '@/components/tasks/TaskDetailForm'
 import { useWireValue } from '@forminator/react-wire'
+import type { Task, TeamMemberProfile } from '@repo/shared/types'
+import logger from '@repo/shared/utils/logger'
+
+import { TaskDetailForm } from '@/components/tasks/TaskDetailForm'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import * as store from '@/store'
 
 const log = logger('TaskDetailDialog')
 

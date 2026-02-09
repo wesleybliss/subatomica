@@ -1,6 +1,7 @@
-import { createSelectSchema } from 'drizzle-zod'
-import { taskLanes } from '@/db/schema'
 import { z } from '@hono/zod-openapi'
+import { createSelectSchema } from 'drizzle-zod'
+
+import { taskLanes } from '@/db/schema'
 
 const TaskLaneBaseSchema = createSelectSchema(taskLanes).extend({
     id: z.string().openapi({

@@ -1,18 +1,19 @@
 import { useWireValue } from '@forminator/react-wire'
+import type { LucideIcon } from 'lucide-react'
 import {
-    Search,
-    Users,
-    Eye,
     Code,
-    Palette,
-    TrendingUp,
-    Settings,
+    Eye,
     LayoutGrid,
+    Palette,
+    Search,
+    Settings,
+    TrendingUp,
+    Users,
 } from 'lucide-react'
+import { useLocation } from 'react-router-dom'
+
 import { cn } from '@/lib/utils'
 import { primarySidebarCollapsed } from '@/store/app'
-import type { LucideIcon } from 'lucide-react'
-import { useLocation } from 'react-router-dom'
 
 type NavItem = {
     icon: LucideIcon

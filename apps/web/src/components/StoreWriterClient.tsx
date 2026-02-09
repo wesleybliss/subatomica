@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
 import { Defined, useWire, type Wire } from '@forminator/react-wire'
+import { useEffect } from 'react'
+
 import * as store from '@/store'
 
 interface StoreWriterClientProps<T> {
