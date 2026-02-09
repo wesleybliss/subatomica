@@ -20,11 +20,11 @@ export const tursoTable = <
     TTableName extends string,
     TColumnsMap extends TursoColumns
 >(
-        name: TTableName,
-        columns: TColumnsMap,
-        // oxlint-disable-next-line typescript-eslint(no-explicit-any)
-        extraConfig?: (table: any) => Record<string, any>,
-    ) => {
+    name: TTableName,
+    columns: TColumnsMap,
+// oxlint-disable-next-line typescript-eslint(no-explicit-any)
+    extraConfig?: (table: any) => Record<string, any>,
+) => {
     
     const { sqliteTable, text } = sqliteCore
     const timestamp = tursoTimestamp
@@ -61,11 +61,11 @@ export const postgresTable = <
     TTableName extends string,
     TColumnsMap extends PostgresColumns
 >(
-        name: TTableName,
-        columns: TColumnsMap,
-        // oxlint-disable-next-line typescript-eslint(no-explicit-any)
-        extraConfig?: (table: any) => Record<string, any>,
-    ) => {
+    name: TTableName,
+    columns: TColumnsMap,
+// oxlint-disable-next-line typescript-eslint(no-explicit-any)
+    extraConfig?: (table: any) => Record<string, any>,
+) => {
     
     const { pgTable, uuid } = postgresCore
     const timestamp = postgresTimestamp

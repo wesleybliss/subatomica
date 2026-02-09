@@ -19,28 +19,27 @@ type TeamsAccountMenuProps = {
 }
 
 const TeamsAccountMenu = ({ collapsed = false }: TeamsAccountMenuProps) => {
-    
     const location = useLocation()
     const navigate = useNavigate()
     const pathname = location.pathname
     
     const teams = useWireValue(storeTeams)
     
-    const activeTeamId = useMemo(() => {
+    const activeTeamSlug = useMemo(() => {
         const match = pathname?.match(/\/t\/([^/]+)/)
-        return match?.[1] ?? teams.sort((a, b) => getUnixTime(a.updatedAt) - getUnixTime(b.updatedAt))[0].id
+        return match?.[1] ?? teams.sort((a, b) => getUnixTime(a.updatedAt) - getUnixTime(b.updatedAt))[0].slug
     }, [pathname, teams])
     
-    const activeTeam = useMemo(() => teams.find(it => it.id === activeTeamId), [activeTeamId])
+    const activeTeam = useMemo(() => teams.find(it => it.slug === activeTeamSlug), [activeTeamSlug])
     const activeTeamName = activeTeam?.name ?? 'Personal'
     const activeTeamInitial = activeTeamName.slice(0, 1).toUpperCase()
     
-    const onTeamSelect = (teamId: string) => {
-        navigate(`/t/${teamId}`)
+    const onTeamSelect = (teamSlug: string) => {
+        navigate(`/t/${teamSlug}`)
     }
     
     const onCreateTeam = () => {
-        navigate(`/t/${activeTeamId}/teams`)
+        navigate(`/t/${activeTeamSlug}/teams`)
     }
     
     return (
@@ -75,8 +74,8 @@ const TeamsAccountMenu = ({ collapsed = false }: TeamsAccountMenuProps) => {
                     {teams.map(team => (
                         <DropdownMenuItem
                             key={team.id}
-                            onClick={() => onTeamSelect(team.id)}
-                            className={team.id === activeTeamId ? 'font-medium' : undefined}>
+                            onClick={() => onTeamSelect(team.slug)}
+                            className={team.slug === activeTeamSlug ? 'font-medium' : undefined}>
                             <span>{team.name}</span>
                         </DropdownMenuItem>
                     ))}

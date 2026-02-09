@@ -7,6 +7,7 @@ import reactHooksPlugin from 'eslint-plugin-react-hooks'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
+import stylistic from '@stylistic/eslint-plugin'
 import globals from 'globals'
 
 const require = createRequire(import.meta.url)
@@ -160,11 +161,20 @@ export default [
         plugins: {
             ...basePlugins,
             '@typescript-eslint': tsPlugin,
+            '@stylistic': stylistic,
         },
         settings: reactSettings,
         rules: {
             ...baseRules,
             ...tsPlugin.configs.recommended.rules,
+            indent: 'off',
+            '@stylistic/indent': [
+                'error',
+                4,
+                {
+                    SwitchCase: 1,
+                },
+            ],
             'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.tsx'] }],
             'no-undef': 'off',
         },

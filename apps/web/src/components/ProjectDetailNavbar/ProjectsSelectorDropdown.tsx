@@ -1,5 +1,7 @@
+import { useWireValue } from '@forminator/react-wire'
 import type { Project } from '@repo/shared/types'
 import { ChevronDown, FolderKanban, Pencil, Trash2 } from 'lucide-react'
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -16,6 +18,7 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import * as store from '@/store'
 
 interface ProjectsSelectorDropdownProps {
     teamId: string
@@ -28,13 +31,15 @@ const ProjectsSelectorDropdown = ({
     projects,
     selectedProjectId,
 }: ProjectsSelectorDropdownProps) => {
-    
     const navigate = useNavigate()
+    const teams = useWireValue(store.teams)
+    
+    const teamSlug = useMemo(() => {
+        return teams?.find(t => t.id === teamId)?.slug
+    }, [teamId, teams])
     
     return (
-        
         <DropdownMenu>
-            
             <DropdownMenuTrigger render={(
                 <Button
                     className="flex justify-between items-center gap-2 opacity-70 hover:opacity-100"
@@ -47,7 +52,6 @@ const ProjectsSelectorDropdown = ({
             )} />
             
             <DropdownMenuContent className="w-56" align="start">
-                
                 <DropdownMenuGroup>
                     <DropdownMenuLabel>Starred</DropdownMenuLabel>
                     <DropdownMenuItem disabled>No starred projects.</DropdownMenuItem>
@@ -56,14 +60,13 @@ const ProjectsSelectorDropdown = ({
                 <DropdownMenuSeparator />
                 
                 <DropdownMenuGroup>
-                    
                     <DropdownMenuLabel>Projects</DropdownMenuLabel>
                     
                     {projects?.map(it => it.id !== selectedProjectId ? (
                         <DropdownMenuItem
                             key={`projects-menu-${it.id}`}
                             className="flex justify-between items-center gap-2"
-                            onClick={() => navigate(`/t/${teamId}/p/${it.id}`)}>
+                            onClick={() => navigate(`/t/${teamSlug}/p/${it.slug}`)}>
                             <span>{it.name}</span>
                         </DropdownMenuItem>
                     ) : (
@@ -99,16 +102,14 @@ const ProjectsSelectorDropdown = ({
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     <DropdownMenuItem
-                        onClick={() => navigate(`/t/${teamId}/p`)}>
+                        onClick={() => navigate(`/t/${teamSlug}/p`)}>
                         <FolderKanban className="mr-2 h-4 w-4" />
                         View all projects
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
             </DropdownMenuContent>
         </DropdownMenu>
-        
     )
-    
 }
 
 export default ProjectsSelectorDropdown

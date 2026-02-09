@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 
 type ColorGroup = {
-  label: string;
-  colors: { name: string; variable: string }[];
+    label: string;
+    colors: { name: string; variable: string }[];
 };
 
 const COLOR_GROUPS: ColorGroup[] = [
@@ -78,8 +78,8 @@ function ColorSwatch({
     name,
     variable,
 }: {
-  name: string;
-  variable: string;
+    name: string;
+    variable: string;
 }) {
     const [color, setColor] = useState<string>('')
     
@@ -109,7 +109,7 @@ export default function DebugColorsPage() {
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-foreground mb-2">Theme Colors</h1>
                 <p className="text-muted-foreground">
-          All colors from the Tailwind & shadcn configuration
+                    All colors from the Tailwind & shadcn configuration
                 </p>
             </div>
             

@@ -1,7 +1,6 @@
-// @ts-expect-error @todo add types
-// import { Analytics } from '@vercel/analytics/next'
 import { preconnect } from 'react-dom'
 import { Navigate,Outlet, Route, Routes } from 'react-router-dom'
+// @ts-expect-error react-wire-persisted has no types
 import * as reactWirePersisted from 'react-wire-persisted'
 
 import DebugClient from '@/components/debug/DebugClient'
@@ -99,7 +98,7 @@ export default function RootLayout() {
                                 
                                 <Route index element={<TeamsPage />} />
                                 
-                                <Route path=":teamId" element={<TeamLayout />}>
+                                <Route path=":teamSlug" element={<TeamLayout />}>
                                     
                                     <Route index element={<TeamPage />} />
                                     
@@ -107,7 +106,7 @@ export default function RootLayout() {
                                         
                                         <Route index element={<TeamProjectsPage />} />
                                         
-                                        <Route path=":projectId" element={<ProjectDetailPage />} />
+                                        <Route path=":projectSlug" element={<ProjectDetailPage />} />
                                     
                                     </Route>
                                 

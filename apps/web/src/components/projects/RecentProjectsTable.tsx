@@ -1,3 +1,4 @@
+import { useWireValue } from '@forminator/react-wire'
 import { Project, Task } from '@repo/shared/types'
 import { getUnixTime } from 'date-fns'
 import { MoreHorizontalIcon } from 'lucide-react'
@@ -13,8 +14,9 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Progress } from '@/components/ui/progress'
-import { Table, TableBody, TableCell,TableRow } from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { calculateProjectProgress } from '@/lib/utils'
+import * as store from '@/store'
 
 interface RecentProjectsTableProps {
     className?: string
@@ -34,13 +36,17 @@ const RecentProjectsTable = ({
     projects,
     tasks,
 }: RecentProjectsTableProps) => {
+    const teams = useWireValue(store.teams)
+    
+    const teamSlug = useMemo(() => {
+        return teams?.find(t => t.id === teamId)?.slug
+    }, [teamId, teams])
     
     const recentProjectsWithTaskCount = useMemo<ProjectWithTaskCount[]>(() => (
         projects
             ?.sort((a, b) => getUnixTime(a.updatedAt) - getUnixTime(b.updatedAt))
             ?.slice(0, 4)
             ?.map(project => {
-                
                 const projectTasks = tasks.filter(task => task.projectId === project.id)
                 
                 return {
@@ -48,7 +54,6 @@ const RecentProjectsTable = ({
                     taskCount: projectTasks.length,
                     progress: calculateProjectProgress(projectTasks),
                 }
-                
             }) || []
     ), [projects, tasks])
     
@@ -57,17 +62,13 @@ const RecentProjectsTable = ({
     )
     
     return (
-        
         <div className={className}>
-            
             <Table>
                 <TableBody>
                     {recentProjectsWithTaskCount.map(it => (
-                        
                         <TableRow key={`recent-project-${it.id}`}>
-                            
                             <TableCell className="text-base">
-                                <Link to={`/t/${teamId}/p/${it.id}`}>
+                                <Link to={`/t/${teamSlug}/p/${it.slug}`}>
                                     {it.name}
                                 </Link>
                             </TableCell>
@@ -98,15 +99,11 @@ const RecentProjectsTable = ({
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </TableCell>
-                        
                         </TableRow>
-                        
                     ))}
                 </TableBody>
             </Table>
-        
         </div>
-        
     )
     
 }

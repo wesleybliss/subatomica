@@ -78,7 +78,7 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                                 key={team.id}
                                 onClick={() => {
                                     setActiveTeam(team)
-                                    navigate(`/t/${team.id}`)
+                                    navigate(`/t/${team.slug}`)
                                 }}
                                 className="gap-2 p-2">
                                 <div className="flex size-6 items-center justify-center rounded-md border">

@@ -36,22 +36,22 @@ const UserAccountMenu = () => {
         return { user, name, email, avatarUrl }
     }, [session])
     
-    const activeTeamId = useMemo(() => {
+    const activeTeamSlug = useMemo(() => {
         const match = pathname?.match(/\/t\/([^/]+)/)
-        return match?.[1] ?? teams.sort((a, b) => getUnixTime(a.updatedAt) - getUnixTime(b.updatedAt))[0].id
-    }, [pathname])
+        return match?.[1] ?? teams.sort((a, b) => getUnixTime(a.updatedAt) - getUnixTime(b.updatedAt))[0].slug
+    }, [pathname, teams])
     
     const onSignOutClick = () => {
         signOut()
         window.location.replace('/')
     }
     
-    const onTeamSelect = (teamId: string) => {
-        navigate(`/t/${teamId}`)
+    const onTeamSelect = (teamSlug: string) => {
+        navigate(`/t/${teamSlug}`)
     }
     
     const onSettingsClick = () => {
-        navigate(`/t/${activeTeamId}/settings`)
+        navigate(`/t/${activeTeamSlug}/settings`)
     }
     
     return (
@@ -75,8 +75,8 @@ const UserAccountMenu = () => {
                         {teams.map(team => (
                             <DropdownMenuItem
                                 key={team.id}
-                                onClick={() => onTeamSelect(team.id)}
-                                className={team.id === activeTeamId ? 'font-medium' : undefined}>
+                                onClick={() => onTeamSelect(team.slug)}
+                                className={team.slug === activeTeamSlug ? 'font-medium' : undefined}>
                                 <span>{team.name}</span>
                             </DropdownMenuItem>
                         ))}

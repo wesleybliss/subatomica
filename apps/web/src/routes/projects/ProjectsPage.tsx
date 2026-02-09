@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import * as store from '@/store'
 
 export default function TeamProjectsPage() {
-    
     const team = useWireValue(store.selectedTeam)
     
     const projects = useWireValue(store.projects)
@@ -18,9 +17,7 @@ export default function TeamProjectsPage() {
     if (!team) return <div className="p-6">Loading projects...</div>
     
     return (
-        
         <div className="flex flex-1 flex-col p-6">
-            
             <div className="mb-8">
                 <h1 className="text-2xl font-semibold text-foreground">Projects</h1>
                 <p className="text-sm text-muted-foreground mt-1">
@@ -38,7 +35,7 @@ export default function TeamProjectsPage() {
                         Get started by creating a project from the team overview page.
                     </p>
                     <Link
-                        to={`/t/${team.id}`}
+                        to={`/t/${team.slug}`}
                         className="mt-4 inline-flex items-center justify-center rounded-md border border-input
                             bg-background px-4 py-2 text-sm font-medium hover:bg-accent
                             hover:text-accent-foreground">
@@ -50,7 +47,7 @@ export default function TeamProjectsPage() {
                     {projects.map(project => {
                         const taskCount = getTaskCountForProject(project.id)
                         return (
-                            <Link key={project.id} to={`/t/${team.id}/p/${project.id}`}>
+                            <Link key={project.id} to={`/t/${team.slug}/p/${project.slug}`}>
                                 <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
                                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                         <CardTitle className="text-sm font-medium line-clamp-1">
@@ -79,9 +76,6 @@ export default function TeamProjectsPage() {
                     })}
                 </div>
             )}
-        
         </div>
-        
     )
-    
 }
