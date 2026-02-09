@@ -4,6 +4,7 @@ import oxlint from 'eslint-plugin-oxlint'
 import reactPlugin from 'eslint-plugin-react'
 import reactCompiler from 'eslint-plugin-react-compiler'
 import reactHooksPlugin from 'eslint-plugin-react-hooks'
+import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
 import globals from 'globals'
@@ -63,6 +64,7 @@ export default [
             'react-compiler': reactCompiler,
             'react-hooks': reactHooksPlugin,
             'indent-empty-lines': indentEmptyLinesPlugin,
+            'simple-import-sort': simpleImportSort,
         },
         settings: {
             react: {
@@ -121,6 +123,8 @@ export default [
             radix: ['error', 'always'],
             'no-eq-null': 'error',
             'object-curly-spacing': ['error', 'always'],
+            'simple-import-sort/imports': 'error',
+            'simple-import-sort/exports': 'error',
         },
     },
     {
