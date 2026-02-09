@@ -24,6 +24,7 @@
     },
     "dependencies": {
         "@hono/node-server": "^1.19.9",
+        "@hono/zod-openapi": "^1.2.1",
         "@hono/zod-validator": "^0.7.6",
         "@libsql/client": "^0.17.0",
         "@neondatabase/serverless": "^1.0.2",
