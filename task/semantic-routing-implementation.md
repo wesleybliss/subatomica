@@ -20,7 +20,7 @@
 - **Slug Generation Utility** (`apps/api/src/lib/slugs.ts`):
   - `generateSlug()`: Creates URL-safe slugs with 24-char limit and collision handling
   - `generateProjectAcronym()`: Derives project acronym from first letters of major words (max 3 chars)
-  - `formatTaskKey()`: Formats task keys as `[ACRONYM]-[padded_localId]` (e.g., "CPW-01")
+  - `formatTaskSlug()`: Formats task keys as `[ACRONYM]-[padded_localId]` (e.g., "CPW-01")
   
 - **Team Service** (`apps/api/src/services/teams.ts`):
   - `createTeam()`: Now generates and saves slug
@@ -34,7 +34,7 @@
 
 - **Task Service** (`apps/api/src/services/tasks.ts`):
   - `createTask()`: Atomically increments taskSequence and assigns localId
-  - `getTaskKey()`: Returns formatted task key for a task
+  - `getTaskSlug()`: Returns formatted task key for a task
   - `getTaskByKey()`: New function to fetch task by key (scoped by project)
 
 ### 7.4 API Route Enhancements ✅
@@ -81,7 +81,7 @@ This is substantial and requires architectural understanding:
 - [ ] Update route parameters in `apps/web/src/routes/index.tsx`:
   - Change `:teamId` to `:teamSlug`
   - Change `:projectId` to `:projectSlug`
-  - Support `:taskKey` pattern for tasks
+  - Support `:key` pattern for tasks
   
 - [ ] Update layout components (`TeamLayout`, `ProjectLayout`) to:
   - Look up teams/projects by slug instead of ID

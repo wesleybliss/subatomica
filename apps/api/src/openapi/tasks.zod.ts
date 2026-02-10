@@ -34,6 +34,9 @@ const TaskBaseSchema = createSelectSchema(tasks).extend({
     isStarred: z.boolean().openapi({
         example: false,
     }),
+    slug: z.string().nullable().openapi({
+        example: 'CPW-01',
+    }),
 })
 
 export const TaskSchema = TaskBaseSchema.openapi('Task')

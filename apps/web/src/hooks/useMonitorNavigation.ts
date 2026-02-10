@@ -2,9 +2,9 @@ import { useWire } from '@forminator/react-wire'
 import { useEffect } from 'react'
 import { useLocation,useParams } from 'react-router-dom'
 
-import { selectedProjectId as storeSelectedProjectId } from '@/store/projects'
-import { selectedTaskId as storeSelectedTaskId } from '@/store/tasks'
-import { selectedTeamId as storeSelectedTeamId } from '@/store/teams'
+import { selectedProjectSlug as storeSelectedProjectSlug } from '@/store/projects'
+import { selectedTaskSlug as storeSelectedTaskSlug } from '@/store/tasks'
+import { selectedTeamSlug as storeSelectedTeamSlug } from '@/store/teams'
 
 const normalizeParam = (value: string | string[] | undefined) => {
     
@@ -21,9 +21,9 @@ const useMonitorNavigation = () => {
     const location = useLocation()
     const pathname = location.pathname
     
-    const selectedTeamId = useWire(storeSelectedTeamId)
-    const selectedProjectId = useWire(storeSelectedProjectId)
-    const selectedTaskId = useWire(storeSelectedTaskId)
+    const selectedTeamSlug = useWire(storeSelectedTeamSlug)
+    const selectedProjectSlug = useWire(storeSelectedProjectSlug)
+    const selectedTaskSlug = useWire(storeSelectedTaskSlug)
     
     useEffect(() => {
         

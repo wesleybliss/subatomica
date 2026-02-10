@@ -56,7 +56,7 @@ export const generateProjectAcronym = (projectName: string): string => {
  * Formats task key as [ACRONYM]-[localId]
  * e.g., "CPW-01"
  */
-export const formatTaskKey = (acronym: string, localId: number): string => {
+export const formatTaskSlug = (acronym: string, localId: number): string => {
     const paddedId = String(localId).padStart(2, '0')
     return `${acronym}-${paddedId}`
 }

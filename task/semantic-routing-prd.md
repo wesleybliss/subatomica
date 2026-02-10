@@ -7,7 +7,7 @@
 
 Currently, URLs are formatted as `/t/<teamId>/p/<projectId>/c/<taskId>`. We are moving to a descriptive hierarchy:
 
-`/t/<teamSlug>/<projectSlug>/<taskKey>`
+`/t/<teamSlug>/<projectSlug>/<key>`
 
 ## ---
 
@@ -146,12 +146,12 @@ export const generateSlug = (name) => {
 - [x] Update `createProject` (`apps/api/src/services/projects.ts`) to generate `slug` and initialize `taskSequence`.
 - [x] Update `renameProject` service to update `slug` on name changes.
 - [x] Update `createTask` (`apps/api/src/services/tasks.ts`) to atomically increment `taskSequence` and assign `localId`.
-- [x] Add a `taskKey` helper to format `[ACRONYM]-[localId]` (e.g., `CPW-01`).
+- [x] Add a `key` helper to format `[ACRONYM]-[localId]` (e.g., `CPW-01`).
 
 ### **7.4. API Route Enhancements**
 - [x] Update `apps/api/src/routes/teams.ts` to support fetching team by `slug`.
 - [x] Update `apps/api/src/routes/projects.ts` to support fetching project by `slug` (scoped by team).
-- [x] Update `apps/api/src/routes/tasks.ts` to support fetching task by `taskKey` (scoped by project).
+- [x] Update `apps/api/src/routes/tasks.ts` to support fetching task by `key` (scoped by project).
 
 ### **7.5. Frontend (Web App) Migration**
 - [x] Update `apps/web/src/routes/index.tsx` route patterns:

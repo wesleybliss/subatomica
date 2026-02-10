@@ -1,5 +1,5 @@
 import { Task } from '@repo/shared/types'
-import { formatTaskKey,generateProjectAcronym } from '@repo/shared/utils/slugs'
+import { formatTaskSlug,generateProjectAcronym } from '@repo/shared/utils/slugs'
 import { and, desc, eq, inArray, sql } from 'drizzle-orm'
 
 import { db } from '@/db/client'
@@ -217,7 +217,7 @@ const getNextTaskOrder = async (projectId: string, status: string) => {
 /**
  * Get task key (e.g., "CPW-01") for a task
  */
-export async function getTaskKey(projectId: string, taskId: string): Promise<string | null> {
+export async function getTaskSlug(projectId: string, taskId: string): Promise<string | null> {
     const [project] = await db
         .select({ name: projects.name })
         .from(projects)
@@ -234,7 +234,7 @@ export async function getTaskKey(projectId: string, taskId: string): Promise<str
         return null
     
     const acronym = generateProjectAcronym(project.name)
-    return formatTaskKey(acronym, task.localId)
+    return formatTaskSlug(acronym, task.localId)
 }
 
 /**
@@ -244,7 +244,7 @@ export async function getTaskByKey(
     userId: string,
     teamId: string,
     projectId: string,
-    taskKey: string,
+    slug: string,
 ): Promise<Task | null> {
     const teamProjectIds = getTeamProjectIds(userId, teamId)
     
@@ -260,7 +260,7 @@ export async function getTaskByKey(
     if (!project)
         return null
     
-    const localIdMatch = taskKey.match(/^[A-Z0-9]+-(\d+)$/)
+    const localIdMatch = slug.match(/^[A-Z0-9]+-(\d+)$/)
     
     if (!localIdMatch)
         return null

@@ -435,8 +435,12 @@ const getTasks: RouteHandler<typeof getTasksRoute, ApiAppEnv> = async c => {
     const { teamId, projectId } = c.req.valid('query')
     
     const tasks = await tasksService.getTasks(user.id, teamId, projectId)
+    const tasksWithKeys = await Promise.all(tasks.map(async task => ({
+        ...task,
+        key: await tasksService.getTaskSlug(task.projectId, task.id),
+    })))
     
-    return c.json(tasks, 200)
+    return c.json(tasksWithKeys, 200)
 }
 
 const getTaskById: RouteHandler<typeof getTaskByIdRoute, ApiAppEnv> = async c => {
@@ -450,7 +454,15 @@ const getTaskById: RouteHandler<typeof getTaskByIdRoute, ApiAppEnv> = async c =>
     
     const task = await tasksService.getTaskById(user.id, teamId, projectId as string, taskId)
     
-    return c.json(task, 200)
+    if (!task)
+        return c.json(task, 200)
+    
+    const slug = await tasksService.getTaskSlug(task.projectId, task.id)
+    
+    return c.json({
+        ...task,
+        slug,
+    }, 200)
 }
 
 const createTask: RouteHandler<typeof createTaskRoute, ApiAppEnv> = async c => {
@@ -468,8 +480,12 @@ const createTask: RouteHandler<typeof createTaskRoute, ApiAppEnv> = async c => {
         const payload = c.req.valid('json')
         
         const task = await tasksService.createTask(user.id, teamId, projectId, payload)
+        const slug = await tasksService.getTaskSlug(task.projectId, task.id)
         
-        return c.json(task, 201)
+        return c.json({
+            ...task,
+            slug,
+        }, 201)
     } catch (error) {
         return handleRouteError(error)
     }
@@ -490,7 +506,11 @@ const createTaskWithId: RouteHandler<typeof createTaskWithIdRoute, ApiAppEnv> = 
         const { taskId } = c.req.valid('param')
         const payload = c.req.valid('json')
         const task = await tasksService.createTask(user.id, teamId, projectId, { ...payload, id: taskId })
-        return c.json(task, 201)
+        const slug = await tasksService.getTaskSlug(task.projectId, task.id)
+        return c.json({
+            ...task,
+            slug,
+        }, 201)
     } catch (error) {
         return handleRouteError(error)
     }
@@ -512,8 +532,12 @@ const updateTask: RouteHandler<typeof updateTaskRoute, ApiAppEnv> = async c => {
         const payload = c.req.valid('json')
         
         const task = await tasksService.updateTask(user.id, teamId, projectId, taskId, payload)
+        const slug = await tasksService.getTaskSlug(task.projectId, task.id)
         
-        return c.json(task, 200)
+        return c.json({
+            ...task,
+            slug,
+        }, 200)
     } catch (error) {
         return handleRouteError(error)
     }

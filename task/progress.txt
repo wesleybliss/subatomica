@@ -6,7 +6,7 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 ## Backend (Deployed)
 - Database schema: Added slug to Teams, slug+taskSequence to Projects, localId to Tasks
 - Services: Teams, Projects, Tasks generate slugs/keys on creation
-- API routes: Support fetching by slug (team/project) and taskKey (tasks)
+- API routes: Support fetching by slug (team/project) and key (tasks)
 - Backfill scripts: Migrated existing data with slugs and localIds
 - Deployment: Completed with all migrations applied
 
