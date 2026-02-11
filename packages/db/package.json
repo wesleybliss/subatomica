@@ -13,11 +13,23 @@
         "./schemas": "./src/schemas/index.ts",
         "./schemas/*": "./src/schemas/*.ts"
     },
+    "scripts": {
+        "check": "pnpm tsc --noEmit --skipLibCheck",
+        "lint": "oxlint && eslint .",
+        "lint:dry": "oxlint && eslint --fix-dry-run .",
+        "lint:fix": "oxlint --fix && eslint --fix .",
+        "eslint": "eslint .",
+        "eslint:dry": "eslint --fix-dry-run .",
+        "eslint:fix": "eslint --fix ."
+    },
     "dependencies": {
         "@hono/zod-openapi": "^1.2.1",
         "drizzle-orm": "^0.45.1",
         "drizzle-zod": "^0.8.3",
         "uuid": "^13.0.0",
         "zod": "^4.3.6"
+    },
+    "devDependencies": {
+        "oxlint": "^1.43.0"
     }
 }

@@ -23,6 +23,7 @@
         "test:web": "pnpm --filter web test",
         "test:api": "pnpm --filter api test",
         "test": "pnpm -r test",
+        "fix:parallel": "pnpm --filter \"*\" --parallel --stream check && pnpm --filter \"*\" --parallel --stream lint:fix",
         "update-shared": "pnpm -r update-shared"
     },
     "pnpm": {

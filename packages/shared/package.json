@@ -3,6 +3,7 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
+        "check": "pnpm tsc --noEmit --skipLibCheck",
         "lint": "oxlint && eslint .",
         "lint:dry": "oxlint && eslint --fix-dry-run .",
         "lint:fix": "oxlint --fix && eslint --fix .",
