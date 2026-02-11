@@ -41,11 +41,11 @@ const KanbanBoardDnd = ({
         
         <div className="flex gap-4 h-full overflow-x-auto overflow-y-hidden pb-4">
             
-            {vm.localLanes.map(it => (
+            {vm.localLanes.map((it: TaskLane) => (
                 <KanbanTaskLane
                     key={it.id}
                     lane={it}
-                    tasks={tasks}
+                    tasks={vm.tasksByStatus[it.key]}
                     teamId={teamId}
                     teamMembers={teamMembers}
                     isCollapsed={vm.collapsedLanes.includes(it.id)}

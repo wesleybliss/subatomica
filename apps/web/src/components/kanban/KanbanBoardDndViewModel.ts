@@ -109,25 +109,30 @@ const KanbanBoardDndViewModel = (
     
     const tasksByStatus = useMemo<Record<string, Task[]>>(() => (
         
-        localTasks.reduce((acc, task) => {
-            
-            // Sanity check warning if there are tasks that don't have a corresponding lane
-            // @todo put these tasks in an "Unorganized" lane so the user can at least organize them
-            if (!lanes.includes(task.status))
-                console.warn('Lane not found for task status:', task.status, 'in lanes', lanes.map(it => it.key))
-            
-            if (!acc[task.status])
-                acc[task.status] = []
-            
-            console.log(task.title, '->', task.status)
-            
-            acc[task.status].push(task)
-            
-            return acc
-            
-        }, {} as Record<string, Task[]>)
+        localTasks
+            .sort((a, b) => a.order - b.order)
+            .reduce((acc, task) => {
+                
+                // Sanity check warning if there are tasks that don't have a corresponding lane
+                // This should never happen, but it's an edge case if a lane is renamed, but
+                // it's key or the tasks' keys don't get properly updated too
+                // @todo put these tasks in an "Unorganized" lane so the user can at least organize them
+                if (!localLanes.some(it => it.key === task.status))
+                    console.warn('Lane not found for task status:', task.status,
+                        'in lanes', localLanes.map(it => it.key))
+                
+                if (!acc[task.status])
+                    acc[task.status] = []
+                
+                // console.log(task.title, '->', task.status)
+                
+                acc[task.status].push(task)
+                
+                return acc
+                
+            }, {} as Record<string, Task[]>)
         
-    ), [lanes, localTasks])
+    ), [localLanes, localTasks])
     
     const handleAddLane = async () => {
         if (!projectId || !onLanesChange) return
@@ -322,11 +327,25 @@ const KanbanBoardDndViewModel = (
             handleCancelRenameLane()
             return
         }
+        
+        const lane = localLanes.find(l => l.id === laneId)
+        if (!lane) return
+        
+        const oldKey = lane.key
+        const nextKey = generateSlug(nextName)
+        
         setSavingLaneId(laneId)
         try {
+            // Optimistically update tasks if key changed
+            if (oldKey !== nextKey) {
+                setLocalTasks(prev => prev.map(task =>
+                    task.status === oldKey ? { ...task, status: nextKey } : task,
+                ))
+            }
+            
             await updateTaskLaneMutation.mutateAsync({
                 laneId,
-                data: { name: nextName },
+                data: { name: nextName, key: nextKey },
             })
             const next = queryClient.getQueryData<TaskLane[]>(lanesQueryKey) || localLanes
             onLanesChange(next)

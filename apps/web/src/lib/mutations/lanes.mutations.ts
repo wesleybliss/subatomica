@@ -126,7 +126,7 @@ export const useUpdateTaskLaneMutation = (
     return useMutation<
         TaskLane,
         Error,
-        { laneId: string; data: { name?: string; color?: string | null; order?: number; isDefault?: boolean } },
+        { laneId: string; data: { key?: string; name?: string; color?: string | null; order?: number; isDefault?: boolean } },
         { previousLanes?: TaskLane[] }
     >({
         mutationFn: async ({ laneId, data }) => {

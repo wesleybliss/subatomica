@@ -102,10 +102,6 @@ const KanbanTaskLane = ({
         )
     }, [canManageLanes, handleReorderLane, lane.id])
     
-    const statusTasks = tasks
-        .filter(t => t.status === lane.key)
-        .sort((a, b) => a.order - b.order)
-    
     return (
         
         <div
@@ -171,7 +167,7 @@ const KanbanTaskLane = ({
                             <Badge
                                 className={cn('rounded-full', { 'hidden': isCollapsed })}
                                 variant="secondary">
-                                {statusTasks.length}
+                                {tasks.length}
                             </Badge>
                         </>
                     )}
@@ -209,7 +205,7 @@ const KanbanTaskLane = ({
             })}>
                 <KanbanColumn
                     status={lane.key}
-                    tasks={statusTasks}
+                    tasks={tasks}
                     teamId={teamId}
                     teamMembers={teamMembers}
                     dropIndicator={dropIndicator}

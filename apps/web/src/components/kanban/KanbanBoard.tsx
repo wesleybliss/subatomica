@@ -48,7 +48,7 @@ export function KanbanBoard({ tasks, onTaskClick, onTaskToggle }: KanbanBoardPro
     const tasksByStatus = tasks.reduce((acc, task) => {
         if (!acc[task.status])
             acc[task.status] = []
-        console.log(task.title, '->', task.status)
+        // console.log(task.title, '->', task.status)
         acc[task.status].push(task)
         return acc
     }, {} as Record<string, KanbanTask[]>)

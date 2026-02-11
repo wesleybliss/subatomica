@@ -1,4 +1,4 @@
-import { projects, taskLanes } from '@repo/db/schema'
+import { projects, taskLanes, tasks } from '@repo/db/schema'
 import type { TaskLane } from '@repo/db/types'
 import { generateSlug } from '@repo/shared/utils/slugs'
 import { and, eq, inArray, ne, sql } from 'drizzle-orm'
@@ -121,6 +121,20 @@ export async function updateTaskLane(
 ): Promise<TaskLane> {
     const teamProjectIds = getTeamProjectIds(userId, teamId)
     const updateData: Partial<TaskLane> = {}
+    
+    // Get existing lane to check for key change
+    const [existingLane] = await db
+        .select({ key: taskLanes.key })
+        .from(taskLanes)
+        .where(and(
+            eq(taskLanes.id, laneId),
+            eq(taskLanes.projectId, projectId),
+        ))
+        .limit(1)
+    
+    if (!existingLane)
+        throw new Error('NotFound: Task lane not found')
+
     if (typeof data.name === 'string') {
         const trimmedName = data.name.trim()
         if (!trimmedName)
@@ -134,7 +148,7 @@ export async function updateTaskLane(
         updateData.key = generateSlug(trimmedKey)
         if (!updateData.key)
             throw new Error('Task lane key is required')
-        const [existing] = await db
+        const [existingWithKey] = await db
             .select({ id: taskLanes.id })
             .from(taskLanes)
             .where(and(
@@ -143,7 +157,7 @@ export async function updateTaskLane(
                 ne(taskLanes.id, laneId),
             ))
             .limit(1)
-        if (existing)
+        if (existingWithKey)
             throw new Error('Conflict: Task lane key already exists')
     }
     if (data.color !== undefined)
@@ -158,6 +172,7 @@ export async function updateTaskLane(
             .set({ isDefault: false })
             .where(eq(taskLanes.projectId, projectId))
     }
+    
     const [updated] = await db
         .update(taskLanes)
         .set(updateData)
@@ -167,8 +182,21 @@ export async function updateTaskLane(
             inArray(taskLanes.projectId, teamProjectIds),
         ))
         .returning()
+    
     if (!updated)
         throw new Error('NotFound: Task lane not found')
+
+    // If key was updated, update all tasks that used the old key as status
+    if (updateData.key && updateData.key !== existingLane.key) {
+        await db
+            .update(tasks)
+            .set({ status: updateData.key })
+            .where(and(
+                eq(tasks.projectId, projectId),
+                eq(tasks.status, existingLane.key),
+            ))
+    }
+
     return updated
 }
 
