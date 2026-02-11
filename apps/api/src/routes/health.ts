@@ -1,8 +1,8 @@
 import type { RouteHandler } from '@hono/zod-openapi'
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
+import { ErrorSchema } from '@repo/db/openapi'
 
 import { ApiAppEnv } from '@/env'
-import { ErrorSchema } from '@/openapi/shared.zod'
 
 const healthRoute = createRoute({
     method: 'get',

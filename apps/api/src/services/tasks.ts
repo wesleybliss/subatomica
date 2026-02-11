@@ -1,9 +1,9 @@
-import { Task } from '@repo/shared/types'
-import { formatTaskSlug,generateProjectAcronym } from '@repo/shared/utils/slugs'
+import { projects, tasks } from '@repo/db/schema'
+import type { Task } from '@repo/db/types'
+import { formatTaskSlug, generateProjectAcronym } from '@repo/shared/utils/slugs'
 import { and, desc, eq, inArray, sql } from 'drizzle-orm'
 
 import { db } from '@/db/client'
-import { projects, tasks } from '@/db/schema'
 import { getAccessibleTeamIds } from '@/services/shared'
 
 /**

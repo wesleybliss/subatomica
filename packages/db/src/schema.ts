@@ -1,5 +1,9 @@
-import * as postgresSchema from '@/db/postgres/schema.postgres'
-import * as tursoSchema from '@/db/turso/schema.turso'
+declare const process: {
+    env: Record<string, string | undefined>
+}
+
+import * as postgresSchema from './postgres/schema.postgres'
+import * as tursoSchema from './turso/schema.turso'
 
 if (!process.env.DATABASE_DIALECT)
     throw new Error('schema.ts: DATABASE_DIALECT env variable is not set')

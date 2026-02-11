@@ -1,7 +1,7 @@
 import { z } from '@hono/zod-openapi'
 import { createSelectSchema } from 'drizzle-zod'
 
-import { taskLanes } from '@/db/schema'
+import { taskLanes } from '../schema'
 
 const TaskLaneBaseSchema = createSelectSchema(taskLanes).extend({
     id: z.string().openapi({
@@ -28,3 +28,5 @@ const TaskLaneBaseSchema = createSelectSchema(taskLanes).extend({
 })
 
 export const TaskLaneSchema = TaskLaneBaseSchema.openapi('TaskLane')
+
+export type TaskLane = z.infer<typeof TaskLaneSchema>

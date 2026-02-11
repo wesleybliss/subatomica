@@ -1,0 +1,23 @@
+{
+    "name": "@repo/db",
+    "version": "0.0.0",
+    "type": "module",
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": "./src/index.ts",
+        "./schema": "./src/schema.ts",
+        "./openapi": "./src/openapi/index.ts",
+        "./openapi/*": "./src/openapi/*.ts",
+        "./types": "./src/types/index.ts",
+        "./schemas": "./src/schemas/index.ts",
+        "./schemas/*": "./src/schemas/*.ts"
+    },
+    "dependencies": {
+        "@hono/zod-openapi": "^1.2.1",
+        "drizzle-orm": "^0.45.1",
+        "drizzle-zod": "^0.8.3",
+        "uuid": "^13.0.0",
+        "zod": "^4.3.6"
+    }
+}

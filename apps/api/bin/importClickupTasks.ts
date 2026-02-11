@@ -42,12 +42,12 @@
 // Load environment variables first
 import 'dotenv/config'
 
-import { and,desc, eq } from 'drizzle-orm'
+import { projects, tasks } from '@repo/db/schema'
+import { and, desc, eq } from 'drizzle-orm'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
 
 import * as client from '../src/db/client'
-import { projects,tasks } from '../src/db/schema'
 
 // oxlint-disable-next-line @typescript-eslint/no-explicit-any
 const db: any = client.db!

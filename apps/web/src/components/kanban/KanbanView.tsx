@@ -1,5 +1,5 @@
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@repo/shared/types'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import KanbanBoardDnd from './KanbanBoardDnd'
 
@@ -26,7 +26,7 @@ const KanbanView = ({
     const [lanes, setLanes] = useState<TaskLane[]>(initialLanes)
     
     // Group tasks by status
-    /*const tasksByStatus = tasks.reduce((acc, task) => {
+    const tasksByStatus = tasks.reduce((acc, task) => {
         if (!acc[task.status])
             acc[task.status] = []
         console.log(task.title, '->', task.status)
@@ -38,7 +38,7 @@ const KanbanView = ({
     const columnsWithCounts = lanes.map(it => ({
         ...it,
         count: tasksByStatus[it.key]?.length || 0,
-    }))*/
+    }))
     
     /*useEffect(() => {
         setLanes(initialLanes)

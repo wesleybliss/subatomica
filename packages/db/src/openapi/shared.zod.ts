@@ -15,3 +15,6 @@ export const SuccessSchema = z
         }),
     })
     .openapi('Success')
+
+export type ErrorResponse = z.infer<typeof ErrorSchema>
+export type SuccessResponse = z.infer<typeof SuccessSchema>

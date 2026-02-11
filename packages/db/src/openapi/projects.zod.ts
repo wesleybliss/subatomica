@@ -1,8 +1,8 @@
 import { z } from '@hono/zod-openapi'
 import { createSelectSchema } from 'drizzle-zod'
 
-import { projects } from '@/db/schema'
-import { TaskLaneSchema } from '@/openapi/lanes.zod'
+import { projects } from '../schema'
+import { TaskLaneSchema } from './lanes.zod'
 
 const ProjectBaseSchema = createSelectSchema(projects).extend({
     id: z.string().openapi({
@@ -35,3 +35,13 @@ export const ProjectWithLanesSchema = ProjectBaseSchema.extend({
         example: [],
     }),
 }).openapi('ProjectWithLanes')
+
+export const ProjectWithOptionalLanesSchema = ProjectBaseSchema.extend({
+    taskLanes: z.array(TaskLaneSchema).optional().openapi({
+        example: [],
+    }),
+})
+
+export type Project = z.infer<typeof ProjectSchema>
+export type ProjectWithLanes = z.infer<typeof ProjectWithLanesSchema>
+export type ProjectWithOptionalLanes = z.infer<typeof ProjectWithOptionalLanesSchema>

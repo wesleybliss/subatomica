@@ -1,6 +1,6 @@
 import { index, integer, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
 
-import { tursoTable as table, tursoTimestamp as timestamp } from '@/db/shared'
+import { tursoTable as table, tursoTimestamp as timestamp } from '../shared'
 
 // Users table (managed by BetterAuth)
 export const users = table('users', {

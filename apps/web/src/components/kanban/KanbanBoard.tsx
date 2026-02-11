@@ -1,6 +1,9 @@
-import { useState } from 'react'
 import { useWireValue } from '@forminator/react-wire'
+import type { TaskLane } from '@repo/shared/types'
+import { useState } from 'react'
+
 import * as store from '@/store'
+
 import { KanbanCard } from './KanbanCard'
 import { KanbanColumn } from './KanbanColumn'
 
@@ -28,7 +31,7 @@ interface KanbanBoardProps {
 export function KanbanBoard({ tasks, onTaskClick, onTaskToggle }: KanbanBoardProps) {
     const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set())
     
-    const lanes = useWireValue(store.lanes)
+    const lanes = useWireValue(store.lanes) as TaskLane[]
     
     const toggleCard = (taskId: string) => {
         const newSelected = new Set(selectedCards)
@@ -51,10 +54,16 @@ export function KanbanBoard({ tasks, onTaskClick, onTaskToggle }: KanbanBoardPro
     }, {} as Record<string, KanbanTask[]>)
     
     // Update column counts
+    type LaneColumn = TaskLane & {
+        id: string
+        key: string
+        name: string
+        count: number
+    }
     const columnsWithCounts = lanes.map(it => ({
         ...it,
         count: tasksByStatus[it.key]?.length || 0,
-    }))
+    })) as LaneColumn[]
     
     return (
         <div className="flex gap-4 h-full overflow-x-auto pb-4">

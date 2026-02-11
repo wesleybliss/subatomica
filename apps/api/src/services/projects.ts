@@ -1,9 +1,9 @@
-import { Project, TaskLane } from '@repo/shared/types'
+import { projects, taskLanes, teamMembers, teams } from '@repo/db/schema'
+import type { Project, TaskLane } from '@repo/db/types'
 import { generateSlug } from '@repo/shared/utils/slugs'
 import { and, eq, inArray } from 'drizzle-orm'
 
 import * as client from '@/db/client'
-import { projects, taskLanes, teamMembers, teams } from '@/db/schema'
 import { getAccessibleTeamIds } from '@/services/shared'
 
 const db = client.db

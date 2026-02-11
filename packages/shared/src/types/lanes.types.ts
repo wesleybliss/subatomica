@@ -1,13 +1,5 @@
 
-export type TaskLane = {
-    id: string
-    projectId: string
-    key: string
-    name: string
-    color: string | null
-    order: number
-    isDefault: boolean
-}
+export type { TaskLane } from '@repo/db/types'
 
 export type CreateLaneInput = {
     key: string

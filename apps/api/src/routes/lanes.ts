@@ -1,10 +1,9 @@
 import type { RouteHandler } from '@hono/zod-openapi'
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
+import { ErrorSchema, SuccessSchema, TaskLaneSchema } from '@repo/db/openapi'
 import { HTTPException } from 'hono/http-exception'
 
 import { ApiAppEnv } from '@/env'
-import { TaskLaneSchema } from '@/openapi/lanes.zod'
-import { ErrorSchema, SuccessSchema } from '@/openapi/shared.zod'
 import * as lanesService from '@/services/lanes'
 
 const LaneParamSchema = z.object({

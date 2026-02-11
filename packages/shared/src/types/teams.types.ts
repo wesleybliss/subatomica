@@ -1,17 +1,2 @@
 
-export type Team = {
-    id: string
-    createdAt: string
-    updatedAt: string
-    ownerId: string
-    name: string
-    slug: string
-}
-
-export type TeamMemberProfile = {
-    id: string
-    name: string
-    email: string
-    image: string | null
-    role: string
-}
+export type { Team, TeamMember as TeamMemberProfile } from '@repo/db/types'

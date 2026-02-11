@@ -5,11 +5,11 @@
 
 import 'dotenv/config'
 
+import { projects, teams } from '@repo/db/schema'
 import { generateSlug } from '@repo/shared/utils/slugs'
 import { eq } from 'drizzle-orm'
 
 import { db } from '@/db/client'
-import { projects,teams } from '@/db/schema'
 
 async function backfillTeamSlugs() {
     console.log('Starting Team slug backfill...')

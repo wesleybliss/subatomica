@@ -6,10 +6,10 @@
 
 import 'dotenv/config'
 
-import { asc,eq } from 'drizzle-orm'
+import { projects, tasks } from '@repo/db/schema'
+import { asc, eq } from 'drizzle-orm'
 
 import { db } from '@/db/client'
-import { projects,tasks } from '@/db/schema'
 
 async function backfillTaskLocalIds() {
     console.log('Starting Task localId backfill...')

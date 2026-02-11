@@ -107,6 +107,28 @@ const KanbanBoardDndViewModel = (
         onRefresh,
     )
     
+    const tasksByStatus = useMemo<Record<string, Task[]>>(() => (
+        
+        localTasks.reduce((acc, task) => {
+            
+            // Sanity check warning if there are tasks that don't have a corresponding lane
+            // @todo put these tasks in an "Unorganized" lane so the user can at least organize them
+            if (!lanes.includes(task.status))
+                console.warn('Lane not found for task status:', task.status, 'in lanes', lanes.map(it => it.key))
+            
+            if (!acc[task.status])
+                acc[task.status] = []
+            
+            console.log(task.title, '->', task.status)
+            
+            acc[task.status].push(task)
+            
+            return acc
+            
+        }, {} as Record<string, Task[]>)
+        
+    ), [lanes, localTasks])
+    
     const handleAddLane = async () => {
         if (!projectId || !onLanesChange) return
         setIsAddingLane(true)
@@ -193,7 +215,7 @@ const KanbanBoardDndViewModel = (
             }
         }
         updateTaskOrderMutation.mutate({ taskId, status: newStatus, order: newOrder })
-    }, [localTasks, onRefresh, tasks, updateTaskOrderMutation])
+    }, [localTasks, onRefresh, /*tasks,*/ updateTaskOrderMutation])
     
     useEffect(() => {
         const monitor = monitorForElements as unknown as (args: {
@@ -407,6 +429,7 @@ const KanbanBoardDndViewModel = (
         
         // Memos
         activeQueryKey,
+        tasksByStatus,
         
         // Mutations
         createTaskMutation,

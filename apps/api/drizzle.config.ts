@@ -27,8 +27,8 @@ console.log('drizzle config', process.env.DATABASE_DIALECT, process.env.DATABASE
 export default defineConfig({
     out: './drizzle',
     schema: process.env.DATABASE_DIALECT === 'turso'
-        ? './src/db/turso/schema.turso.ts'
-        : './src/db/postgres/schema.postgres.ts',
+        ? '../../packages/db/src/turso/schema.turso.ts'
+        : '../../packages/db/src/postgres/schema.postgres.ts',
     // @ts-expect-error Supports multiple dialects
     dialect: process.env.DATABASE_DIALECT! as Dialect,
     dbCredentials,

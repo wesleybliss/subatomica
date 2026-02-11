@@ -1,7 +1,7 @@
 import { z } from '@hono/zod-openapi'
 import { createSelectSchema } from 'drizzle-zod'
 
-import { tasks } from '@/db/schema'
+import { tasks } from '../schema'
 
 const TaskBaseSchema = createSelectSchema(tasks).extend({
     id: z.string().openapi({
@@ -19,7 +19,7 @@ const TaskBaseSchema = createSelectSchema(tasks).extend({
     status: z.string().openapi({
         example: 'backlog',
     }),
-    priority: z.string().openapi({
+    priority: z.string().nullable().openapi({
         example: 'medium',
     }),
     dueDate: z.string().nullable().openapi({
@@ -40,3 +40,5 @@ const TaskBaseSchema = createSelectSchema(tasks).extend({
 })
 
 export const TaskSchema = TaskBaseSchema.openapi('Task')
+
+export type Task = z.infer<typeof TaskSchema>

@@ -1,7 +1,6 @@
-import { useMemo } from 'react'
-import { useNavigate,useParams } from 'react-router-dom'
-import { Outlet } from 'react-router-dom'
 import { useWireValue } from '@forminator/react-wire'
+import { useMemo } from 'react'
+import { Outlet, useNavigate, useParams } from 'react-router-dom'
 
 import { useGetProjectsQuery } from '@/lib/queries/projects.queries'
 import { useGetTasksQuery } from '@/lib/queries/tasks.queries'

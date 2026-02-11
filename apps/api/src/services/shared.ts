@@ -1,9 +1,9 @@
+import { teamMembers, teams } from '@repo/db/schema'
 import type { User } from 'better-auth'
 import { eq, inArray, or } from 'drizzle-orm'
 import { Context } from 'hono'
 
 import { db } from '@/db/client'
-import { teamMembers, teams } from '@/db/schema'
 import auth from '@/services/auth'
 
 export const getCurrentSession = async (c: Context) => {

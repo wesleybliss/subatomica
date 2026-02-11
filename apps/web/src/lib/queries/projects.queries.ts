@@ -71,7 +71,7 @@ export const useGetProjectQuery = (teamId: string, projectId: string) => {
                     
                     if (res.taskLanes?.length) {
                         const taskLanes = new Map<string, TaskLane[]>()
-                        res.taskLanes.forEach(it => taskLanes.set(it.id, [it]))
+                        res.taskLanes.forEach((it: TaskLane) => taskLanes.set(it.id, [it]))
                         store.lanes.setValue([
                             ...store.lanes.getValue(),
                             ...Array.from(taskLanes.values()).flat(),

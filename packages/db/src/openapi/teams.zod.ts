@@ -1,7 +1,7 @@
 import { z } from '@hono/zod-openapi'
 import { createSelectSchema } from 'drizzle-zod'
 
-import { teams } from '@/db/schema'
+import { teams } from '../schema'
 
 const TeamBaseSchema = createSelectSchema(teams).extend({
     id: z.string().openapi({
@@ -39,3 +39,6 @@ export const TeamMemberSchema = z
         }),
     })
     .openapi('TeamMember')
+
+export type Team = z.infer<typeof TeamSchema>
+export type TeamMember = z.infer<typeof TeamMemberSchema>
