@@ -1,8 +1,8 @@
 import type { RouteHandler } from '@hono/zod-openapi'
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
-import { ErrorSchema } from '@repo/db/openapi'
 
 import { ApiAppEnv } from '@/env'
+import { createResponses } from '@/openapi/responses'
 
 const healthRoute = createRoute({
     method: 'get',
@@ -10,24 +10,12 @@ const healthRoute = createRoute({
     tags: ['Health'],
     security: [{ bearerAuth: [] }],
     responses: {
-        200: {
-            description: 'Health check',
-            content: {
-                'application/json': {
-                    schema: z.object({
-                        ok: z.boolean().openapi({ example: true }),
-                    }).openapi('Health'),
-                },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': {
-                    schema: ErrorSchema,
-                },
-            },
-        },
+        ...createResponses(z.object({
+            ok: z.boolean().openapi({ example: true }),
+        }).openapi('Health'), {
+            successDescription: 'Health check',
+            errorStatuses: [401],
+        }),
     },
 })
 

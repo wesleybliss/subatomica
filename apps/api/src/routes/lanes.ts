@@ -1,9 +1,10 @@
 import type { RouteHandler } from '@hono/zod-openapi'
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
-import { ErrorSchema, SuccessSchema, TaskLaneSchema } from '@repo/db/openapi'
+import { SuccessSchema, TaskLaneSchema } from '@repo/db/openapi'
 import { HTTPException } from 'hono/http-exception'
 
 import { ApiAppEnv } from '@/env'
+import { createResponses } from '@/openapi/responses'
 import * as lanesService from '@/services/lanes'
 
 const LaneParamSchema = z.object({
@@ -79,50 +80,10 @@ const getTaskLanesRoute = createRoute({
         query: LaneQuerySchema,
     },
     responses: {
-        200: {
-            description: 'Task lanes list',
-            content: {
-                'application/json': {
-                    schema: z.array(TaskLaneSchema),
-                },
-            },
-        },
-        400: {
-            description: 'Invalid request',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        409: {
-            description: 'Conflict',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(z.array(TaskLaneSchema), {
+            successDescription: 'Task lanes list',
+            errorStatuses: [400, 401, 403, 404, 409, 500],
+        }),
     },
 })
 
@@ -142,50 +103,11 @@ const createTaskLaneRoute = createRoute({
         },
     },
     responses: {
-        201: {
-            description: 'Created task lane',
-            content: {
-                'application/json': {
-                    schema: TaskLaneSchema,
-                },
-            },
-        },
-        400: {
-            description: 'Invalid request',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        409: {
-            description: 'Conflict',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(TaskLaneSchema, {
+            successStatus: 201,
+            successDescription: 'Created task lane',
+            errorStatuses: [400, 401, 403, 404, 409, 500],
+        }),
     },
 })
 
@@ -206,50 +128,10 @@ const updateTaskLaneRoute = createRoute({
         },
     },
     responses: {
-        200: {
-            description: 'Updated task lane',
-            content: {
-                'application/json': {
-                    schema: TaskLaneSchema,
-                },
-            },
-        },
-        400: {
-            description: 'Invalid request',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        409: {
-            description: 'Conflict',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(TaskLaneSchema, {
+            successDescription: 'Updated task lane',
+            errorStatuses: [400, 401, 403, 404, 409, 500],
+        }),
     },
 })
 
@@ -263,50 +145,10 @@ const deleteTaskLaneRoute = createRoute({
         query: LaneQuerySchema,
     },
     responses: {
-        200: {
-            description: 'Deleted task lane',
-            content: {
-                'application/json': {
-                    schema: SuccessSchema,
-                },
-            },
-        },
-        400: {
-            description: 'Invalid request',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        409: {
-            description: 'Conflict',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(SuccessSchema, {
+            successDescription: 'Deleted task lane',
+            errorStatuses: [400, 401, 403, 404, 409, 500],
+        }),
     },
 })
 

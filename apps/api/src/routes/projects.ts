@@ -1,9 +1,10 @@
 import type { RouteHandler } from '@hono/zod-openapi'
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
-import { ErrorSchema, ProjectSchema, ProjectWithLanesSchema, SuccessSchema } from '@repo/db/openapi'
+import { ProjectSchema, ProjectWithLanesSchema, SuccessSchema } from '@repo/db/openapi'
 import { HTTPException } from 'hono/http-exception'
 
 import { ApiAppEnv } from '@/env'
+import { createResponses } from '@/openapi/responses'
 import * as projectsService from '@/services/projects'
 
 const ProjectParamSchema = z.object({
@@ -48,26 +49,10 @@ const getProjectsRoute = createRoute({
         query: ProjectQuerySchema,
     },
     responses: {
-        200: {
-            description: 'Projects list',
-            content: {
-                'application/json': {
-                    schema: z.array(ProjectSchema),
-                },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(z.array(ProjectSchema), {
+            successDescription: 'Projects list',
+            errorStatuses: [401, 500],
+        }),
     },
 })
 
@@ -87,50 +72,11 @@ const createProjectRoute = createRoute({
         },
     },
     responses: {
-        201: {
-            description: 'Created project',
-            content: {
-                'application/json': {
-                    schema: ProjectSchema,
-                },
-            },
-        },
-        400: {
-            description: 'Invalid request',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        409: {
-            description: 'Conflict',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(ProjectSchema, {
+            successStatus: 201,
+            successDescription: 'Created project',
+            errorStatuses: [400, 401, 403, 404, 409, 500],
+        }),
     },
 })
 
@@ -144,38 +90,13 @@ const getProjectByIdRoute = createRoute({
         query: ProjectQuerySchema,
     },
     responses: {
-        200: {
-            description: 'Project details',
-            content: {
-                'application/json': {
-                    schema: ProjectWithLanesSchema,
-                },
+        ...createResponses(ProjectWithLanesSchema, {
+            successDescription: 'Project details',
+            errorStatuses: [401, 404, 422, 500],
+            errorDescriptions: {
+                422: 'Missing parameters',
             },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        422: {
-            description: 'Missing parameters',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        }),
     },
 })
 
@@ -196,56 +117,10 @@ const updateProjectRoute = createRoute({
         },
     },
     responses: {
-        200: {
-            description: 'Updated project',
-            content: {
-                'application/json': {
-                    schema: ProjectSchema,
-                },
-            },
-        },
-        400: {
-            description: 'Invalid request',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        409: {
-            description: 'Conflict',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        422: {
-            description: 'Missing parameter',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(ProjectSchema, {
+            successDescription: 'Updated project',
+            errorStatuses: [400, 401, 403, 404, 409, 422, 500],
+        }),
     },
 })
 
@@ -259,38 +134,10 @@ const deleteProjectRoute = createRoute({
         query: ProjectQuerySchema,
     },
     responses: {
-        200: {
-            description: 'Deleted project',
-            content: {
-                'application/json': {
-                    schema: SuccessSchema,
-                },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(SuccessSchema, {
+            successDescription: 'Deleted project',
+            errorStatuses: [401, 403, 404, 500],
+        }),
     },
 })
 

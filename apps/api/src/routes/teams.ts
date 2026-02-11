@@ -1,10 +1,11 @@
 import type { RouteHandler } from '@hono/zod-openapi'
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
-import { ErrorSchema, ProjectSchema, SuccessSchema, TaskSchema, TeamMemberSchema, TeamSchema } from '@repo/db/openapi'
+import { ProjectSchema, SuccessSchema, TaskSchema, TeamMemberSchema, TeamSchema } from '@repo/db/openapi'
 import logger from '@repo/shared/utils/logger'
 import { HTTPException } from 'hono/http-exception'
 
 import { ApiAppEnv } from '@/env'
+import { createResponses } from '@/openapi/responses'
 import * as projectsService from '@/services/projects'
 import * as tasksService from '@/services/tasks'
 import * as teamsService from '@/services/teams'
@@ -47,26 +48,10 @@ const getTeamsRoute = createRoute({
     tags: ['Teams'],
     security: [{ bearerAuth: [] }],
     responses: {
-        200: {
-            description: 'List teams for the current user',
-            content: {
-                'application/json': {
-                    schema: z.array(TeamSchema),
-                },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(z.array(TeamSchema), {
+            successDescription: 'List teams for the current user',
+            errorStatuses: [401, 500],
+        }),
     },
 })
 
@@ -85,44 +70,11 @@ const createTeamOpenApi = createRoute({
         },
     },
     responses: {
-        201: {
-            description: 'Created team',
-            content: {
-                'application/json': {
-                    schema: TeamSchema,
-                },
-            },
-        },
-        400: {
-            description: 'Invalid request',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        409: {
-            description: 'Conflict',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(TeamSchema, {
+            successStatus: 201,
+            successDescription: 'Created team',
+            errorStatuses: [400, 401, 403, 409, 500],
+        }),
     },
 })
 
@@ -135,32 +87,10 @@ const getTeamByIdRoute = createRoute({
         params: TeamIdParamSchema,
     },
     responses: {
-        200: {
-            description: 'Team details',
-            content: {
-                'application/json': {
-                    schema: TeamSchema,
-                },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(TeamSchema, {
+            successDescription: 'Team details',
+            errorStatuses: [401, 404, 500],
+        }),
     },
 })
 
@@ -173,26 +103,10 @@ const getTeamMembersRoute = createRoute({
         params: TeamIdParamSchema,
     },
     responses: {
-        200: {
-            description: 'Team members',
-            content: {
-                'application/json': {
-                    schema: z.array(TeamMemberSchema),
-                },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(z.array(TeamMemberSchema), {
+            successDescription: 'Team members',
+            errorStatuses: [401, 500],
+        }),
     },
 })
 
@@ -212,50 +126,10 @@ const addTeamMemberRoute = createRoute({
         },
     },
     responses: {
-        200: {
-            description: 'Member added',
-            content: {
-                'application/json': {
-                    schema: SuccessSchema,
-                },
-            },
-        },
-        400: {
-            description: 'Invalid request',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        409: {
-            description: 'Conflict',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(SuccessSchema, {
+            successDescription: 'Member added',
+            errorStatuses: [400, 401, 403, 404, 409, 500],
+        }),
     },
 })
 
@@ -268,56 +142,10 @@ const removeTeamMemberRoute = createRoute({
         params: TeamMemberParamSchema,
     },
     responses: {
-        200: {
-            description: 'Member removed',
-            content: {
-                'application/json': {
-                    schema: SuccessSchema,
-                },
-            },
-        },
-        400: {
-            description: 'Invalid request',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        409: {
-            description: 'Conflict',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        422: {
-            description: 'Missing parameter',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(SuccessSchema, {
+            successDescription: 'Member removed',
+            errorStatuses: [400, 401, 403, 404, 409, 422, 500],
+        }),
     },
 })
 
@@ -330,26 +158,10 @@ const getTeamProjectsRoute = createRoute({
         params: TeamIdParamSchema,
     },
     responses: {
-        200: {
-            description: 'Team projects',
-            content: {
-                'application/json': {
-                    schema: z.array(ProjectSchema),
-                },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(z.array(ProjectSchema), {
+            successDescription: 'Team projects',
+            errorStatuses: [401, 500],
+        }),
     },
 })
 
@@ -362,26 +174,10 @@ const getTeamTasksRoute = createRoute({
         params: TeamIdParamSchema,
     },
     responses: {
-        200: {
-            description: 'Team tasks',
-            content: {
-                'application/json': {
-                    schema: z.array(TaskSchema),
-                },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(z.array(TaskSchema), {
+            successDescription: 'Team tasks',
+            errorStatuses: [401, 500],
+        }),
     },
 })
 

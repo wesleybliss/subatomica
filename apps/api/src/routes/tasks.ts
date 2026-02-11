@@ -1,9 +1,10 @@
 import type { RouteHandler } from '@hono/zod-openapi'
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
-import { ErrorSchema, SuccessSchema, TaskSchema } from '@repo/db/openapi'
+import { SuccessSchema, TaskSchema } from '@repo/db/openapi'
 import { HTTPException } from 'hono/http-exception'
 
 import { ApiAppEnv } from '@/env'
+import { createResponses } from '@/openapi/responses'
 import * as tasksService from '@/services/tasks'
 
 const TaskParamSchema = z.object({
@@ -73,26 +74,10 @@ const getTasksRoute = createRoute({
         query: TaskQuerySchema,
     },
     responses: {
-        200: {
-            description: 'Tasks list',
-            content: {
-                'application/json': {
-                    schema: z.array(TaskSchema),
-                },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(z.array(TaskSchema), {
+            successDescription: 'Tasks list',
+            errorStatuses: [401, 500],
+        }),
     },
 })
 
@@ -106,32 +91,10 @@ const getTaskByIdRoute = createRoute({
         query: TaskQuerySchema,
     },
     responses: {
-        200: {
-            description: 'Task details',
-            content: {
-                'application/json': {
-                    schema: TaskSchema,
-                },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(TaskSchema, {
+            successDescription: 'Task details',
+            errorStatuses: [401, 404, 500],
+        }),
     },
 })
 
@@ -151,56 +114,11 @@ const createTaskRoute = createRoute({
         },
     },
     responses: {
-        201: {
-            description: 'Created task',
-            content: {
-                'application/json': {
-                    schema: TaskSchema,
-                },
-            },
-        },
-        400: {
-            description: 'Invalid request',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        409: {
-            description: 'Conflict',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        422: {
-            description: 'Missing parameter',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(TaskSchema, {
+            successStatus: 201,
+            successDescription: 'Created task',
+            errorStatuses: [400, 401, 403, 404, 409, 422, 500],
+        }),
     },
 })
 
@@ -221,56 +139,11 @@ const createTaskWithIdRoute = createRoute({
         },
     },
     responses: {
-        201: {
-            description: 'Created task',
-            content: {
-                'application/json': {
-                    schema: TaskSchema,
-                },
-            },
-        },
-        400: {
-            description: 'Invalid request',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        409: {
-            description: 'Conflict',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        422: {
-            description: 'Missing parameter',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(TaskSchema, {
+            successStatus: 201,
+            successDescription: 'Created task',
+            errorStatuses: [400, 401, 403, 404, 409, 422, 500],
+        }),
     },
 })
 
@@ -291,56 +164,10 @@ const updateTaskRoute = createRoute({
         },
     },
     responses: {
-        200: {
-            description: 'Updated task',
-            content: {
-                'application/json': {
-                    schema: TaskSchema,
-                },
-            },
-        },
-        400: {
-            description: 'Invalid request',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        409: {
-            description: 'Conflict',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        422: {
-            description: 'Missing parameter',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(TaskSchema, {
+            successDescription: 'Updated task',
+            errorStatuses: [400, 401, 403, 404, 409, 422, 500],
+        }),
     },
 })
 
@@ -354,56 +181,10 @@ const deleteTaskRoute = createRoute({
         query: TaskQuerySchema,
     },
     responses: {
-        200: {
-            description: 'Deleted task',
-            content: {
-                'application/json': {
-                    schema: SuccessSchema,
-                },
-            },
-        },
-        400: {
-            description: 'Invalid request',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        401: {
-            description: 'Unauthorized',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        403: {
-            description: 'Forbidden',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        404: {
-            description: 'Not found',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        409: {
-            description: 'Conflict',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        422: {
-            description: 'Missing parameter',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
-        500: {
-            description: 'Server error',
-            content: {
-                'application/json': { schema: ErrorSchema },
-            },
-        },
+        ...createResponses(SuccessSchema, {
+            successDescription: 'Deleted task',
+            errorStatuses: [400, 401, 403, 404, 409, 422, 500],
+        }),
     },
 })
 

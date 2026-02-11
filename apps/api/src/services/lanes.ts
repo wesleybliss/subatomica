@@ -134,7 +134,7 @@ export async function updateTaskLane(
     
     if (!existingLane)
         throw new Error('NotFound: Task lane not found')
-
+    
     if (typeof data.name === 'string') {
         const trimmedName = data.name.trim()
         if (!trimmedName)
@@ -185,7 +185,7 @@ export async function updateTaskLane(
     
     if (!updated)
         throw new Error('NotFound: Task lane not found')
-
+    
     // If key was updated, update all tasks that used the old key as status
     if (updateData.key && updateData.key !== existingLane.key) {
         await db
@@ -196,7 +196,7 @@ export async function updateTaskLane(
                 eq(tasks.status, existingLane.key),
             ))
     }
-
+    
     return updated
 }
 
