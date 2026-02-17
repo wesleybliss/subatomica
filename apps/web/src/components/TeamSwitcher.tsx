@@ -93,7 +93,7 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                             <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
                                 <Plus className="size-4" />
                             </div>
-                            <div className="text-muted-foreground font-medium">Add team</div>
+                            <div className="text-muted-foreground font-medium">New Team</div>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

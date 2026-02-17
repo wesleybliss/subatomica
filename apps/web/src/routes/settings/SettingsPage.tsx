@@ -35,7 +35,7 @@ import type { Team } from '@repo/shared/types'
 
 export default function SettingsPage() {
     const teams = useWireValue(store.teams)
-    
+
     useGetTeamsQuery()
 
     return (
