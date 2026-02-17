@@ -1,4 +1,3 @@
-
 import {
     BadgeCheck,
     Bell,
@@ -28,6 +27,8 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
+import { authClient } from '@/lib/auth-client'
+import { useNavigate } from 'react-router-dom'
 
 type NavUserProps = {
     user: {
@@ -45,8 +46,23 @@ const getInitials = (name: string) => name
     .join('')
 
 export function NavUser({ user }: NavUserProps) {
+    const navigate = useNavigate()
     const { isMobile } = useSidebar()
     const initials = getInitials(user.name || 'User')
+    
+    const signOut = () => {
+        authClient.signOut({
+            fetchOptions: {
+                onSuccess: () => {
+                    navigate('/sign-in', { replace: true })
+                },
+            },
+        }).catch(e => {
+            console.error('Failed to sign out', e)
+            navigate('/sign-in', { replace: true })
+        })
+    }
+    
     return (
         <SidebarMenu>
             <SidebarMenuItem>
@@ -99,7 +115,7 @@ export function NavUser({ user }: NavUserProps) {
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => navigate('/settings')}>
                                 <BadgeCheck />
                                 Account
                             </DropdownMenuItem>
@@ -113,9 +129,9 @@ export function NavUser({ user }: NavUserProps) {
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={signOut}>
                             <LogOut />
-                            Log out
+                            Sign out
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

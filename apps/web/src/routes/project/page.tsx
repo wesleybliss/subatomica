@@ -1,4 +1,5 @@
 import { useWireValue } from '@forminator/react-wire'
+import { Loader2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { useGetProjectQuery } from '@/lib/queries/projects.queries'
@@ -45,7 +46,11 @@ export default function ProjectDetailPage() {
     }
     
     if (isPending)
-        return <div>Loading project...</div>
+        return (
+            <div className="flex flex-1 items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        )
     
     if (!projectData) {
         console.warn('ProjectDetailPage: no project')

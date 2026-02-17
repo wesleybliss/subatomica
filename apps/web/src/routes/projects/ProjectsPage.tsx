@@ -1,5 +1,5 @@
 import { useWireValue } from '@forminator/react-wire'
-import { FolderKanban, LayoutGrid } from 'lucide-react'
+import { FolderKanban, LayoutGrid, Loader2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -14,7 +14,11 @@ export default function TeamProjectsPage() {
     const getTaskCountForProject = (projectId: string) =>
         tasks.filter(task => task.projectId === projectId).length
     
-    if (!team) return <div className="p-6">Loading projects...</div>
+    if (!team) return (
+        <div className="flex flex-1 items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+    )
     
     return (
         <div className="flex flex-1 flex-col p-6">

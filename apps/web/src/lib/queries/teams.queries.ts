@@ -5,7 +5,7 @@ import { useMemo } from 'react'
 import { request } from '@/lib/api/client'
 import * as store from '@/store'
 
-export const useGetTeamsQuery = () => {
+export const useGetTeamsQuery = (options = {}) => {
     
     const teamsQueryKey = useMemo(() => (
         ['teams'] as const
@@ -28,6 +28,7 @@ export const useGetTeamsQuery = () => {
             }
         },
         // initialData: [],
+        ...options,
     })
     
     return {

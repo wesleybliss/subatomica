@@ -4,7 +4,7 @@ import { Outlet,useNavigate, useParams } from 'react-router-dom'
 
 import * as store from '@/store'
 
-export default function WorkspaceSettingsLayout() {
+export default function TeamSettingsLayout() {
     
     const params = useParams()
     const navigate = useNavigate()

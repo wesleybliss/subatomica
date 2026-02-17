@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { signIn } from '@/lib/auth-client'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function SignInPage() {
     const [email, setEmail] = useState('')
@@ -27,7 +28,7 @@ export default function SignInPage() {
             const result = await signIn.email({
                 email,
                 password,
-                callbackURL: `${import.meta.env.VITE_PUBLIC_APP_URL}/dashboard`,
+                callbackURL: `${import.meta.env.VITE_PUBLIC_APP_URL}`,
             })
             
             if (result?.error) {
@@ -35,7 +36,7 @@ export default function SignInPage() {
                 throw new Error(result.error.message ?? 'Unknown error')
             }
             
-            navigate('/dashboard')
+            navigate('/')
         } catch (e) {
             console.error('handleSubmit', e)
             setError('Invalid email or password')
@@ -45,7 +46,7 @@ export default function SignInPage() {
     }
     
     return (
-        <div className="min-h-screen flex items-center justify-center bg-neutral-50 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <Card className="w-full max-w-md">
                 <CardHeader>
                     <CardTitle className="text-2xl">Sign In</CardTitle>
@@ -101,6 +102,10 @@ export default function SignInPage() {
                     </div>
                 </CardContent>
             </Card>
+            
+            <div className="fixed top-4 right-4 z-50">
+                <ThemeToggle />
+            </div>
         </div>
     )
 }

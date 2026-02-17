@@ -13,7 +13,7 @@ const DebugTools = () => {
     return (
         
         <div
-            className={cn('fixed bottom-17 transition-opacity duration-300 ease-in-out', {
+            className={cn('fixed bottom-4 transition-opacity duration-300 ease-in-out', {
                 'right-3 opacity-12 hover:opacity-100 overflow-hidden rounded-full':
                     vm.debugToolsMode === DebugToolsMode.minified,
                 'w-[35%] min-h-100 max-h-200 right-3 overflow-auto opacity-90 rounded bg-slate-100':

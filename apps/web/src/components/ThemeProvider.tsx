@@ -27,12 +27,24 @@ const ThemeProvider = ({ children, defaultTheme = 'dark' }: ThemeProviderProps) 
     }
     
     useEffect(() => {
-        
         // oxlint-disable-next-line no-restricted-globals
-        document.documentElement.classList.remove('light', 'dark')
-        // oxlint-disable-next-line no-restricted-globals
-        document.documentElement.classList.add(theme)
+        const root = document.documentElement
         
+        if (theme === 'system') {
+            // oxlint-disable-next-line no-restricted-globals
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+            const systemTheme = mediaQuery.matches ? 'dark' : 'light'
+            root.setAttribute('data-theme', systemTheme)
+            
+            const handleChange = (e: MediaQueryListEvent) => {
+                root.setAttribute('data-theme', e.matches ? 'dark' : 'light')
+            }
+            
+            mediaQuery.addEventListener('change', handleChange)
+            return () => mediaQuery.removeEventListener('change', handleChange)
+        } else {
+            root.setAttribute('data-theme', theme)
+        }
     }, [theme])
     
     return (

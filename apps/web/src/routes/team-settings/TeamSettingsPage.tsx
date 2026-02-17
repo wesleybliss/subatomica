@@ -2,15 +2,15 @@ import { useWireValue } from '@forminator/react-wire'
 import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { MembersSection } from '@/components/settings/MembersSection'
-import SettingsAccountHeader from '@/components/settings/SettingsAccountHeader'
+import { MembersSection } from '@/components/team-settings/MembersSection'
+import SettingsAccountHeader from '@/components/team-settings/SettingsAccountHeader'
 import { useSession } from '@/lib/auth-client'
 import * as store from '@/store'
 
 const avatarUrlFor = (name: string, email: string) =>
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
 
-export default function WorkspaceSettingsPage() {
+export default function TeamSettingsPage() {
     
     const params = useParams()
     const navigate = useNavigate()
@@ -42,9 +42,9 @@ export default function WorkspaceSettingsPage() {
     
     return (
         
-        <div className="flex-1 overflow-y-auto bg-neutral-50">
+        <div className="flex-1 overflow-y-auto">
             
-            <div className="border-b border-neutral-200 bg-white/80 backdrop-blur">
+            <div className="border-b border-neutral-200 backdrop-blur">
                 <div className="mx-auto max-w-5xl px-6 py-10">
                     <div className="flex flex-wrap items-center justify-between gap-6">
                         <div>
@@ -55,7 +55,7 @@ export default function WorkspaceSettingsPage() {
                             </p>
                         </div>
                         <div className="rounded-full border border-neutral-200
-                           bg-white px-4 py-2 text-xs text-neutral-500">
+                           px-4 py-2 text-xs text-neutral-500">
                             Last updated today
                         </div>
                     </div>
@@ -64,7 +64,7 @@ export default function WorkspaceSettingsPage() {
             
             <div className="mx-auto max-w-5xl px-6 py-10 space-y-8">
                 
-                <section className="rounded-2xl border border-neutral-200 bg-white shadow-sm">
+                <section className="rounded-2xl border border-neutral-200 shadow-sm">
                     <div className="border-b border-neutral-100 px-6 py-4">
                         <p className="text-xs uppercase tracking-[0.2em] text-neutral-400">Account</p>
                     </div>

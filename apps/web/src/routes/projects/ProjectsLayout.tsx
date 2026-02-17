@@ -1,4 +1,5 @@
 import { useWireValue } from '@forminator/react-wire'
+import { Loader2 } from 'lucide-react'
 import { useMemo } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 
@@ -29,7 +30,11 @@ export default function ProjectsLayout() {
     if (!teamSlug) navigate('/')
     
     if (isPending)
-        return <div>Loading projects...</div>
+        return (
+            <div className="flex flex-1 items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        )
     
     if (projectsError)
         return <div>projectsError: {projectsError.message}</div>

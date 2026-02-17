@@ -1,6 +1,6 @@
 import { useWireValue } from '@forminator/react-wire'
 import { Team } from '@repo/shared/types'
-import { FolderKanban, LayoutGrid, Users } from 'lucide-react'
+import { FolderKanban, LayoutGrid, Loader2, Users } from 'lucide-react'
 import { SyntheticEvent, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
@@ -61,7 +61,11 @@ export default function TeamPage() {
     ), [projectsIsPending, tasksIsPending, teamMembersIsPending])
     
     if (isPending)
-        return <div>@todo Loading teams...</div>
+        return (
+            <div className="flex flex-1 items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        )
     
     if (!team)
         return <div className="p-6">Team not found</div>

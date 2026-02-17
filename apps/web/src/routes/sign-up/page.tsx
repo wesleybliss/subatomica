@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { signIn, signUp } from '@/lib/auth-client'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function SignUpPage() {
     const [name, setName] = useState('')
@@ -30,7 +31,7 @@ export default function SignUpPage() {
                 throw new Error(result.error.message ?? 'Unknown error')
             }
             
-            navigate('/dashboard')
+            navigate('/')
         } catch (e) {
             console.error('handleSubmit', e)
             setError('Invalid email or password')
@@ -61,7 +62,7 @@ export default function SignUpPage() {
                 throw new Error(result.error.message ?? 'Unknown error')
             }
             
-            navigate('/dashboard')
+            navigate('/')
         } catch (e) {
             console.error('handleSubmit', e)
             setError('Failed to create account. Please try again.')
@@ -71,7 +72,7 @@ export default function SignUpPage() {
     }
     
     return (
-        <div className="min-h-screen flex items-center justify-center bg-neutral-50 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <Card className="w-full max-w-md">
                 <CardHeader>
                     <CardTitle className="text-2xl">Create Account</CardTitle>
@@ -134,6 +135,10 @@ export default function SignUpPage() {
                     </div>
                 </CardContent>
             </Card>
+            
+            <div className="fixed top-4 right-4 z-50">
+                <ThemeToggle />
+            </div>
         </div>
     )
 }

@@ -18,7 +18,7 @@ const PrimarySidebarHeader = ({ setSearchOpen }: { setSearchOpen: (item: boolean
                 
                 <img
                     className="shrink-0"
-                    src="/logos/sub-atomica-high-resolution-logo-grayscale-transparent.png"
+                    src="/logos/v2/sub-atomica-high-resolution-logo-grayscale-transparent-v2b.png"
                     alt="Sub Atomica"
                     width={24}
                     height={24} />

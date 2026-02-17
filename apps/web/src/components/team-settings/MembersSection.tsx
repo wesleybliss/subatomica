@@ -91,7 +91,7 @@ export function MembersSection({ teamId, members, canManage }: MembersSectionPro
     }
     
     return (
-        <section className="rounded-2xl border border-neutral-200 bg-white shadow-sm">
+        <section className="rounded-2xl border border-neutral-200 shadow-sm">
             <div className="border-b border-neutral-100 px-6 py-4">
                 <div className="flex items-center justify-between">
                     <p className="text-xs uppercase tracking-[0.2em] text-neutral-400">Members</p>

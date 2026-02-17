@@ -50,8 +50,12 @@ const UserAccountMenu = () => {
         navigate(`/t/${teamSlug}`)
     }
     
-    const onSettingsClick = () => {
+    const onTeamSettingsClick = () => {
         navigate(`/t/${activeTeamSlug}/settings`)
+    }
+    
+    const onSettingsClick = () => {
+        navigate('/settings')
     }
     
     return (
@@ -81,6 +85,9 @@ const UserAccountMenu = () => {
                             </DropdownMenuItem>
                         ))}
                     </DropdownMenuGroup>
+                    <DropdownMenuItem onClick={onTeamSettingsClick}>
+                        <span>Team Settings</span>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={onSettingsClick}>
                         <span>Settings</span>
