@@ -14,6 +14,18 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { useCreateTeamMutation } from '@/lib/mutations/teams.mutations'
 
 type TeamSwitcherProps = {
     teams: Team[]
@@ -24,7 +36,10 @@ type TeamSwitcherProps = {
 export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProps) {
     const { isMobile } = useSidebar()
     const navigate = useNavigate()
+    const createTeam = useCreateTeamMutation()
     const [activeTeam, setActiveTeam] = React.useState<Team | null>(null)
+    const [newTeamName, setNewTeamName] = React.useState('')
+    const [isDialogOpen, setIsDialogOpen] = React.useState(false)
     React.useEffect(() => {
         const nextActiveTeam = teams.find(team => team.id === activeTeamId)
         setActiveTeam(nextActiveTeam ?? teams[0] ?? null)
@@ -89,7 +104,7 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                             </DropdownMenuItem>
                         ))}
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="gap-2 p-2">
+                        <DropdownMenuItem className="gap-2 p-2" onClick={() => setIsDialogOpen(true)}>
                             <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
                                 <Plus className="size-4" />
                             </div>
@@ -97,6 +112,49 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Create New Team</DialogTitle>
+                            <DialogDescription>
+                                Create a new team to collaborate with others.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid gap-2">
+                                <Label htmlFor="teamName">Team Name</Label>
+                                <Input
+                                    id="teamName"
+                                    placeholder="Enter team name..."
+                                    value={newTeamName}
+                                    onChange={(e) => setNewTeamName(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setNewTeamName('')
+                                    setIsDialogOpen(false)
+                                }}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={async () => {
+                                    if (!newTeamName.trim()) return
+                                    await createTeam.mutateAsync({ name: newTeamName })
+                                    setNewTeamName('')
+                                    setIsDialogOpen(false)
+                                }}
+                                disabled={!newTeamName.trim() || createTeam.isPending}
+                            >
+                                {createTeam.isPending ? 'Creating...' : 'Create Team'}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </SidebarMenuItem>
         </SidebarMenu>
     )
