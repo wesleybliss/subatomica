@@ -22,7 +22,7 @@ export const useCreateProjectMutation = (
         mutationFn: async ({ name, tempId }: CreateProjectInput) => {
             if (!teamId)
                 throw new Error('Missing team id')
-            const created = await request<Project>('/projects?teamId=${teamId}', {
+            const created = await request<Project>(`/projects?teamId=${teamId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: resolveName(name) }),
