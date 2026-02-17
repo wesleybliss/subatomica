@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { updateTask } from '@/lib/queries/tasks.queries'
+import { useUpdateTaskMutation } from '@/lib/mutations/tasks.mutations'
 type TaskDetailFormProps = {
     task: Task
     teamId: string | null
@@ -26,7 +26,6 @@ type TaskDetailFormProps = {
 export function TaskDetailForm({ task, teamId, teamMembers, projectId, onSaved, onClose }: TaskDetailFormProps) {
     const [title, setTitle] = useState(task.title)
     const [assigneeId, setAssigneeId] = useState<string>(task.assigneeId ?? '')
-    const [isSaving, setIsSaving] = useState(false)
     const editor = useEditor({
         immediatelyRender: false,
         extensions: [StarterKit],
@@ -40,33 +39,36 @@ export function TaskDetailForm({ task, teamId, teamMembers, projectId, onSaved, 
             },
         },
     })
+
+    const updateTaskMutation = useUpdateTaskMutation(teamId, projectId, (updated) => {
+        onSaved?.(updated)
+        onClose?.()
+    })
+
     useEffect(() => {
         setTitle(task.title)
         setAssigneeId(task.assigneeId ?? '')
         if (editor && task.description !== editor.getHTML())
             editor.commands.setContent(task.description || '<projects></projects>')
     }, [editor, task.assigneeId, task.description, task.title])
+
     const members = useMemo(() => teamMembers, [teamMembers])
+
     const handleSave = async () => {
         const nextTitle = title.trim()
         if (!nextTitle || !editor)
             return
-        setIsSaving(true)
-        try {
-            if (!teamId)
-                return console.warn('TaskDetailForm missing teamId')
-            const updated = await updateTask(teamId, projectId, task.id, {
+        if (!teamId)
+            return console.warn('TaskDetailForm missing teamId')
+
+        updateTaskMutation.mutate({
+            taskId: task.id,
+            data: {
                 title: nextTitle,
                 description: editor.getHTML(),
                 assigneeId: assigneeId || undefined,
-            })
-            onSaved?.(updated)
-            onClose?.()
-        } catch (error) {
-            console.error('Failed to update task:', error)
-        } finally {
-            setIsSaving(false)
-        }
+            },
+        })
     }
     return (
         <div className="grid gap-4">
@@ -106,8 +108,8 @@ export function TaskDetailForm({ task, teamId, teamMembers, projectId, onSaved, 
             </div>
             <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-                <Button type="button" onClick={handleSave} disabled={isSaving || !title.trim()}>
-                    {isSaving ? 'Saving...' : 'Save'}
+                <Button type="button" onClick={handleSave} disabled={updateTaskMutation.isPending || !title.trim()}>
+                    {updateTaskMutation.isPending ? 'Saving...' : 'Save'}
                 </Button>
             </div>
         </div>

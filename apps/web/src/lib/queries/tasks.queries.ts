@@ -38,13 +38,3 @@ export const useGetTasksQuery = (teamId: string, projectId?: string) => {
     }
     
 }
-
-export const updateTask = (teamId: string, projectId: string, taskId: string, data: Partial<Task>): Promise<Task> => {
-    
-    return request(`/tasks/${taskId}?teamId=${teamId}&projectId=${projectId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-    })
-    
-}

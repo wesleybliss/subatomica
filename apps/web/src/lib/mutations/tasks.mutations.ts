@@ -3,6 +3,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { request } from '@/lib/api/client'
 
+interface UpdateTaskData {
+    title?: string
+    description?: string
+    assigneeId?: string
+    status?: string
+    order?: number
+}
+
 export const useCreateTaskMutation = (
     localTasks: Task[],
     setLocalTasks: (value: Task[]) => void,
@@ -138,6 +146,41 @@ export const useUpdateTaskOrderMutation = (
         },
         onSettled: () => {
             onRefresh?.()
+        },
+    })
+}
+
+interface UpdateTaskDetailInput {
+    taskId: string
+    data: UpdateTaskData
+}
+
+export const useUpdateTaskMutation = (
+    teamId?: string | null,
+    projectId?: string | null,
+    onSuccess?: (task: Task) => void,
+) => {
+    const queryClient = useQueryClient()
+    const tasksQueryKey = ['tasks', teamId, projectId]
+    
+    return useMutation<Task, Error, UpdateTaskDetailInput>({
+        mutationFn: async ({ taskId, data }: UpdateTaskDetailInput) => {
+            const queryParams = new URLSearchParams()
+            if (teamId) queryParams.append('teamId', teamId)
+            if (projectId) queryParams.append('projectId', projectId)
+            const queryString = queryParams.toString()
+            const url = queryString ? `/tasks/${taskId}?${queryString}` : `/tasks/${taskId}`
+            
+            const response = await request<Task>(url, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            })
+            return response
+        },
+        onSuccess: (updated: Task) => {
+            queryClient.invalidateQueries({ queryKey: tasksQueryKey })
+            onSuccess?.(updated)
         },
     })
 }
