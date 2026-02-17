@@ -181,6 +181,45 @@ const getTeamTasksRoute = createRoute({
     },
 })
 
+const updateTeamRoute = createRoute({
+    method: 'patch',
+    path: '/{teamId}',
+    tags: ['Teams'],
+    security: [{ bearerAuth: [] }],
+    request: {
+        params: TeamIdParamSchema,
+        body: {
+            content: {
+                'application/json': {
+                    schema: TeamCreateSchema,
+                },
+            },
+        },
+    },
+    responses: {
+        ...createResponses(TeamSchema, {
+            successDescription: 'Team updated',
+            errorStatuses: [400, 401, 403, 404, 500],
+        }),
+    },
+})
+
+const deleteTeamRoute = createRoute({
+    method: 'delete',
+    path: '/{teamId}',
+    tags: ['Teams'],
+    security: [{ bearerAuth: [] }],
+    request: {
+        params: TeamIdParamSchema,
+    },
+    responses: {
+        ...createResponses(SuccessSchema, {
+            successDescription: 'Team deleted',
+            errorStatuses: [400, 401, 403, 404, 500],
+        }),
+    },
+})
+
 const handleRouteError = (error: unknown): never => {
     if (error instanceof HTTPException)
         throw error
@@ -319,6 +358,41 @@ const removeTeamMemberHandler: RouteHandler<typeof removeTeamMemberRoute, ApiApp
     }
 }
 
+const updateTeamHandler: RouteHandler<typeof updateTeamRoute, ApiAppEnv> = async c => {
+    try {
+        const user = c.get('user')
+        
+        if (!user)
+            throw new HTTPException(401, { message: 'Unauthorized' })
+        
+        const { teamId } = c.req.valid('param')
+        const payload = c.req.valid('json')
+        
+        const team = await teamsService.renameTeam(user.id, teamId, payload.name)
+        
+        return c.json(team, 200)
+    } catch (error) {
+        return handleRouteError(error)
+    }
+}
+
+const deleteTeamHandler: RouteHandler<typeof deleteTeamRoute, ApiAppEnv> = async c => {
+    try {
+        const user = c.get('user')
+        
+        if (!user)
+            throw new HTTPException(401, { message: 'Unauthorized' })
+        
+        const { teamId } = c.req.valid('param')
+        
+        await teamsService.deleteTeam(user.id, teamId)
+        
+        return c.json({ success: true }, 200)
+    } catch (error) {
+        return handleRouteError(error)
+    }
+}
+
 export async function ensureUserHasTeam(userId: string) {
     const userTeams = await teamsService.getUserTeams(userId)
     
@@ -337,5 +411,7 @@ const routes = new OpenAPIHono<ApiAppEnv>()
     .openapi(removeTeamMemberRoute, removeTeamMemberHandler)
     .openapi(getTeamProjectsRoute, getTeamProjects)
     .openapi(getTeamTasksRoute, getTeamTasks)
+    .openapi(updateTeamRoute, updateTeamHandler)
+    .openapi(deleteTeamRoute, deleteTeamHandler)
 
 export default routes
