@@ -20,7 +20,7 @@ export function TaskDetailDialog({ task, teamMembers, open, onOpenChange }: Task
     const selectedTeamId = useWireValue(store.selectedTeamId)
     const selectedProjectId = useWireValue(store.selectedProjectId)
     
-    if (selectedTeamId || !selectedProjectId) {
+    if (!selectedTeamId || !selectedProjectId) {
         if (open)
             log.w('dialog opened without a team or project selected, skipping render')
         return null

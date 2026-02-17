@@ -21,10 +21,16 @@ export const useCreateTaskMutation = (
         { previousTasks?: Task[] }
     >({
         mutationFn: async ({ status, tempId }: CreateTaskInput) => {
-            const created = await request<Task>(`/tasks/${tempId}`, {
+            const queryParams = new URLSearchParams()
+            if (teamId) queryParams.append('teamId', teamId)
+            if (projectId) queryParams.append('projectId', projectId)
+            const queryString = queryParams.toString()
+            const url = queryString ? `/tasks/${tempId}?${queryString}` : `/tasks/${tempId}`
+            
+            const created = await request<Task>(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status, tempId, teamId, projectId }),
+                body: JSON.stringify({ status, tempId }),
             })
             return { created, tempId }
         },
@@ -95,10 +101,16 @@ export const useUpdateTaskOrderMutation = (
     
     return useMutation<Task, Error, UpdateTaskOrderInput, { previousTasks?: Task[] }>({
         mutationFn: async ({ taskId, status, order }: UpdateTaskOrderInput) => {
-            const response = await request<Task>(`/tasks/${taskId}`, {
+            const queryParams = new URLSearchParams()
+            if (teamId) queryParams.append('teamId', teamId)
+            if (projectId) queryParams.append('projectId', projectId)
+            const queryString = queryParams.toString()
+            const url = queryString ? `/tasks/${taskId}?${queryString}` : `/tasks/${taskId}`
+            
+            const response = await request<Task>(url, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ teamId, projectId, status, order }),
+                body: JSON.stringify({ status, order }),
             })
             return response as Task
         },
