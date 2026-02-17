@@ -68,6 +68,7 @@ export const useCreateProjectMutation = (
             store.projects.setValue(
                 currentStoreProjects.map(project => (project.id === tempId ? created : project)),
             )
+            queryClient.invalidateQueries({ queryKey: activeQueryKey })
         },
     })
 }

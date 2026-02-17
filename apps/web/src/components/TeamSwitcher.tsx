@@ -144,9 +144,10 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                             <Button
                                 onClick={async () => {
                                     if (!newTeamName.trim()) return
-                                    await createTeam.mutateAsync({ name: newTeamName })
+                                    const team = await createTeam.mutateAsync({ name: newTeamName })
                                     setNewTeamName('')
                                     setIsDialogOpen(false)
+                                    navigate(`/t/${team.slug}`)
                                 }}
                                 disabled={!newTeamName.trim() || createTeam.isPending}
                             >

@@ -1,7 +1,7 @@
 'use client'
 
 import { useWireValue } from '@forminator/react-wire'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Plus, Pencil, Trash2, Users, ChevronRight } from 'lucide-react'
 
@@ -120,13 +120,15 @@ function CreateTeamDialog() {
     const [open, setOpen] = useState(false)
     const [name, setName] = useState('')
     const createTeam = useCreateTeamMutation()
+    const navigate = useNavigate()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!name.trim()) return
-        await createTeam.mutateAsync({ name })
+        const team = await createTeam.mutateAsync({ name })
         setName('')
         setOpen(false)
+        navigate(`/t/${team.slug}`)
     }
 
     return (
