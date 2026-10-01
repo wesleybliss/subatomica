@@ -2,6 +2,7 @@ import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { Task, TeamMemberProfile } from '@repo/shared/types'
 import { format } from 'date-fns'
+import { convert } from 'html-to-text'
 import { Calendar,Flag } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -80,7 +81,7 @@ export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps)
                     {task.title}
                 </h4>
                 <div className="text-xs text-muted-foreground mb-2">
-                    {task.description.substring(0, 100)}
+                    {convert(task.description, { wordwrap: false }).substring(0, 100)}
                 </div>
                 <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center gap-2">
