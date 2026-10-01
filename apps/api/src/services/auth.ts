@@ -47,6 +47,9 @@ export const createAuth = (options: CreateAuthOptions = {}) => {
             database: {
                 generateId: () => uuidv7(),
             },
+            // Vite (and other reverse proxies) set x-forwarded-host/proto;
+            // honor them when resolving the public origin.
+            trustedProxyHeaders: true,
         },
         emailAndPassword: {
             enabled: true,

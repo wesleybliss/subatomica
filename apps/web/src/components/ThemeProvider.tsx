@@ -30,6 +30,11 @@ const ThemeProvider = ({ children, defaultTheme = 'dark' }: ThemeProviderProps) 
         // oxlint-disable-next-line no-restricted-globals
         const root = document.documentElement
         
+        // Keep theme on <html> only — a data-theme on <body> would
+        // re-declare CSS variables and fight the active theme.
+        // oxlint-disable-next-line no-restricted-globals
+        document.body.removeAttribute('data-theme')
+
         if (theme === 'system') {
             // oxlint-disable-next-line no-restricted-globals
             const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')

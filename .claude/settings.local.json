@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm lint:fix:*)",
+      "Bash(pnpm why:*)",
+      "Bash(node -e:*)",
+      "Bash(npm run build:*)",
+      "Bash(pnpm install:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(pnpm check:*)"
+    ]
+  }
+}

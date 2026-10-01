@@ -1,13 +1,14 @@
+import { API_BASE } from '@/lib/api-base'
 
 const createFullUrl = (url: string) => {
     
-    if (url.startsWith('http:'))
+    if (url.startsWith('http:') || url.startsWith('https:'))
         return url
     
     if (url.startsWith('/'))
-        return `${import.meta.env.VITE_BETTER_AUTH_URL}${url}`
+        return `${API_BASE}${url}`
     
-    return `${import.meta.env.VITE_BETTER_AUTH_URL}/${url}`
+    return `${API_BASE}/${url}`
     
 }
 

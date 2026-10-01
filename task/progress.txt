@@ -32,3 +32,13 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 - react-wire-persisted type errors handled with @ts-expect-error directives
 - Store lookups provide fallback if slug lookup fails
 - Task display can be enhanced with task keys once needed
+
+## Theme / landing
+- Never set data-theme on both <html> and <body>; body overrides cascade CSS vars and can make light theme inherit dark foregrounds.
+- ThemeProvider owns data-theme on documentElement only.
+
+## Auth base URLs (Tailscale / remote)
+- Browser must not call `http://localhost:5000` when the page is opened via Tailscale — that hits the *client* machine.
+- Match flowstate: leave `VITE_BETTER_AUTH_URL` empty → same-origin; Vite proxies `/auth`, `/teams`, etc. to `127.0.0.1:5000`.
+- Set `BETTER_AUTH_URL` to the *public* web origin (e.g. `https://geekom-a7.ide-cherimoya.ts.net:3011`), not the API listen port.
+- `advanced.trustedProxyHeaders: true` + Vite `xfwd: true` so forwarded host/proto are honored.

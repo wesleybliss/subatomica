@@ -28,7 +28,7 @@ export default function SignInPage() {
             const result = await signIn.email({
                 email,
                 password,
-                callbackURL: `${import.meta.env.VITE_PUBLIC_APP_URL}`,
+                callbackURL: window.location.origin,
             })
             
             if (result?.error) {

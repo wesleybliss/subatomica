@@ -1,14 +1,14 @@
 import { createAuthClient } from 'better-auth/react'
 
-if (!import.meta.env.VITE_BETTER_AUTH_URL)
-    throw new Error('VITE_BETTER_AUTH_URL is not defined')
+import { API_BASE } from '@/lib/api-base'
 
-console.log('lib/auth-client: baseURL:', import.meta.env.VITE_BETTER_AUTH_URL)
+const baseURL = API_BASE || (typeof window !== 'undefined' ? window.location.origin : undefined)
+
+console.log('lib/auth-client: baseURL:', baseURL || '(unresolved)')
 
 export const authClient = createAuthClient({
-    baseURL: import.meta.env.VITE_BETTER_AUTH_URL,
-    
-    // Don'teams automatically add /api/auth to the basePath
+    // Same-origin when API_BASE is empty (Vite proxies /auth → API)
+    ...(baseURL ? { baseURL } : {}),
     basePath: '/auth',
 })
 
