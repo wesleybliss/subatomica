@@ -15,6 +15,7 @@ interface ListViewGroupProps {
     teamMembers: TeamMemberProfile[]
     onTaskDelete?: (taskId: string) => void
     onTasksReorder?: (taskIds: string[], status: string) => void
+    onLaneColorChange?: (laneId: string, hex: string) => void
 }
 
 const ListViewGroup = ({
@@ -27,6 +28,7 @@ const ListViewGroup = ({
     teamMembers,
     onTaskDelete,
     onTasksReorder,
+    onLaneColorChange,
 }: ListViewGroupProps) => {
     
     const vm = useListViewGroupViewModel(tasks, selectedTasks, lane, onTasksReorder)
@@ -43,7 +45,8 @@ const ListViewGroup = ({
                 selectedTasks={selectedTasks}
                 onToggleTask={onToggleTask}
                 onSelectAll={onSelectAll}
-                onDeselectAll={onDeselectAll} />
+                onDeselectAll={onDeselectAll}
+                onLaneColorChange={onLaneColorChange}/>
             
             {/* Group Content */}
             {vm.isExpanded && (

@@ -1,6 +1,8 @@
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { Task, TaskLane } from '@repo/shared/types'
-import { useEffect, useMemo,useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+
+import { resolveLaneIconColor } from '@/lib/constants/lane-colors.constants'
 
 const ListViewGroupViewModel = (
     tasks: Task[],
@@ -46,7 +48,7 @@ const ListViewGroupViewModel = (
         
     }, [lane.key, onTasksReorder])
     
-    const laneColor = useMemo(() => lane.color ? `#${lane.color}` : undefined, [lane])
+    const laneColor = useMemo(() => resolveLaneIconColor(lane.color), [lane.color])
     
     return {
         

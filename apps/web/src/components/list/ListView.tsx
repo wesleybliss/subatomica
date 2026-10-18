@@ -57,7 +57,8 @@ const ListView = ({
                             onDeselectAll={vm.handleDeselectAll}
                             teamMembers={teamMembers}
                             onTaskDelete={vm.handleDeleteTask}
-                            onTasksReorder={vm.handleTasksReorder}/>
+                            onTasksReorder={vm.handleTasksReorder}
+                            onLaneColorChange={vm.handleLaneColorChange}/>
                     ))
                 )}
             </div>

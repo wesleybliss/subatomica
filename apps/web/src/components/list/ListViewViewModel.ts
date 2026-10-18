@@ -1,6 +1,9 @@
 import type { Project, Task, TaskLane } from '@repo/shared/types'
 import { useEffect, useMemo, useState } from 'react'
 
+import { hexToLaneColor } from '@/lib/constants/lane-colors.constants'
+import { useUpdateTaskLaneMutation } from '@/lib/mutations/lanes.mutations'
+
 const ListViewViewModel = (
     teamId: string,
     project: Project,
@@ -11,6 +14,7 @@ const ListViewViewModel = (
 ) => {
     
     const projectId = project.id
+    const lanesQueryKey = useMemo(() => ['lanes', projectId] as const, [projectId])
     
     const [lanes, setLanes] = useState<TaskLane[]>(initialLanes)
     const [selectedTasks, setSelectedTasks] = useState<Set<string>>(parentSelectedTasks ?? new Set())
@@ -22,6 +26,21 @@ const ListViewViewModel = (
     useEffect(() => {
         setLanes(initialLanes)
     }, [initialLanes])
+    
+    const updateTaskLaneMutation = useUpdateTaskLaneMutation(
+        teamId,
+        projectId,
+        lanes,
+        setLanes,
+        lanesQueryKey,
+    )
+    
+    const handleLaneColorChange = (laneId: string, hex: string) => {
+        updateTaskLaneMutation.mutate({
+            laneId,
+            data: { color: hexToLaneColor(hex) },
+        })
+    }
     
     // Group tasks by status, maintaining lane order
     const groupedTasks = useMemo(() => {
@@ -149,6 +168,7 @@ const ListViewViewModel = (
         handleChangeStatus,
         handleTasksReorder,
         handleDeselectAll,
+        handleLaneColorChange,
         
     }
     
