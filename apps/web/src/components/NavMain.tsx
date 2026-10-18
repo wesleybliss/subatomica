@@ -27,20 +27,14 @@ export function NavMain({
                 {items.map(item => (
                     <SidebarMenuItem key={item.title}>
                         <Link to={item.url}>
-                            
                             <SidebarMenuButton
-                                className="px-1 py-6"
                                 isActive={item.isActive}
                                 tooltip={item.title}>
-                                
-                                {item.icon && <item.icon className="size-4!" />}
-                                
+                                {item.icon && <item.icon className="size-4" />}
                                 <span className="group-data-[state=collapsed]/sidebar:hidden">
                                     {item.title}
                                 </span>
-                            
                             </SidebarMenuButton>
-                        
                         </Link>
                     </SidebarMenuItem>
                 ))}

@@ -255,13 +255,13 @@ function SidebarTrigger({
             data-slot="sidebar-trigger"
             variant="ghost"
             size="icon-sm"
-            className={cn(className)}
+            className={cn('text-muted-foreground', className)}
             onClick={event => {
                 onClick?.(event)
                 toggleSidebar()
             }}
             {...props}>
-            <PanelLeftIcon />
+            <PanelLeftIcon className="size-4" strokeWidth={1.75} />
             <span className="sr-only">Toggle Sidebar</span>
         </Button>
     )

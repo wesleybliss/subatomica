@@ -28,19 +28,13 @@ const ProjectDetailNavbar = ({
     
     return (
         
-        <header className="flex items-center justify-between gap-8 border-b border-border px-6 py-3">
-            
-            <div className="flex items-center gap-3">
-                
-                <SidebarTrigger className="-ml-1" />
-                
-                <div className="flex flex-col gap-1">
-                    <ProjectsSelectorDropdown
-                        teamId={teamId}
-                        projects={projects}
-                        selectedProjectId={selectedProjectId} />
-                </div>
-            
+        <header className="flex h-14 items-center justify-between gap-6 border-b border-border px-4">
+            <div className="flex items-center gap-2">
+                <SidebarTrigger />
+                <ProjectsSelectorDropdown
+                    teamId={teamId}
+                    projects={projects}
+                    selectedProjectId={selectedProjectId} />
             </div>
             
             <Tabs

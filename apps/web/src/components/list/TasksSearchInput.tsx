@@ -31,13 +31,10 @@ const TasksSearchInput = ({
     }, [debouncedValue, setTasksQuery])
     
     return (
-        
-        <InputGroup>
-            
+        <InputGroup className="bg-muted/40 shadow-none">
             <InputGroupAddon align="inline-start">
-                <FileSearchCorner />
+                <FileSearchCorner className="size-4" strokeWidth={1.75} />
             </InputGroupAddon>
-            
             <InputGroupInput
                 id="list-view-search-input"
                 value={inputValue}
@@ -49,9 +46,7 @@ const TasksSearchInput = ({
                         setTasksQuery('')
                     }
                 }} />
-        
         </InputGroup>
-        
     )
     
 }

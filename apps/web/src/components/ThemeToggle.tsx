@@ -32,9 +32,10 @@ const ThemeToggle = ({ className }: { className?: string }) => {
                         <Button
                             aria-label="Toggle theme"
                             variant="ghost"
-                            size="icon" />
+                            size="icon-sm"
+                            className="text-muted-foreground" />
                     )}>
-                    <Icon className="size-4" />
+                    <Icon className="size-4" strokeWidth={1.75} />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-40">
                     <DropdownMenuItem onClick={() => onThemeChange('light')}>

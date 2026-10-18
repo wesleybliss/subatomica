@@ -42,12 +42,12 @@ const ProjectsSelectorDropdown = ({
         <DropdownMenu>
             <DropdownMenuTrigger render={(
                 <Button
-                    className="flex justify-between items-center gap-2 opacity-70 hover:opacity-100"
+                    className="h-8 gap-1.5 px-2 text-sm font-medium text-foreground"
                     variant="ghost">
-                    <span className="text-sm">
+                    <span>
                         {projects?.find(it => it.id === selectedProjectId)?.name}
                     </span>
-                    <ChevronDown size="16px" />
+                    <ChevronDown className="size-3.5 text-muted-foreground" />
                 </Button>
             )} />
             

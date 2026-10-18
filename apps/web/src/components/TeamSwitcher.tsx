@@ -3,6 +3,15 @@ import { ChevronsUpDown, Plus, SquareTerminal } from 'lucide-react'
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { Button } from '@/components/ui/button'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,18 +22,9 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { SidebarMenu, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
+import { SidebarMenu, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
 import { useCreateTeamMutation } from '@/lib/mutations/teams.mutations'
 
 type TeamSwitcherProps = {
@@ -55,18 +55,15 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                 <DropdownMenu>
                     <DropdownMenuTrigger
                         className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground
-                            flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm">
+                            hover:bg-sidebar-accent flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm
+                            transition-colors outline-none">
                         <div
-                            className="bg-sidebar-primary text-sidebar-primary-foreground
-                                flex aspect-square size-7 items-center justify-center rounded-lg
-                                group-data-[state=collapsed]/sidebar:size-9">
-                            <div className="size-7 bg-primary rounded flex items-center justify-center
-                                group-data-[state=collapsed]/sidebar:size-9">
-                                <span className="text-xs font-bold text-primary-foreground
-                                    group-data-[state=collapsed]/sidebar:text-sm">
-                                    {activeTeamInitial}
-                                </span>
-                            </div>
+                            className="bg-primary text-primary-foreground
+                                flex size-7 shrink-0 items-center justify-center rounded-md
+                                group-data-[state=collapsed]/sidebar:size-8">
+                            <span className="text-xs font-semibold">
+                                {activeTeamInitial}
+                            </span>
                         </div>
                         <div
                             className="group-data-[state=collapsed]/sidebar:hidden grid flex-1
@@ -76,7 +73,8 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                             </span>
                         </div>
                         <ChevronsUpDown
-                            className="ml-auto group-data-[state=collapsed]/sidebar:hidden size-4" />
+                            className="ml-auto size-4 text-muted-foreground
+                                group-data-[state=collapsed]/sidebar:hidden" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
@@ -127,8 +125,7 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                                     id="teamName"
                                     placeholder="Enter team name..."
                                     value={newTeamName}
-                                    onChange={(e) => setNewTeamName(e.target.value)}
-                                />
+                                    onChange={e => setNewTeamName(e.target.value)}/>
                             </div>
                         </div>
                         <DialogFooter>
@@ -137,8 +134,7 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                                 onClick={() => {
                                     setNewTeamName('')
                                     setIsDialogOpen(false)
-                                }}
-                            >
+                                }}>
                                 Cancel
                             </Button>
                             <Button
@@ -149,8 +145,7 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                                     setIsDialogOpen(false)
                                     navigate(`/t/${team.slug}`)
                                 }}
-                                disabled={!newTeamName.trim() || createTeam.isPending}
-                            >
+                                disabled={!newTeamName.trim() || createTeam.isPending}>
                                 {createTeam.isPending ? 'Creating...' : 'Create Team'}
                             </Button>
                         </DialogFooter>
