@@ -107,7 +107,11 @@ function TeamListItem({ team }: { team: Team }) {
             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <EditTeamDialog team={team} />
                 <DeleteTeamDialog team={team} />
-                <Link to={`/t/${team.slug}/settings`} className="inline-flex items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-medium transition-all hover:bg-muted hover:text-foreground h-8 w-8">
+                <Link
+                    to={`/t/${team.slug}/settings`}
+                    className="inline-flex items-center justify-center rounded-md border
+                        border-transparent bg-clip-padding text-sm font-medium transition-all
+                        hover:bg-muted hover:text-foreground h-8 w-8">
                     <ChevronRight className="h-4 w-4" />
                 </Link>
             </div>

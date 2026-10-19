@@ -3,6 +3,11 @@ import { Link } from 'react-router-dom'
 import ThemeToggle from '@/components/ThemeToggle'
 import { Button } from '@/components/ui/button'
 
+// eslint-disable-next-line @stylistic/max-len
+const gradient1 = 'bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--primary)_16%,transparent),_transparent_58%)]'
+// eslint-disable-next-line @stylistic/max-len
+const gradient2 = '[background-image:linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_7%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklab,var(--foreground)_7%,transparent)_1px,transparent_1px)] [background-size:56px_56px] [mask-image:radial-gradient(ellipse_at_center,black_15%,transparent_72%)]'
+
 const LandingPage = () => {
     
     return (
@@ -38,10 +43,10 @@ const LandingPage = () => {
                 <section className="relative overflow-hidden">
                     <div
                         aria-hidden
-                        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_color-mix(in_oklab,var(--primary)_16%,transparent),_transparent_58%)]" />
+                        className={`pointer-events-none absolute inset-0 ${gradient1}`} />
                     <div
                         aria-hidden
-                        className="pointer-events-none absolute inset-0 opacity-[0.3] [background-image:linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_7%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklab,var(--foreground)_7%,transparent)_1px,transparent_1px)] [background-size:56px_56px] [mask-image:radial-gradient(ellipse_at_center,black_15%,transparent_72%)]" />
+                        className={`pointer-events-none absolute inset-0 opacity-[0.3] ${gradient2}`} />
                     
                     <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 pb-12 sm:pb-16">
                         <div className="max-w-2xl animate-in fade-in slide-in-from-bottom-2 duration-700">
@@ -55,7 +60,8 @@ const LandingPage = () => {
                                 Teams, boards, and tasks in one quiet workspace —
                                 so shipping stays the focus.
                             </p>
-                            <div className="mt-8 flex flex-wrap items-center gap-3 animate-in fade-in duration-700 delay-150 fill-mode-both">
+                            <div className="mt-8 flex flex-wrap items-center gap-3 animate-in
+                                fade-in duration-700 delay-150 fill-mode-both">
                                 <Link to="/sign-up">
                                     <Button size="lg">Get Started</Button>
                                 </Link>
@@ -68,7 +74,8 @@ const LandingPage = () => {
                         </div>
                     </div>
                     
-                    <div className="relative animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200 fill-mode-both">
+                    <div className="relative animate-in fade-in slide-in-from-bottom-4
+                        duration-1000 delay-200 fill-mode-both">
                         <img
                             src="/Sub-Atomica-mock.png"
                             alt="Sub Atomica kanban board"
@@ -77,7 +84,8 @@ const LandingPage = () => {
                             height={1201} />
                         <div
                             aria-hidden
-                            className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-linear-to-t from-background to-transparent" />
+                            className="pointer-events-none absolute inset-x-0 bottom-0 h-28
+                                bg-linear-to-t from-background to-transparent" />
                     </div>
                 </section>
             </main>

@@ -42,7 +42,7 @@ const useMonitorNavigation = () => {
         setSelectedProjectSlug(projectSlug)
         setSelectedTaskSlug(taskSlug)
         
-    }, [params, pathname])
+    }, [params, pathname, setSelectedProjectSlug, setSelectedTaskSlug, setSelectedTeamSlug])
     
 }
 

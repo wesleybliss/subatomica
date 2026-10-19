@@ -50,7 +50,8 @@ export const createSetterFns = <T extends object>() => <K extends keyof T>(
     }
     
     for (const key of keys) {
-        const setterName = `set${String(key).charAt(0).toUpperCase()}${String(key).slice(1)}` as `set${Capitalize<string & K>}`
+        const firstLetter = String(key).charAt(0).toUpperCase()
+        const setterName = `set${firstLetter}${String(key).slice(1)}` as `set${Capitalize<string & K>}`
         
         Object.assign(setters, {
             [setterName]: createSetterFn<T>()(set, key),
