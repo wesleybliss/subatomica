@@ -1,5 +1,5 @@
 import { Task } from '@repo/shared/types'
-import logger from '@repo/shared/utils/logger'
+import Logger from '@repo/shared/utils/logger'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { v7 as uuidv7 } from 'uuid'
@@ -7,7 +7,7 @@ import { v7 as uuidv7 } from 'uuid'
 import { useCreateTaskMutation } from '@/lib/mutations/tasks.mutations'
 import { useLaneStore, useSelectedProjectId, useSelectedTeamId, useTaskStore } from '@/store'
 
-const log = logger('GlobalCommandProjectViewModel')
+const log = new Logger('web/components/dialogs/GlobalCommand/GlobalCommandProjectViewModel')
 
 const activeQueryKey = ['tasks']
 

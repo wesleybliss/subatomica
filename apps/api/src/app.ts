@@ -2,12 +2,15 @@ import 'dotenv/config'
 
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import Logger from '@repo/shared/utils/logger'
 import { Context } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { prettyJSON } from 'hono/pretty-json'
 
 import { ApiAppEnv, createApp } from '@/env'
+
+const log = new Logger('api/app')
 import healthRoutes from '@/routes/health'
 import lanesRoutes from '@/routes/lanes'
 import projectsRoutes from '@/routes/projects'
@@ -132,7 +135,7 @@ export const createApiServer = (auth = defaultAuth) => {
     
     // Error handler
     finalApp.onError((err: Error, c: Context) => {
-        console.error(err)
+        log.e(err)
         return c.json({ error: 'Internal Server Error' }, 500)
     })
     

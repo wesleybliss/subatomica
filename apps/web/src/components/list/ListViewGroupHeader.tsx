@@ -1,10 +1,13 @@
 import { KnownLaneType, Task, TaskLane } from '@repo/shared/types'
+import Logger from '@repo/shared/utils/logger'
 import { ChevronDown } from 'lucide-react'
 
 import LaneIconColorPicker from '@/components/lanes/LaneIconColorPicker'
 import useListViewGroupViewModel from '@/components/list/ListViewGroupViewModel'
 import { KNOWN_LANE_ICONS } from '@/lib/constants/icons.constants'
 import { cn } from '@/lib/utils'
+
+const log = new Logger('web/components/list/ListViewGroupHeader')
 
 interface ListViewGroupHeaderParams {
     vm: ReturnType<typeof useListViewGroupViewModel>
@@ -27,7 +30,7 @@ const ListViewGroupHeader = ({
 }: ListViewGroupHeaderParams) => {
     
     if (!KNOWN_LANE_ICONS[lane.name as KnownLaneType])
-        console.warn('No icon for', lane.name)
+        log.w('No icon for', lane.name)
     
     return (
         

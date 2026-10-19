@@ -28,7 +28,7 @@ describe('Sanity check', () => {
     
     /*it('should authorize a user', async () => {
         //auth/sign-up
-        console.log('@@@@@@@@', client.auth.signInEmailPassword.toString())
+        // log.d('@@@@@@@@', client.auth.signInEmailPassword.toString())
         
         const res = await client.auth.signInEmailPassword('foo@gmail.com', 'bar')
         

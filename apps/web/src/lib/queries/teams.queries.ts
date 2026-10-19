@@ -1,10 +1,10 @@
 import type { Team, TeamMemberProfile } from '@repo/shared/types'
+import Logger from '@repo/shared/utils/logger'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { request } from '@/lib/api/client'
 import { useTeamStore } from '@/store'
-import Logger from '@repo/shared/utils/logger'
 
 const log = new Logger('web/lib/queries/teams.queries')
 

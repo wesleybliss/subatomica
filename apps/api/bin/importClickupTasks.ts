@@ -43,11 +43,14 @@
 import 'dotenv/config'
 
 import { projects, tasks } from '@repo/db/schema'
+import Logger from '@repo/shared/utils/logger'
 import { and, desc, eq } from 'drizzle-orm'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
 
 import * as client from '../src/db/client'
+
+const log = new Logger('api/bin/importClickupTasks')
 
 // oxlint-disable-next-line @typescript-eslint/no-explicit-any
 const db: any = client.db!
@@ -78,10 +81,10 @@ async function importTasks(
     const content = readFileSync(absolutePath, 'utf-8')
     const lines = content.trim().split('\n')
     
-    console.log(`Found ${lines.length} tasks to import`)
+    log.d(`Found ${lines.length} tasks to import`)
     
     if (dryRun) {
-        console.log('\n🔍 DRY RUN MODE - No changes will be made to the database\n')
+        log.d('\n🔍 DRY RUN MODE - No changes will be made to the database\n')
     }
     
     // Verify project exists
@@ -95,8 +98,8 @@ async function importTasks(
         throw new Error(`Project with ID ${projectId} not found`)
     }
     
-    console.log(`Importing tasks into project: ${project.name}`)
-    console.log(`User ID: ${userId}\n`)
+    log.d(`Importing tasks into project: ${project.name}`)
+    log.d(`User ID: ${userId}\n`)
     
     // Get starting localId from project's taskSequence
     let nextLocalId = project.taskSequence || 1
@@ -112,7 +115,7 @@ async function importTasks(
         
         const parts = line.split('\t')
         if (parts.length !== 3) {
-            console.warn(`Skipping invalid line: ${line}`)
+            log.w(`Skipping invalid line: ${line}`)
             skipped++
             continue
         }
@@ -137,7 +140,7 @@ async function importTasks(
         const description = `Imported from ClickUp\n\nOriginal URL: ${url}`
         
         if (dryRun) {
-            console.log(`[DRY RUN] Would import: ${title} (${status}, order: ${order}, localId: ${nextLocalId})`)
+            log.d(`[DRY RUN] Would import: ${title} (${status}, order: ${order}, localId: ${nextLocalId})`)
             nextLocalId++
             imported++
         } else {
@@ -155,9 +158,9 @@ async function importTasks(
                 
                 nextLocalId++
                 imported++
-                console.log(`✓ Imported: ${title} (${status})`)
+                log.d(`✓ Imported: ${title} (${status})`)
             } catch (error) {
-                console.error(`✗ Failed to import: ${title}`, error)
+                log.e(`✗ Failed to import: ${title}`, error)
                 skipped++
             }
         }
@@ -169,12 +172,12 @@ async function importTasks(
             .update(projects)
             .set({ taskSequence: nextLocalId })
             .where(eq(projects.id, projectId))
-        console.log(`Updated project taskSequence to ${nextLocalId}`)
+        log.d(`Updated project taskSequence to ${nextLocalId}`)
     }
     
-    console.log('\nImport complete:')
-    console.log(`  ${dryRun ? 'Would import' : 'Imported'}: ${imported}`)
-    console.log(`  Skipped: ${skipped}`)
+    log.d('\nImport complete:')
+    log.d(`  ${dryRun ? 'Would import' : 'Imported'}: ${imported}`)
+    log.d(`  Skipped: ${skipped}`)
 }
 
 // Parse command line arguments
@@ -183,9 +186,9 @@ const dryRun = args.includes('--dry-run')
 const positionalArgs = args.filter(arg => arg !== '--dry-run')
 
 if (positionalArgs.length !== 3) {
-    console.error('Usage: importClickupTasks.ts <filePath> <userId> <projectId> [--dry-run]')
-    console.error('Example: importClickupTasks.ts task/sample-clickup-tasks.txt user-456 abc-123')
-    console.error('Example: importClickupTasks.ts task/sample-clickup-tasks.txt user-456 abc-123 --dry-run')
+    log.e('Usage: importClickupTasks.ts <filePath> <userId> <projectId> [--dry-run]')
+    log.e('Example: importClickupTasks.ts task/sample-clickup-tasks.txt user-456 abc-123')
+    log.e('Example: importClickupTasks.ts task/sample-clickup-tasks.txt user-456 abc-123 --dry-run')
     process.exit(1)
 }
 
@@ -194,6 +197,6 @@ const [filePath, userId, projectId] = positionalArgs
 importTasks(filePath, userId, projectId, dryRun)
     .then(() => process.exit(0))
     .catch(error => {
-        console.error('Import failed:', error)
+        log.e('Import failed:', error)
         process.exit(1)
     })

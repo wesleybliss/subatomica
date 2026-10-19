@@ -1,3 +1,4 @@
+import Logger from '@repo/shared/utils/logger'
 import type React from 'react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -9,6 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { signIn, signUp } from '@/lib/auth-client'
+
+const log = new Logger('web/routes/sign-up/page')
 
 export default function SignUpPage() {
     const [name, setName] = useState('')
@@ -27,13 +30,13 @@ export default function SignUpPage() {
             })
             
             if (result?.error) {
-                console.error('handleSubmit (result)', result.error)
+                log.e('handleSubmit (result)', result.error)
                 throw new Error(result.error.message ?? 'Unknown error')
             }
             
             navigate('/')
         } catch (e) {
-            console.error('handleSubmit', e)
+            log.e('handleSubmit', e)
             setError('Invalid email or password')
         } finally {
             setLoading(false)
@@ -58,13 +61,13 @@ export default function SignUpPage() {
                 if (result.error.code === 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL')
                     return await signInExistingUser(email, password)
                 
-                console.error('handleSubmit (result)', result.error)
+                log.e('handleSubmit (result)', result.error)
                 throw new Error(result.error.message ?? 'Unknown error')
             }
             
             navigate('/')
         } catch (e) {
-            console.error('handleSubmit', e)
+            log.e('handleSubmit', e)
             setError('Failed to create account. Please try again.')
         } finally {
             setLoading(false)

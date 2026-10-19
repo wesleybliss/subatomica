@@ -1,9 +1,12 @@
 import type { Task } from '@repo/shared/types'
+import Logger from '@repo/shared/utils/logger'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { request } from '@/lib/api/client'
 import * as store from '@/store'
+
+const log = new Logger('web/lib/queries/tasks.queries')
 
 export const useGetTasksQuery = (teamId: string, projectId?: string) => {
     
@@ -23,7 +26,7 @@ export const useGetTasksQuery = (teamId: string, projectId?: string) => {
                 
                 return res || []
             } catch (e) {
-                console.error('useGetTasksQuery', e)
+                log.e('useGetTasksQuery', e)
                 return []
             }
         },

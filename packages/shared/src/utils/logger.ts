@@ -2,7 +2,9 @@
 
 import c from 'ansi-colors'
 
-import type { LogLevel } from '@/types'
+import type { LogLevel } from '../types/logger.types'
+
+declare const process: { env: { NEXT_PUBLIC_LOG_ENABLED?: string } }
 
 export const LogLevels = {
     log: 'log',

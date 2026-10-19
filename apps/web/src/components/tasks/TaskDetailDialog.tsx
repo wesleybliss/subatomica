@@ -1,11 +1,11 @@
 import type { Task, TeamMemberProfile } from '@repo/shared/types'
-import logger from '@repo/shared/utils/logger'
+import Logger from '@repo/shared/utils/logger'
 
 import { TaskDetailForm } from '@/components/tasks/TaskDetailForm'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useSelectedProjectId, useSelectedTeamId } from '@/store'
 
-const log = logger('TaskDetailDialog')
+const log = new Logger('web/components/tasks/TaskDetailDialog')
 
 type TaskDetailDialogProps = {
     task: Task

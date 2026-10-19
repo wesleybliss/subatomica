@@ -1,3 +1,4 @@
+import Logger from '@repo/shared/utils/logger'
 import {
     BadgeCheck,
     Bell,
@@ -30,6 +31,8 @@ import {
 import { authClient } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
 
+const log = new Logger('web/components/NavUser')
+
 type NavUserProps = {
     user: {
         name: string
@@ -58,7 +61,7 @@ export function NavUser({ user }: NavUserProps) {
                 },
             },
         }).catch(e => {
-            console.error('Failed to sign out', e)
+            log.e('Failed to sign out', e)
             navigate('/sign-in', { replace: true })
         })
     }

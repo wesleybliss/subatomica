@@ -1,7 +1,7 @@
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { Task, TaskLane, TaskStatus } from '@repo/shared/types'
 import { DropIndicatorData } from '@repo/shared/types'
-import logger from '@repo/shared/utils/logger'
+import Logger from '@repo/shared/utils/logger'
 import { generateSlug } from '@repo/shared/utils/slugs'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -18,7 +18,7 @@ import { useLaneStore } from '@/store'
 
 import { type ColumnDropData, isColumnDropData, isTaskDragData, isTaskDropData,type TaskDropData } from './dragTypes'
 
-const log = logger('KanbanBoardDndViewModel')
+const log = new Logger('web/components/kanban/KanbanBoardDndViewModel')
 
 const KanbanBoardDndViewModel = (
     lanes: TaskLane[],
@@ -119,13 +119,13 @@ const KanbanBoardDndViewModel = (
                 // it's key or the tasks' keys don't get properly updated too
                 // @todo put these tasks in an "Unorganized" lane so the user can at least organize them
                 if (!localLanes.some(it => it.key === task.status))
-                    console.warn('Lane not found for task status:', task.status,
+                    log.w('Lane not found for task status:', task.status,
                         'in lanes', localLanes.map(it => it.key))
                 
                 if (!acc[task.status])
                     acc[task.status] = []
                 
-                // console.log(task.title, '->', task.status)
+                // log.d(task.title, '->', task.status)
                 
                 acc[task.status].push(task)
                 

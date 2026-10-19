@@ -1,8 +1,11 @@
 import type { Project, Task, TaskLane } from '@repo/shared/types'
+import Logger from '@repo/shared/utils/logger'
 import { useEffect, useMemo, useState } from 'react'
 
 import { normalizeLaneHexForStorage } from '@/lib/constants/lane-colors.constants'
 import { useUpdateTaskLaneMutation } from '@/lib/mutations/lanes.mutations'
+
+const log = new Logger('web/components/list/ListViewViewModel')
 
 const ListViewViewModel = (
     teamId: string,
@@ -91,7 +94,7 @@ const ListViewViewModel = (
                 return newSet
             })
         } catch (error) {
-            console.error('Failed to delete task:', error)
+            log.e('Failed to delete task:', error)
         }
     }
     
@@ -106,7 +109,7 @@ const ListViewViewModel = (
             window.location.reload()
             setSelectedTasks(new Set())
         } catch (error) {
-            console.error('Failed to delete tasks:', error)
+            log.e('Failed to delete tasks:', error)
         }
     }
     
@@ -124,7 +127,7 @@ const ListViewViewModel = (
             window.location.reload()
             setSelectedTasks(new Set())
         } catch (error) {
-            console.error('Failed to update tasks:', error)
+            log.e('Failed to update tasks:', error)
         }
     }
     
@@ -141,7 +144,7 @@ const ListViewViewModel = (
             )
             window.location.reload()
         } catch (error) {
-            console.error('Failed to reorder tasks:', error)
+            log.e('Failed to reorder tasks:', error)
         }
     }
     

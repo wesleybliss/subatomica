@@ -1,4 +1,5 @@
 import * as schema from '@repo/db/schema'
+import Logger from '@repo/shared/utils/logger'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { APIError, createAuthMiddleware } from 'better-auth/api'
@@ -6,6 +7,8 @@ import { v7 as uuidv7 } from 'uuid'
 
 import { db } from '@/db/client'
 import { ensureUserHasTeam } from '@/services/teams'
+
+const log = new Logger('api/services/auth')
 
 const DEBUG_LOGGING = false
 
@@ -78,8 +81,8 @@ export const createAuth = (options: CreateAuthOptions = {}) => {
                 
                 const inviteCode = ctx.body?.inviteCode
                 
-                console.log('raw body', ctx.body)
-                console.log(inviteCode, '==?', process.env.INVITE_CODE, { res: inviteCode === process.env.INVITE_CODE })
+                log.d('raw body', ctx.body)
+                log.d(inviteCode, '==?', process.env.INVITE_CODE, { res: inviteCode === process.env.INVITE_CODE })
                 
                 if (!inviteCode || inviteCode !== process.env.INVITE_CODE)
                     throw new APIError('BAD_REQUEST', {
@@ -92,9 +95,9 @@ export const createAuth = (options: CreateAuthOptions = {}) => {
                 if ((ctx.path === '/sign-up/email' || ctx.path === '/sign-in/email') && ctx.context?.newSession?.user) {
                     
                     const user = ctx.context.newSession.user
-                    console.log('Ensuring user has team after successful sign-in/up:', user.email)
+                    log.d('Ensuring user has team after successful sign-in/up:', user.email)
                     if (user.id)
-                        try { await ensureUserHasTeam(user.id); console.log('ensureUserHasTeam success') } catch (e) { console.error('ensureUserHasTeam failed', e) }
+                        try { await ensureUserHasTeam(user.id); log.d('ensureUserHasTeam success') } catch (e) { log.e('ensureUserHasTeam failed', e) }
                 }
                 
             }),
@@ -111,7 +114,7 @@ export const createAuth = (options: CreateAuthOptions = {}) => {
     }
     
     if (DEBUG_LOGGING)
-        console.log('betterAuth config', config)
+        log.d('betterAuth config', config)
     
     return betterAuth(config)
     

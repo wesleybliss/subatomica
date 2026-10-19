@@ -1,9 +1,12 @@
+import Logger from '@repo/shared/utils/logger'
 import { Loader2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { useGetProjectQuery } from '@/lib/queries/projects.queries'
 import { ProjectDetailClient } from '@/routes/project/ProjectDetailClient'
 import { useProjectStore, useTaskStore, useTeamStore } from '@/store'
+
+const log = new Logger('web/routes/project/page')
 
 export default function ProjectDetailPage() {
     const params = useParams()
@@ -28,18 +31,18 @@ export default function ProjectDetailPage() {
     const { isPending, error, data: projectData } = useGetProjectQuery(teamId || '', projectId || '')
     
     if (!teamSlug) {
-        console.warn('ProjectDetailPage: no teamSlug')
+        log.w('ProjectDetailPage: no teamSlug')
         navigate('/t')
         return null
     }
     
     if (!teamId) {
-        console.warn('ProjectDetailPage: team not found')
+        log.w('ProjectDetailPage: team not found')
         return <div>Team not found</div>
     }
     
     if (!projectSlug) {
-        console.warn('ProjectDetailPage: no projectSlug')
+        log.w('ProjectDetailPage: no projectSlug')
         navigate(`/t/${teamSlug}`)
         return null
     }
@@ -52,12 +55,12 @@ export default function ProjectDetailPage() {
         )
     
     if (!projectData) {
-        console.warn('ProjectDetailPage: no project')
+        log.w('ProjectDetailPage: no project')
         return null
     }
     
     if (projectData.teamId !== teamId) {
-        console.warn('ProjectDetailPage: teamId mismatch', { projectTeamId: projectData.teamId, teamId })
+        log.w('ProjectDetailPage: teamId mismatch', { projectTeamId: projectData.teamId, teamId })
         return null
     }
     

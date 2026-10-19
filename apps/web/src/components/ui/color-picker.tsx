@@ -18,6 +18,9 @@ import {
 } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Logger from "@repo/shared/utils/logger"
+
+const log = new Logger("web/components/ui/color-picker")
 import {
   Select,
   SelectContent,
@@ -271,7 +274,7 @@ export const ColorPickerEyeDropper = ({ className, ...props }: ColorPickerEyeDro
       setLightness(l)
       setAlpha(100)
     } catch (error) {
-      console.error("EyeDropper failed:", error)
+      log.e("EyeDropper failed:", error)
     }
   }
 

@@ -1,4 +1,5 @@
 import type { Task, TeamMemberProfile } from '@repo/shared/types'
+import Logger from '@repo/shared/utils/logger'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useEffect, useMemo, useState } from 'react'
@@ -15,6 +16,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useUpdateTaskMutation } from '@/lib/mutations/tasks.mutations'
+
+const log = new Logger('web/components/tasks/TaskDetailForm')
+
 type TaskDetailFormProps = {
     task: Task
     teamId: string | null
@@ -59,7 +63,7 @@ export function TaskDetailForm({ task, teamId, teamMembers, projectId, onSaved, 
         if (!nextTitle || !editor)
             return
         if (!teamId)
-            return console.warn('TaskDetailForm missing teamId')
+            return log.w('TaskDetailForm missing teamId')
         
         updateTaskMutation.mutate({
             taskId: task.id,

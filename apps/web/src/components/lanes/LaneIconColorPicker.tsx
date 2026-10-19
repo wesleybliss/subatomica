@@ -1,4 +1,5 @@
 import { KnownLaneType, TaskLane } from '@repo/shared/types'
+import Logger from '@repo/shared/utils/logger'
 import { Circle } from 'lucide-react'
 import type { MouseEvent } from 'react'
 
@@ -20,6 +21,8 @@ import {
 } from '@/lib/constants/lane-colors.constants'
 import { cn } from '@/lib/utils'
 
+const log = new Logger('web/components/lanes/LaneIconColorPicker')
+
 interface LaneIconColorPickerProps {
     lane: TaskLane
     onColorChange?: (hex: string) => void
@@ -39,7 +42,7 @@ const LaneIconColorPicker = ({
 }: LaneIconColorPickerProps) => {
     
     if (!KNOWN_LANE_ICONS[lane.name as KnownLaneType])
-        console.warn('No icon for', lane.name)
+        log.w('No icon for', lane.name)
     
     const LaneIcon = KNOWN_LANE_ICONS[lane.name as KnownLaneType] || Circle
     const iconColor = resolveLaneIconColor(lane.color)

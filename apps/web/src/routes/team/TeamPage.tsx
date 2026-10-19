@@ -1,4 +1,5 @@
 import { Team } from '@repo/shared/types'
+import Logger from '@repo/shared/utils/logger'
 import { FolderKanban, LayoutGrid, Loader2, Users } from 'lucide-react'
 import { SyntheticEvent, useMemo } from 'react'
 import { Link } from 'react-router-dom'
@@ -13,6 +14,8 @@ import { useGetProjectsQuery } from '@/lib/queries/projects.queries'
 import { useGetTasksQuery } from '@/lib/queries/tasks.queries'
 import { useGetTeamMembersQuery } from '@/lib/queries/teams.queries'
 import { useTeamStore } from '@/store'
+
+const log = new Logger('web/routes/team/TeamPage')
 
 const activeProjectsQueryKey = ['projects']
 
@@ -49,7 +52,7 @@ export default function TeamPage() {
             const tempId = uuidv7()
             await createProjectMutation.mutateAsync({ name, tempId })
         } catch (e) {
-            console.error('TeamsPage#handleCreateProject', e)
+            log.e('TeamsPage#handleCreateProject', e)
             
         }
         

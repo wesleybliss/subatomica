@@ -7,12 +7,15 @@
 import 'dotenv/config'
 
 import { projects, tasks } from '@repo/db/schema'
+import Logger from '@repo/shared/utils/logger'
 import { asc, eq } from 'drizzle-orm'
 
 import { db } from '@/db/client'
 
+const log = new Logger('api/scripts/backfill-task-ids')
+
 async function backfillTaskLocalIds() {
-    console.log('Starting Task localId backfill...')
+    log.d('Starting Task localId backfill...')
     
     const allProjects = await db.select({ id: projects.id, name: projects.name })
         .from(projects)
@@ -38,20 +41,20 @@ async function backfillTaskLocalIds() {
         }
         
         if (projectTasks.length > 0) {
-            console.log(`  Project "${project.name}": assigned localIds 1-${projectTasks.length}`)
+            log.d(`  Project "${project.name}": assigned localIds 1-${projectTasks.length}`)
         }
     }
     
-    console.log(`Backfill complete: ${totalUpdated} tasks updated with localId`)
+    log.d(`Backfill complete: ${totalUpdated} tasks updated with localId`)
 }
 
 async function main() {
     try {
         await backfillTaskLocalIds()
-        console.log('Task localId backfill completed successfully!')
+        log.d('Task localId backfill completed successfully!')
         process.exit(0)
     } catch (error) {
-        console.error('Backfill failed:', error)
+        log.e('Backfill failed:', error)
         process.exit(1)
     }
 }

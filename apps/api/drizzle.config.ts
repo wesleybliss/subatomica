@@ -1,6 +1,9 @@
 import 'dotenv/config'
 
+import Logger from '@repo/shared/utils/logger'
 import { defineConfig } from 'drizzle-kit'
+
+const log = new Logger('api/drizzle.config')
 import { Dialect } from 'drizzle-orm'
 
 type DbCredentials = {
@@ -22,7 +25,7 @@ const dbCredentials: DbCredentials = {
 if (process.env.DATABASE_DIALECT === 'turso')
     dbCredentials.authToken = process.env.TURSO_AUTH_TOKEN
 
-console.log('drizzle config', process.env.DATABASE_DIALECT, process.env.DATABASE_URL)
+log.d('drizzle config', process.env.DATABASE_DIALECT, process.env.DATABASE_URL)
 
 export default defineConfig({
     out: './drizzle',

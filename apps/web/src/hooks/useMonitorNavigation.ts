@@ -1,7 +1,10 @@
+import Logger from '@repo/shared/utils/logger'
 import { useEffect } from 'react'
 import { useLocation,useParams } from 'react-router-dom'
 
 import { useProjectStore, useTaskStore, useTeamStore } from '@/store'
+
+const log = new Logger('web/hooks/useMonitorNavigation')
 
 const normalizeParam = (value: string | string[] | undefined) => {
     
@@ -28,7 +31,7 @@ const useMonitorNavigation = () => {
         const projectSlug = normalizeParam(params?.projectSlug as string | string[] | undefined)
         const taskSlug = normalizeParam(params?.taskSlug as string | string[] | undefined)
         
-        console.log('useMonitorNavigation', {
+        log.d('useMonitorNavigation', {
             teamSlug,
             projectSlug,
             taskSlug,

@@ -1,9 +1,9 @@
-import logger from '@repo/shared/utils/logger'
+import Logger from '@repo/shared/utils/logger'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useDialogStore } from '@/store'
 
-const log = logger('hooks/useGlobalHotkeys')
+const log = new Logger('web/hooks/useGlobalHotkeys')
 
 interface HotkeyOptions {
     useKey?: boolean            // Matches event.key === '/' regardless of shift/code

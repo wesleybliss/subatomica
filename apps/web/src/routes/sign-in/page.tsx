@@ -1,3 +1,4 @@
+import Logger from '@repo/shared/utils/logger'
 import { Eye, EyeOff } from 'lucide-react'
 import type React from 'react'
 import { useState } from 'react'
@@ -10,6 +11,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { signIn } from '@/lib/auth-client'
+
+const log = new Logger('web/routes/sign-in/page')
 
 export default function SignInPage() {
     const [email, setEmail] = useState('')
@@ -32,13 +35,13 @@ export default function SignInPage() {
             })
             
             if (result?.error) {
-                console.error('handleSubmit (result)', result.error)
+                log.e('handleSubmit (result)', result.error)
                 throw new Error(result.error.message ?? 'Unknown error')
             }
             
             navigate('/')
         } catch (e) {
-            console.error('handleSubmit', e)
+            log.e('handleSubmit', e)
             setError('Invalid email or password')
         } finally {
             setLoading(false)

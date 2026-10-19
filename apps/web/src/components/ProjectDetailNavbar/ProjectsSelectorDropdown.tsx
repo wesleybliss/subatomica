@@ -1,4 +1,5 @@
 import type { Project } from '@repo/shared/types'
+import Logger from '@repo/shared/utils/logger'
 import { ChevronDown, FolderKanban, Pencil, Trash2 } from 'lucide-react'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -18,6 +19,8 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useTeamStore } from '@/store'
+
+const log = new Logger('web/components/ProjectDetailNavbar/ProjectsSelectorDropdown')
 
 interface ProjectsSelectorDropdownProps {
     teamId: string
@@ -80,7 +83,7 @@ const ProjectsSelectorDropdown = ({
                                 <DropdownMenuSubContent>
                                     <DropdownMenuGroup>
                                         <DropdownMenuItem
-                                            onClick={() => console.log('@todo rename project', it)}>
+                                            onClick={() => log.d('@todo rename project', it)}>
                                             <Pencil className="text-muted-foreground mr-2 h-4 w-4" />
                                             <span>Rename</span>
                                         </DropdownMenuItem>
@@ -88,7 +91,7 @@ const ProjectsSelectorDropdown = ({
                                     <DropdownMenuGroup>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
-                                            onClick={() => console.log('@todo delete project')}>
+                                            onClick={() => log.d('@todo delete project')}>
                                             <Trash2 className="text-destructive mr-2 h-4 w-4" />
                                             <span>Delete</span>
                                         </DropdownMenuItem>

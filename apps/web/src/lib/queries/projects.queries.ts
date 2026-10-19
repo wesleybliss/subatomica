@@ -1,9 +1,12 @@
 import type { Project, TaskLane } from '@repo/shared/types'
+import Logger from '@repo/shared/utils/logger'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { request } from '@/lib/api/client'
 import { useLaneStore, useProjectStore } from '@/store'
+
+const log = new Logger('web/lib/queries/projects.queries')
 
 export const useGetProjectsQuery = (teamId: string) => {
     
@@ -30,7 +33,7 @@ export const useGetProjectsQuery = (teamId: string) => {
                 
                 return res || []
             } catch (e) {
-                console.error('useGetProjectsQuery', e)
+                log.e('useGetProjectsQuery', e)
                 return []
             }
         },
@@ -82,7 +85,7 @@ export const useGetProjectQuery = (teamId: string, projectId: string) => {
                 
                 return res
             } catch (e) {
-                console.error('useGetProjectQuery', e)
+                log.e('useGetProjectQuery', e)
                 return null
             }
         },

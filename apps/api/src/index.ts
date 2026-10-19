@@ -1,8 +1,11 @@
 import 'dotenv/config'
 
 import { serve } from '@hono/node-server'
+import Logger from '@repo/shared/utils/logger'
 
 import app from './app'
+
+const log = new Logger('api/index')
 
 /*const globalForServer = globalThis as unknown as {
     __honoServer?: ReturnType<typeof serve>
@@ -18,5 +21,5 @@ const options = {
 export default options
 
 serve(options, info => {
-    console.log(`Running on http://localhost:${info.port}`)
+    log.d(`Running on http://localhost:${info.port}`)
 })
