@@ -1,4 +1,4 @@
-import { StoreActionBase, StoreSetter } from '@repo/shared/types'
+import { StoreAction, StoreActionBase, StoreSetter } from '@repo/shared/types'
 
 const isStoreSetter = <T>(
     value: StoreActionBase<T>,
@@ -23,45 +23,39 @@ export const getStoreKeys = <T extends object>(value: T) =>
 export const createSetterFn = <T extends object>() => <K extends keyof T>(
     set: (partial: Partial<T> | ((state: T) => Partial<T>)) => void,
     key: K,
-): (value: StoreActionBase<T[K]>) => void => {
-    
+): StoreAction<T[K]> => {
     return value => {
-        
-        if (isStoreSetter(value)) {
-            set(state => {
-                const partial: Partial<T> = {}
-                partial[key] = value(state[key])
-                return partial
-            })
-        } else {
+        set(state => {
             const partial: Partial<T> = {}
-            partial[key] = value
-            set(partial)
-        }
-        
+
+            partial[key] = isStoreSetter(value)
+                ? value(state[key])
+                : value
+
+            return partial
+        })
     }
-    
 }
 
 export const createSetterFns = <T extends object>() => <K extends keyof T>(
     set: (partial: Partial<T> | ((state: T) => Partial<T>)) => void,
-    initialValues: Partial<T>,
+    initialValues: Pick<T, K>,
 ): {
-    [P in K as `set${Capitalize<string & P>}`]: (value: StoreActionBase<T[P]>) => void
+    [P in K as `set${Capitalize<string & P>}`]: StoreAction<T[P]>
 } => {
-    
     const keys = getStoreKeys(initialValues)
-    
+
     const setters = {} as {
-        [P in K as `set${Capitalize<string & P>}`]: (value: StoreActionBase<T[P]>) => void
+        [P in K as `set${Capitalize<string & P>}`]: StoreAction<T[P]>
     }
-    
+
     for (const key of keys) {
-        const firstLetter = String(key).charAt(0).toUpperCase()
-        const setterName = `set${firstLetter}${String(key).slice(1)}` as `set${Capitalize<string & K>}`
-        Object.assign(setters, { [setterName]: createSetterFn<T>()(set, key) })
+        const setterName = `set${String(key).charAt(0).toUpperCase()}${String(key).slice(1)}` as `set${Capitalize<string & K>}`
+
+        Object.assign(setters, {
+            [setterName]: createSetterFn<T>()(set, key),
+        })
     }
-    
+
     return setters
-    
 }

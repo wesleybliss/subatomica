@@ -1,11 +1,11 @@
-import { DebugToolsMode } from '@repo/shared/types'
+import { DebugToolsMode, StoreAction } from '@repo/shared/types'
 import { create } from 'zustand'
 
 import { createSetterFns } from '@/lib/utils/store.utils'
 
 interface DebugStore {
     debugToolsMode: DebugToolsMode
-    setDebugToolsMode: (value: DebugToolsMode) => void
+    setDebugToolsMode: StoreAction<DebugToolsMode>
 }
 
 const initialValues = {

@@ -1,4 +1,4 @@
-import type { TaskLane } from '@repo/shared/types'
+import type { StoreAction, TaskLane } from '@repo/shared/types'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -7,9 +7,9 @@ import { createSetterFns } from '@/lib/utils/store.utils'
 
 interface LaneStore {
     lanes: TaskLane[]
-    setLanes: (value: TaskLane[]) => void
+    setLanes: StoreAction<TaskLane[]>
     collapsedLanes: string[]
-    setCollapsedLanes: (value: string[]) => void
+    setCollapsedLanes: StoreAction<string[]>
 }
 
 const initialValues = {

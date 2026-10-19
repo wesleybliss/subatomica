@@ -1,10 +1,11 @@
 import { create } from 'zustand'
 
 import { createSetterFns } from '@/lib/utils/store.utils'
+import { StoreAction } from '@repo/shared/types'
 
 interface DialogStore {
     globalCommandOpen: boolean
-    setGlobalCommandOpen: (value: boolean) => void
+    setGlobalCommandOpen: StoreAction<boolean>
 }
 
 const initialValues = {

@@ -29,6 +29,7 @@ const PrimarySidebarViewModel = ({ teamId }: PrimarySidebarViewModelInput) => {
     const location = useLocation()
     const pathname = location.pathname
     const isCollapsed = useAppStore(s => s.primarySidebarCollapsed)
+    const setIsCollapsed = useAppStore(s => s.setPrimarySidebarCollapsed)
     
     const sidebarClassName = cn(
         'h-screen bg-sidebar border-r border-sidebar-border flex flex-col transition-[width] duration-200',
@@ -65,7 +66,7 @@ const PrimarySidebarViewModel = ({ teamId }: PrimarySidebarViewModelInput) => {
     ]
     
     const toggleCollapse = () => {
-        primarySidebarCollapsed.setValue(!isCollapsed)
+        setIsCollapsed(prev => !prev)
     }
     
     const isNavItemActive = (item: NavItem) => item.active || pathname === item.href

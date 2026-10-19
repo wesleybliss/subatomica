@@ -1,4 +1,4 @@
-import type { Task } from '@repo/shared/types'
+import type { StoreAction, Task } from '@repo/shared/types'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -7,9 +7,9 @@ import { createSetterFns } from '@/lib/utils/store.utils'
 
 interface TaskStore {
     tasks: Task[]
-    setTasks: (value: Task[]) => void
+    setTasks: StoreAction<Task[]>
     selectedTaskSlug: string | null
-    setSelectedTaskSlug: (value: string | null) => void
+    setSelectedTaskSlug: StoreAction<string | null>
     // selectedTask: Task | null
     // selectedTaskId: string | null
 }

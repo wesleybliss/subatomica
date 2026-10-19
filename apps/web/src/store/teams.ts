@@ -1,4 +1,4 @@
-import type { Team } from '@repo/shared/types'
+import type { StoreAction, Team } from '@repo/shared/types'
 import { TeamMemberProfile } from '@repo/shared/types'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
@@ -8,11 +8,11 @@ import { createSetterFns } from '@/lib/utils/store.utils'
 
 interface TeamStore {
     teams: Team[]
-    setTeams: (value: Team[]) => void
+    setTeams: StoreAction<Team[]>
     selectedTeamSlug: string | null
-    setSelectedTeamSlug: (value: string | null) => void
+    setSelectedTeamSlug: StoreAction<string | null>
     teamMembers: TeamMemberProfile[]
-    setTeamMembers: (value: TeamMemberProfile[]) => void
+    setTeamMembers: StoreAction<TeamMemberProfile[]>
 }
 
 const initialValues = {

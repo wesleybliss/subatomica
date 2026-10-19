@@ -1,14 +1,12 @@
-import { useWireState } from '@forminator/react-wire'
-import { DebugToolsMode } from '@repo/shared/types'
-
 import { useTheme } from '@/components/ThemeProvider'
-import * as store from '@/store'
+import { useDebugStore } from '@/store'
 
 const DebugToolsViewModel = () => {
     
     const { theme } = useTheme()
     
-    const [debugToolsMode, setDebugToolsMode] = useWireState(store.debugToolsMode, DebugToolsMode.minified)
+    const debugToolsMode = useDebugStore(s => s.debugToolsMode)
+    const setDebugToolsMode = useDebugStore(s => s.setDebugToolsMode)
     
     const activeTheme = theme
     

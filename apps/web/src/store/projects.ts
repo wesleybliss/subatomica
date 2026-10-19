@@ -1,4 +1,4 @@
-import type { Project } from '@repo/shared/types'
+import type { Project, StoreAction } from '@repo/shared/types'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -7,9 +7,9 @@ import { createSetterFns } from '@/lib/utils/store.utils'
 
 interface ProjectStore {
     projects: Project[]
-    setProjects: (value: Project[]) => void
+    setProjects: StoreAction<Project[]>
     selectedProjectSlug: string | null
-    setSelectedProjectSlug: (value: string | null) => void
+    setSelectedProjectSlug: StoreAction<string | null>
     // selectedProject: Project | null
     // selectedProjectId: string | null
 }

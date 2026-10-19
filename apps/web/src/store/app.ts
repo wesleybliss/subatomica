@@ -3,12 +3,13 @@ import { persist } from 'zustand/middleware'
 
 import { getStoreName } from '@/lib/constants'
 import { createSetterFns } from '@/lib/utils/store.utils'
+import { StoreAction } from '@repo/shared/types'
 
 interface AppStore {
     primarySidebarWidth: string[]
-    setPrimarySidebarWidth: (value: string[]) => void
+    setPrimarySidebarWidth: StoreAction<string[]>
     primarySidebarCollapsed: boolean
-    setPrimarySidebarCollapsed: (value: boolean) => void
+    setPrimarySidebarCollapsed: StoreAction<boolean>
 }
 
 const initialValues = {
