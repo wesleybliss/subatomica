@@ -1,7 +1,7 @@
 
 export const omit = <
     T extends Record<PropertyKey, unknown>,
-    K extends readonly (keyof T)[]
+    K extends readonly (keyof T)[],
 >(obj: T, keys: K): Omit<T, K[number]> => {
     
     const result: Partial<T> = {}
@@ -17,7 +17,7 @@ export const omit = <
 
 export const keep = <
     T extends Record<PropertyKey, unknown>,
-    K extends readonly (keyof T)[]
+    K extends readonly (keyof T)[],
 >(obj: T, keys: K): Pick<T, K[number]> => {
     
     const result: Partial<Pick<T, K[number]>> = {}

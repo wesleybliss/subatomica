@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 type ColorGroup = {
     label: string;
     colors: { name: string; variable: string }[];
-};
+}
 
 const COLOR_GROUPS: ColorGroup[] = [
     {

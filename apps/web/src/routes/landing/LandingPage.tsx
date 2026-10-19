@@ -4,11 +4,11 @@ import ThemeToggle from '@/components/ThemeToggle'
 import { Button } from '@/components/ui/button'
 
 const LandingPage = () => {
-
+    
     return (
-
+        
         <div id="LandingPage" className="min-h-screen bg-background text-foreground">
-
+            
             <header className="border-b border-border/80 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
                     <Link to="/" className="flex items-center gap-2 text-foreground">
@@ -33,7 +33,7 @@ const LandingPage = () => {
                     </div>
                 </div>
             </header>
-
+            
             <main>
                 <section className="relative overflow-hidden">
                     <div
@@ -42,7 +42,7 @@ const LandingPage = () => {
                     <div
                         aria-hidden
                         className="pointer-events-none absolute inset-0 opacity-[0.3] [background-image:linear-gradient(to_right,color-mix(in_oklab,var(--foreground)_7%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklab,var(--foreground)_7%,transparent)_1px,transparent_1px)] [background-size:56px_56px] [mask-image:radial-gradient(ellipse_at_center,black_15%,transparent_72%)]" />
-
+                    
                     <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 pb-12 sm:pb-16">
                         <div className="max-w-2xl animate-in fade-in slide-in-from-bottom-2 duration-700">
                             <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight">
@@ -67,7 +67,7 @@ const LandingPage = () => {
                             </div>
                         </div>
                     </div>
-
+                    
                     <div className="relative animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200 fill-mode-both">
                         <img
                             src="/Sub-Atomica-mock.png"
@@ -81,11 +81,11 @@ const LandingPage = () => {
                     </div>
                 </section>
             </main>
-
+        
         </div>
-
+        
     )
-
+    
 }
 
 export default LandingPage

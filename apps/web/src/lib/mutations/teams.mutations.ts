@@ -12,7 +12,7 @@ interface TeamContext {
 
 export const useCreateTeamMutation = () => {
     const queryClient = useQueryClient()
-
+    
     return useMutation<Team, Error, { name: string }, TeamContext>({
         mutationFn: async ({ name }) => {
             if (!name.trim()) throw new Error('Team name is required')
@@ -44,7 +44,7 @@ export const useCreateTeamMutation = () => {
                 useTeamStore.getState().setTeams(context.previousTeams)
             }
         },
-        onSuccess: (created) => {
+        onSuccess: created => {
             queryClient.setQueryData(teamsQueryKey, (current?: Team[]) => {
                 const teams = current || []
                 const filtered = teams.filter(t => !t.id.startsWith('temp-'))
@@ -59,7 +59,7 @@ export const useCreateTeamMutation = () => {
 
 export const useUpdateTeamMutation = () => {
     const queryClient = useQueryClient()
-
+    
     return useMutation<Team, Error, { teamId: string; name: string }, TeamContext>({
         mutationFn: async ({ teamId, name }) => {
             if (!name.trim()) throw new Error('Team name is required')
@@ -75,7 +75,7 @@ export const useUpdateTeamMutation = () => {
             const nextTeams = (previousTeams || useTeamStore.getState().teams || []).map(team =>
                 team.id === teamId
                     ? { ...team, name: name.trim(), slug: name.trim().toLowerCase().replace(/\s+/g, '-') }
-                    : team
+                    : team,
             )
             queryClient.setQueryData(teamsQueryKey, nextTeams)
             useTeamStore.getState().setTeams(nextTeams)
@@ -87,7 +87,7 @@ export const useUpdateTeamMutation = () => {
                 useTeamStore.getState().setTeams(context.previousTeams)
             }
         },
-        onSuccess: (updated) => {
+        onSuccess: updated => {
             queryClient.setQueryData(teamsQueryKey, (current?: Team[]) => {
                 const teams = current || []
                 return teams.map(team => (team.id === updated.id ? updated : team))
@@ -100,7 +100,7 @@ export const useUpdateTeamMutation = () => {
 
 export const useDeleteTeamMutation = () => {
     const queryClient = useQueryClient()
-
+    
     return useMutation<void, Error, { teamId: string }, TeamContext>({
         mutationFn: async ({ teamId }) => {
             await request(`/teams/${teamId}`, {

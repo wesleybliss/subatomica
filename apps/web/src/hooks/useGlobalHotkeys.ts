@@ -1,6 +1,7 @@
-import { useDialogStore } from '@/store'
 import logger from '@repo/shared/utils/logger'
 import { useHotkeys } from 'react-hotkeys-hook'
+
+import { useDialogStore } from '@/store'
 
 const log = logger('hooks/useGlobalHotkeys')
 

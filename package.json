@@ -33,9 +33,12 @@
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-react-compiler": "19.1.0-rc.2",
         "eslint-plugin-react-hooks": "^7.0.1",
+        "eslint-plugin-react-refresh": "^0.5.7",
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "globals": "^17.3.0",
         "indent": "link:@stylistic/ts/indent",
-        "oxlint": "^1.43.0"
+        "jiti": "^2.7.0",
+        "oxlint": "^1.43.0",
+        "typescript-eslint": "^8.71.2"
     }
 }

@@ -1,8 +1,8 @@
 import { KnownLaneType, Task, TaskLane } from '@repo/shared/types'
 import { ChevronDown } from 'lucide-react'
 
-import useListViewGroupViewModel from '@/components/list/ListViewGroupViewModel'
 import LaneIconColorPicker from '@/components/lanes/LaneIconColorPicker'
+import useListViewGroupViewModel from '@/components/list/ListViewGroupViewModel'
 import { KNOWN_LANE_ICONS } from '@/lib/constants/icons.constants'
 import { cn } from '@/lib/utils'
 

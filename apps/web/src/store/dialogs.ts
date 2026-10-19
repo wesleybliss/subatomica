@@ -1,7 +1,7 @@
+import { StoreAction } from '@repo/shared/types'
 import { create } from 'zustand'
 
 import { createSetterFns } from '@/lib/utils/store.utils'
-import { StoreAction } from '@repo/shared/types'
 
 interface DialogStore {
     globalCommandOpen: boolean

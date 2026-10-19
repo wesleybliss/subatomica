@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import 'dotenv/config'
+
 import { auth } from '../src/services/auth'
 
 async function resetPassword(email: string, newPassword: string) {

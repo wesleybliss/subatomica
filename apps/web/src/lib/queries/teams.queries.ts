@@ -4,6 +4,9 @@ import { useMemo } from 'react'
 
 import { request } from '@/lib/api/client'
 import { useTeamStore } from '@/store'
+import Logger from '@repo/shared/utils/logger'
+
+const log = new Logger('web/lib/queries/teams.queries')
 
 export const useGetTeamsQuery = (options = {}) => {
     
@@ -22,7 +25,7 @@ export const useGetTeamsQuery = (options = {}) => {
                 return res || []
                 
             } catch (e) {
-                console.error('useGetTeamsQuery', e)
+                log.e('useGetTeamsQuery', e)
                 return []
             }
         },
@@ -50,7 +53,7 @@ export const useGetTeamMembersQuery = (teamId: string) => {
             try {
                 return await request<TeamMemberProfile[]>(`/teams/${teamId}/members`)
             } catch (e) {
-                console.error('useGetTeamMembersQuery', e)
+                log.e('useGetTeamMembersQuery', e)
                 return []
             }
         },
@@ -74,7 +77,7 @@ export const getTeamMembers = async (teamId: string): Promise<TeamMemberProfile[
 
 export const canManageTeamMembers = (teamId: string) => {
     
-    console.warn('!!!!!! @todo canManageTeamMembers', teamId)
+    log.e('!!!!!! @todo canManageTeamMembers', teamId)
     
     return true
     

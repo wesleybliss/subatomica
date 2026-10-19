@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 
 import { MembersSection } from '@/components/team-settings/MembersSection'
 import SettingsAccountHeader from '@/components/team-settings/SettingsAccountHeader'
@@ -12,7 +12,6 @@ const avatarUrlFor = (name: string, email: string) =>
 export default function TeamSettingsPage() {
     
     const params = useParams()
-    const navigate = useNavigate()
     const { data: session } = useSession()
     
     const teamSlug = params.teamSlug
@@ -29,9 +28,9 @@ export default function TeamSettingsPage() {
     
     const teamId = team?.id
     
-    if (!session) return navigate('/sign-in', { replace: true })
+    if (!session) return <Navigate to="/sign-in" replace />
     
-    if (!teamSlug || !team) return navigate('/')
+    if (!teamSlug || !team) return <Navigate to="/" replace />
     
     // @todo check canManageTeamMembers(teamId),
     

@@ -27,11 +27,11 @@ export const createSetterFn = <T extends object>() => <K extends keyof T>(
     return value => {
         set(state => {
             const partial: Partial<T> = {}
-
+            
             partial[key] = isStoreSetter(value)
                 ? value(state[key])
                 : value
-
+            
             return partial
         })
     }
@@ -44,18 +44,18 @@ export const createSetterFns = <T extends object>() => <K extends keyof T>(
     [P in K as `set${Capitalize<string & P>}`]: StoreAction<T[P]>
 } => {
     const keys = getStoreKeys(initialValues)
-
+    
     const setters = {} as {
         [P in K as `set${Capitalize<string & P>}`]: StoreAction<T[P]>
     }
-
+    
     for (const key of keys) {
         const setterName = `set${String(key).charAt(0).toUpperCase()}${String(key).slice(1)}` as `set${Capitalize<string & K>}`
-
+        
         Object.assign(setters, {
             [setterName]: createSetterFn<T>()(set, key),
         })
     }
-
+    
     return setters
 }

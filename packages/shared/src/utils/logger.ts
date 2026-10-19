@@ -1,21 +1,82 @@
+/* eslint-disable no-console */
 
-export type LogLevel = 'log' | 'error' | 'warn' | 'info' | 'debug'
+import c from 'ansi-colors'
+
+import type { LogLevel } from '@/types'
+
+export const LogLevels = {
+    log: 'log',
+    error: 'error',
+    warn: 'warn',
+    info: 'info',
+    debug: 'debug',
+} as const
 
 export class Logger {
     
     public tag: string
+    public enabled: boolean
+    public colorize: boolean
     
-    constructor(tag: string) {
+    public static hooks: Array<(level: LogLevel, processed: unknown[]) => Promise<void>> = []
+    
+    public static registerHook(fn: (level: LogLevel, processed: unknown[]) => Promise<void>) {
+        
+        Logger.hooks.push(fn)
+        
+    }
+    
+    constructor(tag: string, enabled?: boolean, colorize?: boolean) {
         
         this.tag = tag
+        const isBrowser = typeof window !== 'undefined'
+        // Must be a literal property access so Next.js can inline it into the client bundle.
+        const envEnabled = process.env.NEXT_PUBLIC_LOG_ENABLED === 'true'
+        // On the server there's no client env var, so default to enabled.
+        // In the browser, only enable when explicitly opted in.
+        const enabledByDefault = !isBrowser
+        this.enabled = enabled === true ? true : (envEnabled || enabledByDefault)
+        this.colorize = colorize === true
+            ? true
+            : (!isBrowser ? false : envEnabled)
         
     }
     
     private _log(level: LogLevel, messages: unknown[]) {
         
+        if (!this.enabled)
+            return
+        
         const processed = this.collateArguments(messages)
         
-        console[level](`[${this.tag}]`, ...processed)
+        const tag = this.colorizeText(`[${this.tag}]`, level)
+        
+        console[level](tag, ...processed)
+        
+        Logger.hooks.map(hook => hook(level, processed))
+        
+    }
+    
+    public registerHook(fn: (level: LogLevel, processed: unknown[]) => Promise<void>) {
+        
+        Logger.hooks.push(fn)
+        
+    }
+    
+    private colorizeText(text: string, level: LogLevel) {
+        
+        if (!this.colorize)
+            return text
+        
+        switch (level) {
+            case LogLevels.log: return c.cyan(text)
+            case LogLevels.error: return c.red(text)
+            case LogLevels.warn: return c.yellow(text)
+            case LogLevels.info: return c.bgCyanBright(text)
+            case LogLevels.debug: return c.green(text)
+            default:
+                throw new Error(`Invalid log level "${level}"`)
+        }
         
     }
     
@@ -37,47 +98,37 @@ export class Logger {
     }
     
     public debug(...messages: unknown[]) {
-        this._log('log', messages)
+        return this._log('log', messages)
     }
     
     public info(...messages: unknown[]) {
-        this._log('info', messages)
+        return this._log('info', messages)
     }
     
     public warn(...messages: unknown[]) {
-        this._log('warn', messages)
+        return this._log('warn', messages)
     }
     
     public error(...messages: unknown[]) {
-        this._log('error', messages)
+        return this._log('error', messages)
     }
     
-    // Aliases
-    
     public d(...messages: unknown[]) {
-        this._log('log', messages)
+        return this._log('log', messages)
     }
     
     public i(...messages: unknown[]) {
-        this._log('info', messages)
+        return this._log('info', messages)
     }
     
     public w(...messages: unknown[]) {
-        this._log('warn', messages)
+        return this._log('warn', messages)
     }
     
     public e(...messages: unknown[]) {
-        this._log('error', messages)
+        return this._log('error', messages)
     }
     
 }
 
-export const createLogger = (tag: string) => new Logger(tag)
-
-export default createLogger
-
-/*const log = new Logger('example')
-
-log.d('Simple')
-log.d('JSON', { foo: 'bar', biz: 'bat', now: new Date(), arr: ['foo', 'bar', 'baz'] })
-log.d('Mixed', [1,2,3], 'foo', { bar: 'baz' }, new Set([1,2,3]), new Date(), true)*/
+export default Logger

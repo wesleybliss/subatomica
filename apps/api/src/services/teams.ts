@@ -192,7 +192,7 @@ export async function ensureUserHasTeam(userId: string): Promise<Team> {
 
 export async function renameTeam(userId: string, teamId: string, newName: string): Promise<Team> {
     const accessibleTeamIds = getAccessibleTeamIds(userId)
-
+    
     const [team] = await db.select()
         .from(teams)
         .where(and(
@@ -200,16 +200,16 @@ export async function renameTeam(userId: string, teamId: string, newName: string
             inArray(teams.id, accessibleTeamIds),
         ))
         .limit(1)
-
+    
     if (!team)
         throw new Error('NotFound: Team not found')
-
+    
     const role = await getTeamRole(userId, teamId)
     if (role !== 'owner' && role !== 'admin')
         throw new Error('Forbidden: Only owners and admins can rename teams')
-
+    
     const newSlug = generateSlug(newName)
-
+    
     const [updated] = await db
         .update(teams)
         .set({
@@ -218,13 +218,13 @@ export async function renameTeam(userId: string, teamId: string, newName: string
         })
         .where(eq(teams.id, teamId))
         .returning()
-
+    
     return updated
 }
 
 export async function deleteTeam(userId: string, teamId: string): Promise<void> {
     const accessibleTeamIds = getAccessibleTeamIds(userId)
-
+    
     const [team] = await db.select()
         .from(teams)
         .where(and(
@@ -232,19 +232,19 @@ export async function deleteTeam(userId: string, teamId: string): Promise<void> 
             inArray(teams.id, accessibleTeamIds),
         ))
         .limit(1)
-
+    
     if (!team)
         throw new Error('NotFound: Team not found')
-
+    
     const role = await getTeamRole(userId, teamId)
     if (role !== 'owner')
         throw new Error('Forbidden: Only owners can delete teams')
-
+    
     // Delete team members first
     await db
         .delete(teamMembers)
         .where(eq(teamMembers.teamId, teamId))
-
+    
     // Delete the team
     await db
         .delete(teams)

@@ -14,9 +14,9 @@ import {
     useUpdateTaskLaneMutation,
 } from '@/lib/mutations/lanes.mutations'
 import { useCreateTaskMutation, useUpdateTaskOrderMutation } from '@/lib/mutations/tasks.mutations'
+import { useLaneStore } from '@/store'
 
 import { type ColumnDropData, isColumnDropData, isTaskDragData, isTaskDropData,type TaskDropData } from './dragTypes'
-import { useLaneStore } from '@/store'
 
 const log = logger('KanbanBoardDndViewModel')
 

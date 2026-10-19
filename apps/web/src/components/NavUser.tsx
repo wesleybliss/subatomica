@@ -6,6 +6,7 @@ import {
     LogOut,
     Sparkles,
 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 import {
     Avatar,
@@ -26,9 +27,8 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from '@/components/ui/sidebar'
-import { cn } from '@/lib/utils'
 import { authClient } from '@/lib/auth-client'
-import { useNavigate } from 'react-router-dom'
+import { cn } from '@/lib/utils'
 
 type NavUserProps = {
     user: {

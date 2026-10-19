@@ -39,28 +39,28 @@ export function TaskDetailForm({ task, teamId, teamMembers, projectId, onSaved, 
             },
         },
     })
-
-    const updateTaskMutation = useUpdateTaskMutation(teamId, projectId, (updated) => {
+    
+    const updateTaskMutation = useUpdateTaskMutation(teamId, projectId, updated => {
         onSaved?.(updated)
         onClose?.()
     })
-
+    
     useEffect(() => {
         setTitle(task.title)
         setAssigneeId(task.assigneeId ?? '')
         if (editor && task.description !== editor.getHTML())
             editor.commands.setContent(task.description || '<projects></projects>')
     }, [editor, task.assigneeId, task.description, task.title])
-
+    
     const members = useMemo(() => teamMembers, [teamMembers])
-
+    
     const handleSave = async () => {
         const nextTitle = title.trim()
         if (!nextTitle || !editor)
             return
         if (!teamId)
             return console.warn('TaskDetailForm missing teamId')
-
+        
         updateTaskMutation.mutate({
             taskId: task.id,
             data: {

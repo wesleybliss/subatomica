@@ -18,7 +18,7 @@ export const tursoTimestamp = (name: string) =>
  */
 export const tursoTable = <
     TTableName extends string,
-    TColumnsMap extends TursoColumns
+    TColumnsMap extends TursoColumns,
 >(
     name: TTableName,
     columns: TColumnsMap,
@@ -59,7 +59,7 @@ export const postgresTimestamp = (name: string, options = {}) =>
  */
 export const postgresTable = <
     TTableName extends string,
-    TColumnsMap extends PostgresColumns
+    TColumnsMap extends PostgresColumns,
 >(
     name: TTableName,
     columns: TColumnsMap,

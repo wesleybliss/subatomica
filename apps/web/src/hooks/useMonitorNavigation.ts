@@ -1,6 +1,7 @@
-import { useProjectStore, useTaskStore, useTeamStore } from '@/store'
 import { useEffect } from 'react'
 import { useLocation,useParams } from 'react-router-dom'
+
+import { useProjectStore, useTaskStore, useTeamStore } from '@/store'
 
 const normalizeParam = (value: string | string[] | undefined) => {
     

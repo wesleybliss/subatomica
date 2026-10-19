@@ -1,9 +1,9 @@
+import { StoreAction } from '@repo/shared/types'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import { getStoreName } from '@/lib/constants'
 import { createSetterFns } from '@/lib/utils/store.utils'
-import { StoreAction } from '@repo/shared/types'
 
 interface AppStore {
     primarySidebarWidth: string[]

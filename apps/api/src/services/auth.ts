@@ -91,10 +91,10 @@ export const createAuth = (options: CreateAuthOptions = {}) => {
                 // Ensure user has a team after signup or signin
                 if ((ctx.path === '/sign-up/email' || ctx.path === '/sign-in/email') && ctx.context?.newSession?.user) {
                     
-                                        const user = ctx.context.newSession.user;
-                    console.log("Ensuring user has team after successful sign-in/up:", user.email);
-                                        if (user.id)
-                        try { await ensureUserHasTeam(user.id); console.log("ensureUserHasTeam success"); } catch (e) { console.error("ensureUserHasTeam failed", e); }
+                    const user = ctx.context.newSession.user
+                    console.log('Ensuring user has team after successful sign-in/up:', user.email)
+                    if (user.id)
+                        try { await ensureUserHasTeam(user.id); console.log('ensureUserHasTeam success') } catch (e) { console.error('ensureUserHasTeam failed', e) }
                 }
                 
             }),
