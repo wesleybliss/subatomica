@@ -96,8 +96,14 @@ export const createAuth = (options: CreateAuthOptions = {}) => {
                     
                     const user = ctx.context.newSession.user
                     log.d('Ensuring user has team after successful sign-in/up:', user.email)
-                    if (user.id)
-                        try { await ensureUserHasTeam(user.id); log.d('ensureUserHasTeam success') } catch (e) { log.e('ensureUserHasTeam failed', e) }
+                    if (user.id) {
+                        try {
+                            await ensureUserHasTeam(user.id)
+                            log.d('ensureUserHasTeam success')
+                        } catch (e) {
+                            log.e('ensureUserHasTeam failed', e)
+                        }
+                    }
                 }
                 
             }),

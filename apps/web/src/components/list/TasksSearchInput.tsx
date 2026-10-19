@@ -17,10 +17,15 @@ const TasksSearchInput = ({
     const [inputValue, setInputValue] = useState(tasksQuery)
     const debouncedValue = useDebounce(inputValue, 250)
     const lastEmittedValue = useRef(tasksQuery)
+    const [prevTasksQuery, setPrevTasksQuery] = useState(tasksQuery)
+    
+    if (tasksQuery !== prevTasksQuery) {
+        setPrevTasksQuery(tasksQuery)
+        setInputValue(tasksQuery)
+    }
     
     useEffect(() => {
         lastEmittedValue.current = tasksQuery
-        setInputValue(tasksQuery)
     }, [tasksQuery])
     
     useEffect(() => {

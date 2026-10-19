@@ -40,7 +40,7 @@ export const useGetTeamsQuery = (options = {}) => {
     
 }
 
-export const useGetTeamMembersQuery = (teamId: string) => {
+export const useGetTeamMembersQuery = (teamId: string | undefined) => {
     
     const teamMembersQueryKey = useMemo(() => (
         ['teamMembers', teamId] as const
@@ -57,6 +57,7 @@ export const useGetTeamMembersQuery = (teamId: string) => {
                 return []
             }
         },
+        enabled: !!teamId,
         // initialData: [],
     })
     

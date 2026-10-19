@@ -30,6 +30,7 @@ type TaskDetailFormProps = {
 export function TaskDetailForm({ task, teamId, teamMembers, projectId, onSaved, onClose }: TaskDetailFormProps) {
     const [title, setTitle] = useState(task.title)
     const [assigneeId, setAssigneeId] = useState<string>(task.assigneeId ?? '')
+    const [syncedTask, setSyncedTask] = useState(task)
     const editor = useEditor({
         immediatelyRender: false,
         extensions: [StarterKit],
@@ -49,12 +50,16 @@ export function TaskDetailForm({ task, teamId, teamMembers, projectId, onSaved, 
         onClose?.()
     })
     
-    useEffect(() => {
+    if (task.id !== syncedTask.id) {
+        setSyncedTask(task)
         setTitle(task.title)
         setAssigneeId(task.assigneeId ?? '')
+    }
+    
+    useEffect(() => {
         if (editor && task.description !== editor.getHTML())
             editor.commands.setContent(task.description || '<projects></projects>')
-    }, [editor, task.assigneeId, task.description, task.title])
+    }, [editor, task.description])
     
     const members = useMemo(() => teamMembers, [teamMembers])
     

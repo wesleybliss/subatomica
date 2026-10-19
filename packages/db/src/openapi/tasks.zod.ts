@@ -1,7 +1,7 @@
 import { z } from '@hono/zod-openapi'
 import { createSelectSchema } from 'drizzle-zod'
 
-import { tasks } from '../schema'
+import { tasks } from '../turso/schema.turso'
 
 const TaskBaseSchema = createSelectSchema(tasks).extend({
     id: z.string().openapi({

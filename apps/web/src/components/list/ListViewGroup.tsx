@@ -32,10 +32,11 @@ const ListViewGroup = ({
 }: ListViewGroupProps) => {
     
     const vm = useListViewGroupViewModel(tasks, selectedTasks, lane, onTasksReorder)
+    const { groupRef, isExpanded } = vm
     
     return (
         
-        <div ref={vm.groupRef} className="p-4 border-b border-border rounded">
+        <div ref={groupRef} className="p-4 border-b border-border rounded">
             
             {/* Group Header */}
             <ListViewGroupHeader
@@ -49,7 +50,7 @@ const ListViewGroup = ({
                 onLaneColorChange={onLaneColorChange}/>
             
             {/* Group Content */}
-            {vm.isExpanded && (
+            {isExpanded && (
                 <div className="divide-y divide-border">
                     {tasks.length === 0 ? (
                         <div className="px-4 py-8 text-center">

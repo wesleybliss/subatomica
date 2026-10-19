@@ -40,6 +40,7 @@ export const useCreateTaskLaneMutation = (
             
             const previousLanes = queryClient.getQueryData<TaskLane[]>(activeQueryKey)
             const nextOrder = Math.max(0, ...localLanes.map(lane => lane.order)) + 1000
+            const now = new Date().toISOString()
             const optimisticLane: TaskLane = {
                 id: tempId,
                 projectId,
@@ -48,6 +49,9 @@ export const useCreateTaskLaneMutation = (
                 color: color ?? null,
                 order: nextOrder,
                 isDefault: false,
+                createdAt: now,
+                updatedAt: now,
+                deletedAt: null,
             }
             const nextLanes = [...(previousLanes || localLanes), optimisticLane]
                 .sort((a, b) => a.order - b.order)

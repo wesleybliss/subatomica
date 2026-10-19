@@ -29,7 +29,10 @@ const TeamsAccountMenu = ({ collapsed = false }: TeamsAccountMenuProps) => {
         return match?.[1] ?? teams.sort((a, b) => getUnixTime(a.updatedAt) - getUnixTime(b.updatedAt))[0].slug
     }, [pathname, teams])
     
-    const activeTeam = useMemo(() => teams.find(it => it.slug === activeTeamSlug), [activeTeamSlug])
+    const activeTeam = useMemo(
+        () => teams.find(it => it.slug === activeTeamSlug),
+        [activeTeamSlug, teams],
+    )
     const activeTeamName = activeTeam?.name ?? 'Personal'
     const activeTeamInitial = activeTeamName.slice(0, 1).toUpperCase()
     

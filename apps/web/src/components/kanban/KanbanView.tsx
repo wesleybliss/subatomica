@@ -9,7 +9,7 @@ interface KanbanViewProps {
     tasks: Task[]
     initialLanes: TaskLane[]
     teamMembers: TeamMemberProfile[]
-    tasksQueryKey: readonly ['tasks', string, string | undefined]
+    tasksQueryKey: readonly ['tasks', string | undefined, string | undefined]
 }
 
 const KanbanView = ({

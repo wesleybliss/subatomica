@@ -1,6 +1,7 @@
 {
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
+        "tsBuildInfoFile": "./node_modules/.cache/tsbuildinfo/api.tsbuildinfo",
         "composite": true,
         "target": "ES2022",
         "skipLibCheck": true,

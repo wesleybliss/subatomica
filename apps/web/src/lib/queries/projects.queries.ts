@@ -8,7 +8,7 @@ import { useLaneStore, useProjectStore } from '@/store'
 
 const log = new Logger('web/lib/queries/projects.queries')
 
-export const useGetProjectsQuery = (teamId: string) => {
+export const useGetProjectsQuery = (teamId: string | undefined) => {
     
     const projectsQueryKey = useMemo(() => (
         ['projects', teamId] as const

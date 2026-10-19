@@ -221,7 +221,7 @@ const KanbanBoardDndViewModel = (
             }
         }
         updateTaskOrderMutation.mutate({ taskId, status: newStatus, order: newOrder })
-    }, [localTasks, onRefresh, /*tasks,*/ updateTaskOrderMutation])
+    }, [localTasks, updateTaskOrderMutation])
     
     useEffect(() => {
         const monitor = monitorForElements as unknown as (args: {

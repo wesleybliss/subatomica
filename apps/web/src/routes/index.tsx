@@ -31,16 +31,6 @@ import TeamsPage from '@/routes/teams/TeamsPage'
 preconnect('https://fonts.googleapis.com')
 preconnect('https://fonts.gstatic.com', { crossOrigin: 'anonymous' })
 
-// @todo
-export const metadata = {
-    title: 'Sub Atomica',
-    description: 'Todo',
-    icons: {
-        icon: '/logos/sub-atomica-high-resolution-logo-grayscale-transparent-192.png',
-        apple: '/logos/sub-atomica-high-resolution-logo-grayscale-transparent-192.png',
-    },
-}
-
 const GlobalLayout = () => (
     <>
         <Outlet />

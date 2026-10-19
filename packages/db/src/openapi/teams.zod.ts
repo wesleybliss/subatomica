@@ -1,7 +1,7 @@
 import { z } from '@hono/zod-openapi'
 import { createSelectSchema } from 'drizzle-zod'
 
-import { teams } from '../schema'
+import { teams } from '../turso/schema.turso'
 
 const TeamBaseSchema = createSelectSchema(teams).extend({
     id: z.string().openapi({

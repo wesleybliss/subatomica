@@ -1,7 +1,10 @@
+import type { BuildColumns, BuildExtraConfigColumns } from 'drizzle-orm/column-builder'
 import * as postgresCore from 'drizzle-orm/pg-core'
 import type { PgColumnBuilderBase } from 'drizzle-orm/pg-core/columns/common'
+import type { PgTableExtraConfig } from 'drizzle-orm/pg-core/table'
 import type { SQLiteColumnBuilderBase } from 'drizzle-orm/sqlite-core'
 import * as sqliteCore from 'drizzle-orm/sqlite-core'
+import type { SQLiteTableExtraConfig } from 'drizzle-orm/sqlite-core/table'
 import { v7 as uuidv7 } from 'uuid'
 
 export type TursoColumns = Record<string, SQLiteColumnBuilderBase>
@@ -13,6 +16,15 @@ export type PostgresColumns = Record<string, PgColumnBuilderBase>
 export const tursoTimestamp = (name: string) =>
     sqliteCore.text(name)
 
+type TursoBaseColumnBuilders = {
+    id: ReturnType<typeof sqliteCore.text>
+    updatedAt: ReturnType<typeof tursoTimestamp>
+    createdAt: ReturnType<typeof tursoTimestamp>
+    deletedAt: ReturnType<typeof tursoTimestamp>
+}
+
+type TursoFullColumns<TColumnsMap extends TursoColumns> = TColumnsMap & TursoBaseColumnBuilders
+
 /**
  * Base Turso table helper
  */
@@ -22,14 +34,15 @@ export const tursoTable = <
 >(
     name: TTableName,
     columns: TColumnsMap,
-// oxlint-disable-next-line typescript-eslint(no-explicit-any)
-    extraConfig?: (table: any) => Record<string, any>,
+    extraConfig?: (
+        table: BuildColumns<TTableName, TursoFullColumns<TColumnsMap>, 'sqlite'>,
+    ) => SQLiteTableExtraConfig,
 ) => {
     
     const { sqliteTable, text } = sqliteCore
     const timestamp = tursoTimestamp
     
-    return sqliteTable(name, {
+    const baseColumns: TursoBaseColumnBuilders = {
         id: text('id')
             .primaryKey()
             .$defaultFn(() => uuidv7()),
@@ -40,9 +53,15 @@ export const tursoTable = <
             .notNull()
             .$defaultFn(() => new Date().toISOString()),
         deletedAt: timestamp('deletedAt'),
+    }
+    
+    return sqliteTable<
+        TTableName,
+        TursoFullColumns<TColumnsMap>
+    >(name, {
+        ...baseColumns,
         ...columns,
-        // oxlint-disable-next-line typescript-eslint(no-explicit-any)
-    } as any, extraConfig as any)
+    }, extraConfig)
     
 }
 
@@ -54,6 +73,15 @@ export const tursoTable = <
 export const postgresTimestamp = (name: string, options = {}) =>
     postgresCore.timestamp(name, { withTimezone: true, mode: 'string', ...options })
 
+type PostgresBaseColumnBuilders = {
+    id: ReturnType<typeof postgresCore.uuid>
+    updatedAt: ReturnType<typeof postgresTimestamp>
+    createdAt: ReturnType<typeof postgresTimestamp>
+    deletedAt: ReturnType<typeof postgresTimestamp>
+}
+
+type PostgresFullColumns<TColumnsMap extends PostgresColumns> = TColumnsMap & PostgresBaseColumnBuilders
+
 /**
  * Base Postgres table helper
  */
@@ -63,22 +91,38 @@ export const postgresTable = <
 >(
     name: TTableName,
     columns: TColumnsMap,
-// oxlint-disable-next-line typescript-eslint(no-explicit-any)
-    extraConfig?: (table: any) => Record<string, any>,
+    extraConfig?: (
+        table: BuildExtraConfigColumns<TTableName, PostgresFullColumns<TColumnsMap>, 'pg'>,
+    ) => PgTableExtraConfig,
 ) => {
     
     const { pgTable, uuid } = postgresCore
     const timestamp = postgresTimestamp
     
-    return pgTable(name, {
+    const baseColumns: PostgresBaseColumnBuilders = {
         id: uuid('id')
             .primaryKey()
             .$defaultFn(() => uuidv7()),
         updatedAt: timestamp('updatedAt').notNull().defaultNow(),
         createdAt: timestamp('createdAt').notNull().defaultNow(),
         deletedAt: timestamp('deletedAt'),
+    }
+    
+    const allColumns = {
+        ...baseColumns,
         ...columns,
-        // oxlint-disable-next-line typescript-eslint(no-explicit-any)
-    } as any, extraConfig as any)
+    } as PostgresFullColumns<TColumnsMap>
+    
+    if (extraConfig) {
+        return pgTable<
+            TTableName,
+            PostgresFullColumns<TColumnsMap>
+        >(name, allColumns, extraConfig)
+    }
+    
+    return pgTable<
+        TTableName,
+        PostgresFullColumns<TColumnsMap>
+    >(name, allColumns)
     
 }

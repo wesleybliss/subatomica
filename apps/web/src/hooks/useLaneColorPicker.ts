@@ -14,13 +14,17 @@ export const useLaneColorPicker = (
     const pickerColor = laneColorToHex(storedColor, DEFAULT_LANE_ICON_COLOR)
     const [draftColor, setDraftColor] = useState(pickerColor)
     const [pickerOpen, setPickerOpen] = useState(false)
+    const [prevPickerColor, setPrevPickerColor] = useState(pickerColor)
     const draftColorRef = useRef(draftColor)
     
-    draftColorRef.current = draftColor
-    
     useEffect(() => {
+        draftColorRef.current = draftColor
+    }, [draftColor])
+    
+    if (pickerColor !== prevPickerColor) {
+        setPrevPickerColor(pickerColor)
         setDraftColor(pickerColor)
-    }, [pickerColor])
+    }
     
     const commitColor = useCallback((hex: string) => {
         onCommit?.(hex)

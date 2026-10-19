@@ -48,12 +48,9 @@ import { and, desc, eq } from 'drizzle-orm'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
 
-import * as client from '../src/db/client'
+import db from '../src/db/client'
 
 const log = new Logger('api/bin/importClickupTasks')
-
-// oxlint-disable-next-line @typescript-eslint/no-explicit-any
-const db: any = client.db!
 
 // Status mapping from ClickUp to our system
 const statusMap: Record<string, string> = {

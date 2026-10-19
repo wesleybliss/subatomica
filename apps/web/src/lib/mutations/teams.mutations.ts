@@ -32,6 +32,7 @@ export const useCreateTeamMutation = () => {
                 ownerId: 'pending',
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
+                deletedAt: null,
             }
             const nextTeams = [...(previousTeams || useTeamStore.getState().teams || []), tempTeam]
             queryClient.setQueryData(teamsQueryKey, nextTeams)

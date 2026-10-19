@@ -148,7 +148,7 @@ export default function TeamPage() {
                 </header>
                 
                 <RecentProjectsTable
-                    teamId={teamId}
+                    teamId={team.id}
                     projects={projects}
                     tasks={tasks} />
             

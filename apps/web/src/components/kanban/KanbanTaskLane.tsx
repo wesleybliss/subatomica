@@ -106,7 +106,7 @@ const KanbanTaskLane = ({
         )
     }, [canManageLanes, handleReorderLane, lane.id])
     
-    const laneColor = useLaneColor(lane.color)
+    const laneColor = useLaneColor(lane.color ?? '')
     
     return (
         

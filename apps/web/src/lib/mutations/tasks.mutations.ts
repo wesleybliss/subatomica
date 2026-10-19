@@ -72,6 +72,8 @@ export const useCreateTaskMutation = (
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
                 deletedAt: null,
+                isStarred: false,
+                slug: null,
             }
             
             const nextTasks = [...(previousTasks || localTasks), optimisticTask]

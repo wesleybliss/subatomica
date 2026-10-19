@@ -26,8 +26,6 @@ export default function TeamSettingsPage() {
         teams?.find(it => it.slug === teamSlug)
     ), [teams, teamSlug])
     
-    const teamId = team?.id
-    
     if (!session) return <Navigate to="/sign-in" replace />
     
     if (!teamSlug || !team) return <Navigate to="/" replace />
@@ -69,7 +67,7 @@ export default function TeamSettingsPage() {
                     <SettingsAccountHeader name={name} email={email} avatarUrl={avatarUrl} />
                 </section>
                 
-                <MembersSection teamId={teamId} members={members} canManage={canManage} />
+                <MembersSection teamId={team.id} members={members} canManage={canManage} />
             
             </div>
         

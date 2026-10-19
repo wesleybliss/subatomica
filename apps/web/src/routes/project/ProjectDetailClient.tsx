@@ -1,5 +1,5 @@
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@repo/shared/types'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import KanbanView from '@/components/kanban/KanbanView'
 import ListView from '@/components/list/ListView'
@@ -31,11 +31,11 @@ export function ProjectDetailClient({
     
     const { tasksQueryKey, data: tasks = initialTasks } = useGetTasksQuery(teamId, project.id)
     
-    useEffect(() => {
-        if (!tasksQuery.length) {
+    const setTasksQueryAndClearSelection = useCallback((value: string) => {
+        setTasksQuery(value)
+        if (!value.length)
             setSelectedTasks(new Set())
-        }
-    }, [tasksQuery])
+    }, [])
     
     const filteredTasks = useMemo(() => {
         if (!tasksQuery.length)
@@ -64,7 +64,7 @@ export function ProjectDetailClient({
                 activeView={activeView}
                 onViewChange={setActiveView}
                 tasksQuery={tasksQuery}
-                setTasksQuery={setTasksQuery} />
+                setTasksQuery={setTasksQueryAndClearSelection} />
             
             {activeView === 'list' ? (
                 <ListView

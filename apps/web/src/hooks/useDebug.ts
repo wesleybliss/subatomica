@@ -27,7 +27,7 @@ const useDebug = () => {
             navigate('/sign-in', { replace: true })
         }
         
-    }, [])
+    }, [navigate])
     
 }
 

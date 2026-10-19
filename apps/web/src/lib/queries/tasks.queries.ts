@@ -8,7 +8,7 @@ import * as store from '@/store'
 
 const log = new Logger('web/lib/queries/tasks.queries')
 
-export const useGetTasksQuery = (teamId: string, projectId?: string) => {
+export const useGetTasksQuery = (teamId: string | undefined, projectId?: string) => {
     
     const tasksQueryKey = useMemo(() => (
         ['tasks', teamId, projectId] as const

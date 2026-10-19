@@ -1,4 +1,4 @@
-import { useTheme } from '@/components/ThemeProvider'
+import { useTheme } from '@/components/useTheme'
 import { useDebugStore } from '@/store'
 
 const DebugToolsViewModel = () => {

@@ -1,4 +1,26 @@
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
+
+function readCssVariable(variable: string) {
+    // oxlint-disable-next-line no-restricted-globals
+    return getComputedStyle(document.documentElement).getPropertyValue(variable).trim()
+}
+
+function subscribeToDocumentTheme(onStoreChange: () => void) {
+    const observer = new MutationObserver(onStoreChange)
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style'],
+    })
+    return () => observer.disconnect()
+}
+
+function useCssVariable(variable: string) {
+    return useSyncExternalStore(
+        subscribeToDocumentTheme,
+        () => readCssVariable(variable),
+        () => '',
+    )
+}
 
 type ColorGroup = {
     label: string;
@@ -81,13 +103,7 @@ function ColorSwatch({
     name: string;
     variable: string;
 }) {
-    const [color, setColor] = useState<string>('')
-    
-    useEffect(() => {
-        // oxlint-disable-next-line no-restricted-globals
-        const value = getComputedStyle(document.documentElement).getPropertyValue(variable).trim()
-        setColor(value)
-    }, [variable])
+    const color = useCssVariable(variable)
     
     return (
         <div className="space-y-2">

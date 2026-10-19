@@ -1,7 +1,6 @@
 import { Laptop, Moon, Sun } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 
-import { useTheme } from '@/components/ThemeProvider'
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
@@ -9,14 +8,15 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useTheme } from '@/components/useTheme'
 
 type ThemeName = 'light' | 'dark' | 'system'
 
+const subscribe = () => () => {}
+
 const ThemeToggle = ({ className }: { className?: string }) => {
     const { theme, setTheme } = useTheme()
-    const [mounted, setMounted] = useState(false)
-    
-    useEffect(() => setMounted(true), [])
+    const mounted = useSyncExternalStore(subscribe, () => true, () => false)
     
     const Icon = theme === 'dark' ? Moon : Sun
     

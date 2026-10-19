@@ -5,7 +5,7 @@ import { request } from '@/lib/api/client'
 import { useProjectStore } from '@/store'
 
 export const useCreateProjectMutation = (
-    teamId: string,
+    teamId: string | undefined,
     activeQueryKey: readonly (string | number | boolean | Record<string, unknown>)[],
 ) => {
     const queryClient = useQueryClient()
@@ -41,12 +41,14 @@ export const useCreateProjectMutation = (
                 id: tempId,
                 createdAt: now,
                 updatedAt: now,
+                deletedAt: null,
                 ownerId: 'pending',
-                teamId,
+                teamId: teamId!,
                 name: resolveName(name),
                 slug: resolveSlug(name),
                 taskSequence: 1,
                 description: '',
+                isStarred: false,
             }
             const nextProjects = [...(previousProjects || useProjectStore.getState().projects || []), optimisticProject]
             queryClient.setQueryData(activeQueryKey, nextProjects)
