@@ -29,7 +29,6 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 ✅ All tests pass
 
 ## Notes for Future
-- react-wire-persisted type errors handled with @ts-expect-error directives
 - Store lookups provide fallback if slug lookup fails
 - Task display can be enhanced with task keys once needed
 
