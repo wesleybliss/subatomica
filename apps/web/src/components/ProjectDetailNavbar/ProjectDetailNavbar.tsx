@@ -28,7 +28,9 @@ const ProjectDetailNavbar = ({
     
     return (
         
-        <header className="flex h-14 items-center justify-between gap-6 border-b border-border px-4">
+        <header
+            data-testid="ProjectDetailNavbar"
+            className="flex h-14 items-center justify-between gap-6 border-b border-border px-4">
             <div className="flex items-center gap-2">
                 <SidebarTrigger />
                 <ProjectsSelectorDropdown

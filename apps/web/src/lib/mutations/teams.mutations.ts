@@ -2,7 +2,7 @@ import { Team } from '@repo/shared/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { request } from '@/lib/api/client'
-import * as store from '@/store'
+import { useTeamStore } from '@/store'
 
 const teamsQueryKey = ['teams'] as const
 
@@ -33,15 +33,15 @@ export const useCreateTeamMutation = () => {
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
             }
-            const nextTeams = [...(previousTeams || store.teams.getValue() || []), tempTeam]
+            const nextTeams = [...(previousTeams || useTeamStore.getState().teams || []), tempTeam]
             queryClient.setQueryData(teamsQueryKey, nextTeams)
-            store.teams.setValue(nextTeams)
+            useTeamStore.getState().setTeams(nextTeams)
             return { previousTeams }
         },
         onError: (_error, _vars, context) => {
             if (context?.previousTeams) {
                 queryClient.setQueryData(teamsQueryKey, context.previousTeams)
-                store.teams.setValue(context.previousTeams)
+                useTeamStore.getState().setTeams(context.previousTeams)
             }
         },
         onSuccess: (created) => {
@@ -50,9 +50,9 @@ export const useCreateTeamMutation = () => {
                 const filtered = teams.filter(t => !t.id.startsWith('temp-'))
                 return [...filtered, created]
             })
-            const currentStoreTeams = store.teams.getValue() || []
+            const currentStoreTeams = useTeamStore.getState().teams || []
             const filtered = currentStoreTeams.filter(t => !t.id.startsWith('temp-'))
-            store.teams.setValue([...filtered, created])
+            useTeamStore.getState().setTeams([...filtered, created])
         },
     })
 }
@@ -72,19 +72,19 @@ export const useUpdateTeamMutation = () => {
         onMutate: async ({ teamId, name }) => {
             await queryClient.cancelQueries({ queryKey: teamsQueryKey })
             const previousTeams = queryClient.getQueryData<Team[]>(teamsQueryKey)
-            const nextTeams = (previousTeams || store.teams.getValue() || []).map(team =>
+            const nextTeams = (previousTeams || useTeamStore.getState().teams || []).map(team =>
                 team.id === teamId
                     ? { ...team, name: name.trim(), slug: name.trim().toLowerCase().replace(/\s+/g, '-') }
                     : team
             )
             queryClient.setQueryData(teamsQueryKey, nextTeams)
-            store.teams.setValue(nextTeams)
+            useTeamStore.getState().setTeams(nextTeams)
             return { previousTeams }
         },
         onError: (_error, _vars, context) => {
             if (context?.previousTeams) {
                 queryClient.setQueryData(teamsQueryKey, context.previousTeams)
-                store.teams.setValue(context.previousTeams)
+                useTeamStore.getState().setTeams(context.previousTeams)
             }
         },
         onSuccess: (updated) => {
@@ -92,8 +92,8 @@ export const useUpdateTeamMutation = () => {
                 const teams = current || []
                 return teams.map(team => (team.id === updated.id ? updated : team))
             })
-            const currentStoreTeams = store.teams.getValue() || []
-            store.teams.setValue(currentStoreTeams.map(team => (team.id === updated.id ? updated : team)))
+            const currentStoreTeams = useTeamStore.getState().teams || []
+            useTeamStore.getState().setTeams(currentStoreTeams.map(team => (team.id === updated.id ? updated : team)))
         },
     })
 }
@@ -110,15 +110,15 @@ export const useDeleteTeamMutation = () => {
         onMutate: async ({ teamId }) => {
             await queryClient.cancelQueries({ queryKey: teamsQueryKey })
             const previousTeams = queryClient.getQueryData<Team[]>(teamsQueryKey)
-            const nextTeams = (previousTeams || store.teams.getValue() || []).filter(team => team.id !== teamId)
+            const nextTeams = (previousTeams || useTeamStore.getState().teams || []).filter(team => team.id !== teamId)
             queryClient.setQueryData(teamsQueryKey, nextTeams)
-            store.teams.setValue(nextTeams)
+            useTeamStore.getState().setTeams(nextTeams)
             return { previousTeams }
         },
         onError: (_error, _vars, context) => {
             if (context?.previousTeams) {
                 queryClient.setQueryData(teamsQueryKey, context.previousTeams)
-                store.teams.setValue(context.previousTeams)
+                useTeamStore.getState().setTeams(context.previousTeams)
             }
         },
         onSuccess: (_data, { teamId }) => {
@@ -126,8 +126,8 @@ export const useDeleteTeamMutation = () => {
                 const teams = current || []
                 return teams.filter(team => team.id !== teamId)
             })
-            const currentStoreTeams = store.teams.getValue() || []
-            store.teams.setValue(currentStoreTeams.filter(team => team.id !== teamId))
+            const currentStoreTeams = useTeamStore.getState().teams || []
+            useTeamStore.getState().setTeams(currentStoreTeams.filter(team => team.id !== teamId))
         },
     })
 }

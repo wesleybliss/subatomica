@@ -1,35 +1,30 @@
 import { preconnect } from 'react-dom'
-import { Navigate,Outlet, Route, Routes } from 'react-router-dom'
-// @ts-expect-error react-wire-persisted has no types
-import * as reactWirePersisted from 'react-wire-persisted'
+import { Outlet, Route, Routes } from 'react-router-dom'
 
-import useDebug from '@/hooks/useDebug'
 import DebugTools from '@/components/debug/DebugTools'
 import GlobalCommand from '@/components/dialogs/GlobalCommand/GlobalCommand'
 import GlobalClient from '@/components/GlobalClient'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import QueryProvider from '@/components/QueryProvider'
 import ThemeProvider from '@/components/ThemeProvider'
+import useDebug from '@/hooks/useDebug'
 import { useSession } from '@/lib/auth-client'
-import { NS } from '@/lib/constants'
+import DebugPage from '@/routes/debug/page'
 import LandingPage from '@/routes/landing'
 import HomePage from '@/routes/page'
-import DebugPage from '@/routes/debug/page'
 import ProjectDetailPage from '@/routes/project/page'
 import ProjectsLayout from '@/routes/projects/ProjectsLayout'
 import TeamProjectsPage from '@/routes/projects/ProjectsPage'
+import SettingsLayout from '@/routes/settings/SettingsLayout'
+import SettingsPage from '@/routes/settings/SettingsPage'
 import SignInPage from '@/routes/sign-in/page'
 import SignUpPage from '@/routes/sign-up/page'
 import TeamLayout from '@/routes/team/TeamLayout'
 import TeamPage from '@/routes/team/TeamPage'
-import TeamsLayout from '@/routes/teams/TeamsLayout'
-import TeamsPage from '@/routes/teams/TeamsPage'
 import TeamSettingsLayout from '@/routes/team-settings/TeamSettingsLayout'
 import TeamSettingsPage from '@/routes/team-settings/TeamSettingsPage'
-import SettingsLayout from '@/routes/settings/SettingsLayout'
-import SettingsPage from '@/routes/settings/SettingsPage'
-
-reactWirePersisted.setNamespace(NS)
+import TeamsLayout from '@/routes/teams/TeamsLayout'
+import TeamsPage from '@/routes/teams/TeamsPage'
 
 // const VERCEL_ANALYTICS_ENABLED = false
 

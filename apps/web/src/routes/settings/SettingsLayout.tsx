@@ -1,14 +1,13 @@
-import { useWireValue } from '@forminator/react-wire'
-import { Link, Outlet } from 'react-router-dom'
-import { useMemo } from 'react'
 import { ArrowLeft } from 'lucide-react'
+import { useMemo } from 'react'
+import { Link, Outlet } from 'react-router-dom'
 
-import * as store from '@/store'
+import { useProjectStore, useTeamStore } from '@/store'
 
 export default function SettingsLayout() {
     
-    const selectedTeamSlug = useWireValue(store.selectedTeamSlug)
-    const selectedProjectSlug = useWireValue(store.selectedProjectSlug)
+    const selectedTeamSlug = useTeamStore(s => s.selectedTeamSlug)
+    const selectedProjectSlug = useProjectStore(s => s.selectedProjectSlug)
     
     const backLink = useMemo(() => {
         

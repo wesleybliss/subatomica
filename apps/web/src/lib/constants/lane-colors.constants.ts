@@ -15,15 +15,25 @@ export const LANE_QUICK_COLORS = [
 
 export const DEFAULT_LANE_ICON_COLOR = '#94a3b8'
 
+/** Hex in DB is stored with `#`. Tailwind / other tokens are stored as-is (no `#`). */
+export const isLaneHexColor = (color: string | null | undefined): boolean => {
+    if (!color)
+        return false
+    if (color.startsWith('#'))
+        return colord(color).isValid()
+    // Legacy rows saved without `#` before we fixed persistence
+    if (/^[0-9a-fA-F]{6}$/.test(color))
+        return colord(`#${color}`).isValid()
+    return false
+}
+
 export const resolveLaneIconColor = (
     color: string | null | undefined,
 ): string | undefined => {
-    if (!color)
+    if (!isLaneHexColor(color))
         return undefined
-    const candidate = color.startsWith('#') ? color : `#${color}`
-    if (colord(candidate).isValid())
-        return colord(candidate).toHex()
-    return undefined
+    const candidate = color!.startsWith('#') ? color! : `#${color}`
+    return colord(candidate).toHex()
 }
 
 export const laneColorToHex = (
@@ -31,4 +41,5 @@ export const laneColorToHex = (
     fallback = DEFAULT_LANE_ICON_COLOR,
 ): string => resolveLaneIconColor(color) ?? fallback
 
-export const hexToLaneColor = (hex: string) => hex.replace(/^#/, '')
+/** Normalize picker output for DB: always `#rrggbb`. */
+export const normalizeLaneHexForStorage = (hex: string): string => colord(hex).toHex()

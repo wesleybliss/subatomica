@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { request } from '@/lib/api/client'
-import * as store from '@/store'
+import { useTeamStore } from '@/store'
 
 export const useGetTeamsQuery = (options = {}) => {
     
@@ -17,8 +17,7 @@ export const useGetTeamsQuery = (options = {}) => {
         queryFn: async () => {
             try {
                 const res = await request<Team[]>('/teams')
-                
-                store.teams.setValue(res || [])
+                useTeamStore.getState().setTeams(res || [])
                 
                 return res || []
                 

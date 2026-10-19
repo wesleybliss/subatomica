@@ -2,7 +2,7 @@ import { CreateProjectInput, Project } from '@repo/shared/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { request } from '@/lib/api/client'
-import * as store from '@/store'
+import { useProjectStore } from '@/store'
 
 export const useCreateProjectMutation = (
     teamId: string,
@@ -48,24 +48,24 @@ export const useCreateProjectMutation = (
                 taskSequence: 1,
                 description: '',
             }
-            const nextProjects = [...(previousProjects || store.projects.getValue() || []), optimisticProject]
+            const nextProjects = [...(previousProjects || useProjectStore.getState().projects || []), optimisticProject]
             queryClient.setQueryData(activeQueryKey, nextProjects)
-            store.projects.setValue(nextProjects)
+            useProjectStore.getState().setProjects(nextProjects)
             
             return { previousProjects }
         },
         onError: (_error: Error, _vars: CreateProjectInput, context: { previousProjects?: Project[] } | undefined) => {
             if (context?.previousProjects) {
                 queryClient.setQueryData(activeQueryKey, context.previousProjects)
-                store.projects.setValue(context.previousProjects)
+                useProjectStore.getState().setProjects(context.previousProjects)
             }
         },
         onSuccess: ({ created, tempId }: { created: Project; tempId: string }) => {
             queryClient.setQueryData(activeQueryKey, (current?: Project[]) =>
                 (current || []).map((project: Project) => (project.id === tempId ? created : project)),
             )
-            const currentStoreProjects = store.projects.getValue() || []
-            store.projects.setValue(
+            const currentStoreProjects = useProjectStore.getState().projects || []
+            useProjectStore.getState().setProjects(
                 currentStoreProjects.map(project => (project.id === tempId ? created : project)),
             )
             queryClient.invalidateQueries({ queryKey: activeQueryKey })

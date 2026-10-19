@@ -1,10 +1,9 @@
-import { useWireValue } from '@forminator/react-wire'
 import { Loader2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { useGetProjectQuery } from '@/lib/queries/projects.queries'
 import { ProjectDetailClient } from '@/routes/project/ProjectDetailClient'
-import * as store from '@/store'
+import { useProjectStore, useTaskStore, useTeamStore } from '@/store'
 
 export default function ProjectDetailPage() {
     const params = useParams()
@@ -13,10 +12,10 @@ export default function ProjectDetailPage() {
     const teamSlug = params.teamSlug as string
     const projectSlug = params.projectSlug as string
     
-    const teams = useWireValue(store.teams)
-    const teamMembers = useWireValue(store.teamMembers)
-    const projects = useWireValue(store.projects)
-    const tasks = useWireValue(store.tasks)
+    const teams = useTeamStore(s => s.teams)
+    const teamMembers = useTeamStore(s => s.teamMembers)
+    const projects = useProjectStore(s => s.projects)
+    const tasks = useTaskStore(s => s.tasks)
     
     // Find team by slug to get ID
     const team = teams?.find(t => t.slug === teamSlug)

@@ -1,4 +1,3 @@
-import { useWireValue } from '@forminator/react-wire'
 import { Team } from '@repo/shared/types'
 import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -8,7 +7,7 @@ import { AppSidebar } from '@/components/AppSidebar'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { useSession } from '@/lib/auth-client'
 import { getGravatarUrl } from '@/lib/gravatar'
-import * as store from '@/store'
+import { useTeamStore } from '@/store'
 
 export default function TeamLayout() {
     const navigate = useNavigate()
@@ -19,7 +18,7 @@ export default function TeamLayout() {
     const params = useParams()
     const teamSlug: string | null = params.teamSlug as string
     
-    const teams = useWireValue(store.teams)
+    const teams = useTeamStore(s => s.teams)
     
     const team = useMemo<Team | undefined>(() => (
         teams?.find(it => it.slug === teamSlug)

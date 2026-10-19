@@ -1,15 +1,14 @@
-import { useWireValue } from '@forminator/react-wire'
 import { FolderKanban, LayoutGrid, Loader2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import * as store from '@/store'
+import { useProjectStore, useSelectedTeam, useTaskStore } from '@/store'
 
 export default function TeamProjectsPage() {
-    const team = useWireValue(store.selectedTeam)
+    const team = useSelectedTeam()
     
-    const projects = useWireValue(store.projects)
-    const tasks = useWireValue(store.tasks)
+    const projects = useProjectStore(s => s.projects)
+    const tasks = useTaskStore(s => s.tasks)
     
     const getTaskCountForProject = (projectId: string) =>
         tasks.filter(task => task.projectId === projectId).length

@@ -1,8 +1,7 @@
-import { useWireValue } from '@forminator/react-wire'
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { Outlet,useNavigate, useParams } from 'react-router-dom'
 
-import * as store from '@/store'
+import { useTeamStore } from '@/store'
 
 export default function TeamSettingsLayout() {
     
@@ -11,7 +10,7 @@ export default function TeamSettingsLayout() {
     
     const teamSlug = params.teamSlug as string
     
-    const teams = useWireValue(store.teams)
+    const teams = useTeamStore(s => s.teams)
     
     const team = useMemo(() => (
         teams?.find(it => it.slug === teamSlug)

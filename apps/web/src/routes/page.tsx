@@ -1,12 +1,9 @@
-import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
 import { getUnixTime } from 'date-fns'
 import { useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import { useGetTeamsQuery } from '@/lib/queries/teams.queries'
-
-import { Button } from '@/components/ui/button'
 import { useSession } from '@/lib/auth-client'
+import { useGetTeamsQuery } from '@/lib/queries/teams.queries'
 
 export default function HomePage() {
     

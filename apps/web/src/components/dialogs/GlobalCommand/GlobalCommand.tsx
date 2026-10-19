@@ -1,4 +1,3 @@
-import { useWireState, useWireValue } from '@forminator/react-wire'
 import { CalculatorIcon, CalendarIcon, CreditCardIcon, SettingsIcon, SmileIcon, UserIcon } from 'lucide-react'
 
 import GlobalCommandProject from '@/components/dialogs/GlobalCommand/GlobalCommandProject'
@@ -15,15 +14,16 @@ import {
     CommandSeparator,
     CommandShortcut,
 } from '@/components/ui/command'
-import * as store from '@/store'
+import { useDialogStore, useSelectedProject, useSelectedTask, useSelectedTeam } from '@/store'
 
 const GlobalCommand = () => {
     
-    const [globalCommandOpen, setGlobalCommandOpen] = useWireState(store.globalCommandOpen)
+    const globalCommandOpen = useDialogStore(s => s.globalCommandOpen)
+    const setGlobalCommandOpen = useDialogStore(s => s.setGlobalCommandOpen)
     
-    const selectedTeam = useWireValue(store.selectedTeam)
-    const selectedProject = useWireValue(store.selectedProject)
-    const selectedTask = useWireValue(store.selectedTask)
+    const selectedTeam = useSelectedTeam()
+    const selectedProject = useSelectedProject()
+    const selectedTask = useSelectedTask()
     
     return (
         

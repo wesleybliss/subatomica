@@ -1,10 +1,9 @@
-import { useWireValue } from '@forminator/react-wire'
 import type { Task, TeamMemberProfile } from '@repo/shared/types'
 import logger from '@repo/shared/utils/logger'
 
 import { TaskDetailForm } from '@/components/tasks/TaskDetailForm'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import * as store from '@/store'
+import { useSelectedProjectId, useSelectedTeamId } from '@/store'
 
 const log = logger('TaskDetailDialog')
 
@@ -17,8 +16,8 @@ type TaskDetailDialogProps = {
 
 export function TaskDetailDialog({ task, teamMembers, open, onOpenChange }: TaskDetailDialogProps) {
     
-    const selectedTeamId = useWireValue(store.selectedTeamId)
-    const selectedProjectId = useWireValue(store.selectedProjectId)
+    const selectedTeamId = useSelectedTeamId()
+    const selectedProjectId = useSelectedProjectId()
     
     if (!selectedTeamId || !selectedProjectId) {
         if (open)

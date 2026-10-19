@@ -29,7 +29,9 @@ const ListView = ({
     
     return (
         
-        <div className="flex-1 flex flex-col overflow-hidden bg-background">
+        <div
+            data-testid="ListView"
+            className="flex-1 flex flex-col overflow-hidden bg-background">
             
             {/* Toolbar */}
             <ListViewToolbar

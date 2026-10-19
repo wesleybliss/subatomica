@@ -1,5 +1,12 @@
 import { KnownLaneType } from '@repo/shared/types'
-import { CircleCheck, CircleDashed, CircleDotDashed, CircleEllipsis, LucideIcon } from 'lucide-react'
+import {
+    Circle,
+    CircleCheck,
+    CircleDashed,
+    CircleDotDashed,
+    CircleEllipsis,
+    LucideIcon,
+} from 'lucide-react'
 
 export const KNOWN_LANE_ICONS: Record<KnownLaneType, LucideIcon>  = {
     Backlog: CircleDashed,
@@ -7,3 +14,6 @@ export const KNOWN_LANE_ICONS: Record<KnownLaneType, LucideIcon>  = {
     'In Progress': CircleEllipsis,
     'Done': CircleCheck,
 }
+
+export const getLaneIcon = (laneName: string): LucideIcon =>
+    KNOWN_LANE_ICONS[laneName as KnownLaneType] || Circle

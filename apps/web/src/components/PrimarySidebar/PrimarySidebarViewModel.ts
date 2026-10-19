@@ -1,4 +1,3 @@
-import { useWireValue } from '@forminator/react-wire'
 import type { LucideIcon } from 'lucide-react'
 import {
     Code,
@@ -13,7 +12,7 @@ import {
 import { useLocation } from 'react-router-dom'
 
 import { cn } from '@/lib/utils'
-import { primarySidebarCollapsed } from '@/store/app'
+import { useAppStore } from '@/store'
 
 type NavItem = {
     icon: LucideIcon
@@ -29,7 +28,7 @@ type PrimarySidebarViewModelInput = {
 const PrimarySidebarViewModel = ({ teamId }: PrimarySidebarViewModelInput) => {
     const location = useLocation()
     const pathname = location.pathname
-    const isCollapsed = useWireValue(primarySidebarCollapsed)
+    const isCollapsed = useAppStore(s => s.primarySidebarCollapsed)
     
     const sidebarClassName = cn(
         'h-screen bg-sidebar border-r border-sidebar-border flex flex-col transition-[width] duration-200',

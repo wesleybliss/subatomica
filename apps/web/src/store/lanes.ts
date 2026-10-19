@@ -1,10 +1,33 @@
-import { createWire } from '@forminator/react-wire'
 import type { TaskLane } from '@repo/shared/types'
-// @ts-expect-error react-wire-persisted has no types
-import { createPersistedWire } from 'react-wire-persisted'
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-import { keys } from '@/lib/constants'
+import { getStoreName } from '@/lib/constants'
+import { createSetterFns } from '@/lib/utils/store.utils'
 
-export const lanes = createWire<TaskLane[]>([])
+interface LaneStore {
+    lanes: TaskLane[]
+    setLanes: (value: TaskLane[]) => void
+    collapsedLanes: string[]
+    setCollapsedLanes: (value: string[]) => void
+}
 
-export const collapsedLanes = createPersistedWire<string[]>(keys.collapsedLanes, [])
+const initialValues = {
+    lanes: [],
+    collapsedLanes: [],
+} satisfies Partial<LaneStore>
+
+export const useLaneStore = create<LaneStore>()(
+    persist(
+        set => ({
+            ...initialValues,
+            ...createSetterFns<LaneStore>()(set, initialValues),
+        }),
+        {
+            name: getStoreName('lane'),
+            partialize: state => ({
+                collapsedLanes: state.collapsedLanes,
+            }),
+        },
+    ),
+)

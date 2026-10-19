@@ -1,17 +1,44 @@
-import { createSelector, createWire } from '@forminator/react-wire'
 import type { Team } from '@repo/shared/types'
 import { TeamMemberProfile } from '@repo/shared/types'
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-export const teams = createWire<Team[]>([])
+import { getStoreName } from '@/lib/constants'
+import { createSetterFns } from '@/lib/utils/store.utils'
 
-export const selectedTeamSlug = createWire<string | null>(null)
+interface TeamStore {
+    teams: Team[]
+    setTeams: (value: Team[]) => void
+    selectedTeamSlug: string | null
+    setSelectedTeamSlug: (value: string | null) => void
+    teamMembers: TeamMemberProfile[]
+    setTeamMembers: (value: TeamMemberProfile[]) => void
+}
 
-export const selectedTeam = createSelector<Team | null>({
-    get: ({ get }) => get(teams)?.find(it => it.slug === get(selectedTeamSlug)) || null,
-})
+const initialValues = {
+    teams: [],
+    selectedTeamSlug: null,
+    teamMembers: [],
+} satisfies Partial<TeamStore>
 
-export const selectedTeamId = createSelector<string | null>({
-    get: ({ get }) => get(selectedTeam)?.id || null,
-})
+export const useTeamStore = create<TeamStore>()(
+    persist(
+        set => ({
+            ...initialValues,
+            ...createSetterFns<TeamStore>()(set, initialValues),
+        }),
+        {
+            name: getStoreName('project'),
+            partialize: state => ({
+                selectedTeamSlug: state.selectedTeamSlug,
+            }),
+        },
+    ),
+)
 
-export const teamMembers = createWire<TeamMemberProfile[]>([])
+export const useSelectedTeam = () =>
+    useTeamStore(state =>
+        state.teams.find(it => it.slug === state.selectedTeamSlug) ?? null,
+    )
+
+export const useSelectedTeamId = () => useSelectedTeam()?.id

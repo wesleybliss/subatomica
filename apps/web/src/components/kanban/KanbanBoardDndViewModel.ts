@@ -1,5 +1,4 @@
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { useWireState } from '@forminator/react-wire'
 import { Task, TaskLane, TaskStatus } from '@repo/shared/types'
 import { DropIndicatorData } from '@repo/shared/types'
 import logger from '@repo/shared/utils/logger'
@@ -8,15 +7,16 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { v7 as uuidv7 } from 'uuid'
 
+import { normalizeLaneHexForStorage } from '@/lib/constants/lane-colors.constants'
 import {
     useCreateTaskLaneMutation,
     useDeleteTaskLaneMutation,
     useUpdateTaskLaneMutation,
 } from '@/lib/mutations/lanes.mutations'
 import { useCreateTaskMutation, useUpdateTaskOrderMutation } from '@/lib/mutations/tasks.mutations'
-import * as store from '@/store'
 
 import { type ColumnDropData, isColumnDropData, isTaskDragData, isTaskDropData,type TaskDropData } from './dragTypes'
+import { useLaneStore } from '@/store'
 
 const log = logger('KanbanBoardDndViewModel')
 
@@ -41,7 +41,8 @@ const KanbanBoardDndViewModel = (
     const [savingLaneId, setSavingLaneId] = useState<string | null>(null)
     const [deletingLaneId, setDeletingLaneId] = useState<string | null>(null)
     
-    const [collapsedLanes, setCollapsedLanes] = useWireState<string[]>(store.collapsedLanes)
+    const collapsedLanes = useLaneStore(s => s.collapsedLanes)
+    const setCollapsedLanes = useLaneStore(s => s.setCollapsedLanes)
     
     const canManageLanes = Boolean(projectId && onLanesChange)
     const canDeleteLane = localLanes.length > 1
@@ -388,6 +389,14 @@ const KanbanBoardDndViewModel = (
             return nextLane.order - 1000
         return 1000
     }
+    const handleLaneColorChange = (laneId: string, hex: string) => {
+        if (!canManageLanes) return
+        updateTaskLaneMutation.mutate({
+            laneId,
+            data: { color: normalizeLaneHexForStorage(hex) },
+        })
+    }
+    
     const handleReorderLane = async (sourceLaneId: string, targetLaneId: string) => {
         if (!canManageLanes || sourceLaneId === targetLaneId) return
         const sortedLanes = [...localLanes].sort((a, b) => a.order - b.order)
@@ -462,6 +471,7 @@ const KanbanBoardDndViewModel = (
         handleRenameLane,
         handleDeleteLane,
         handleReorderLane,
+        handleLaneColorChange,
         handleCreateTask,
         handleDrop,
         

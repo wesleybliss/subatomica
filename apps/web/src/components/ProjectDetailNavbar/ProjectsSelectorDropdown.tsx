@@ -1,4 +1,3 @@
-import { useWireValue } from '@forminator/react-wire'
 import type { Project } from '@repo/shared/types'
 import { ChevronDown, FolderKanban, Pencil, Trash2 } from 'lucide-react'
 import { useMemo } from 'react'
@@ -18,7 +17,7 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import * as store from '@/store'
+import { useTeamStore } from '@/store'
 
 interface ProjectsSelectorDropdownProps {
     teamId: string
@@ -32,7 +31,7 @@ const ProjectsSelectorDropdown = ({
     selectedProjectId,
 }: ProjectsSelectorDropdownProps) => {
     const navigate = useNavigate()
-    const teams = useWireValue(store.teams)
+    const teams = useTeamStore(s => s.teams)
     
     const teamSlug = useMemo(() => {
         return teams?.find(t => t.id === teamId)?.slug

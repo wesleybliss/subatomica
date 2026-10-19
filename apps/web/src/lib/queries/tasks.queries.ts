@@ -19,8 +19,7 @@ export const useGetTasksQuery = (teamId: string, projectId?: string) => {
                     ? `/tasks?teamId=${teamId}&projectId=${projectId}`
                     : `/tasks?teamId=${teamId}`
                 const res = await request<Task[]>(url)
-                
-                store.tasks.setValue(res || [])
+                store.useTaskStore.getState().setTasks(res || [])
                 
                 return res || []
             } catch (e) {

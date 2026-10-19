@@ -1,5 +1,4 @@
-import type { FnsWire, StateWire } from '@forminator/react-wire'
 
-export type StringArrayWireValue = StateWire<string[]>
-export type StringArrayWireFn = FnsWire<(value: string[]) => void>
-export type StringArrayWire = StringArrayWireValue & StringArrayWireFn
+export type StoreSetter<T> = (prev: T) => T
+export type StoreActionBase<T> = T | StoreSetter<T>
+export type StoreAction<T> = (value: StoreActionBase<T>) => void

@@ -53,7 +53,9 @@ export function ProjectDetailClient({
     
     return (
         
-        <div className="flex h-full flex-col">
+        <div
+            data-testid="ProjectDetailClient"
+            className="flex h-full flex-col">
             
             <ProjectDetailNavbar
                 teamId={teamId}

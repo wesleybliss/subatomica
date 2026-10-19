@@ -1,9 +1,27 @@
-import { createWire } from '@forminator/react-wire'
-import type { StringArrayWire } from '@repo/shared/types/store.types'
-// @ts-expect-error react-wire-persisted has no types
-import { createPersistedWire } from 'react-wire-persisted'
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-import { keys } from '@/lib/constants'
+import { getStoreName } from '@/lib/constants'
+import { createSetterFns } from '@/lib/utils/store.utils'
 
-export const primarySidebarWidth: StringArrayWire = createPersistedWire(keys.primarySidebarWidth, [])
-export const primarySidebarCollapsed = createWire<boolean>(false)
+interface AppStore {
+    primarySidebarWidth: string[]
+    setPrimarySidebarWidth: (value: string[]) => void
+    primarySidebarCollapsed: boolean
+    setPrimarySidebarCollapsed: (value: boolean) => void
+}
+
+const initialValues = {
+    primarySidebarWidth: [],
+    primarySidebarCollapsed: false,
+} satisfies Partial<AppStore>
+
+export const useAppStore = create<AppStore>()(
+    persist(
+        set => ({
+            ...initialValues,
+            ...createSetterFns<AppStore>()(set, initialValues),
+        }),
+        { name: getStoreName('app') },
+    ),
+)

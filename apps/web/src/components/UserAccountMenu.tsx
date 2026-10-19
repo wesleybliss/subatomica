@@ -1,4 +1,3 @@
-import { useWireValue } from '@forminator/react-wire'
 import { getUnixTime } from 'date-fns'
 import { memo, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -14,7 +13,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { signOut, useSession } from '@/lib/auth-client'
-import { teams as storeTeams } from '@/store/teams'
+import { useTeamStore } from '@/store/teams'
 
 const avatarUrlFor = (name: string, email: string) =>
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
@@ -25,7 +24,7 @@ const UserAccountMenu = () => {
     const navigate = useNavigate()
     const pathname = location.pathname
     
-    const teams = useWireValue(storeTeams)
+    const teams = useTeamStore(s => s.teams)
     
     const { user, name, avatarUrl } = useMemo(() => {
         const user = session?.user

@@ -1,11 +1,10 @@
-import { useWireValue } from '@forminator/react-wire'
 import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { MembersSection } from '@/components/team-settings/MembersSection'
 import SettingsAccountHeader from '@/components/team-settings/SettingsAccountHeader'
 import { useSession } from '@/lib/auth-client'
-import * as store from '@/store'
+import { useTeamStore } from '@/store'
 
 const avatarUrlFor = (name: string, email: string) =>
     `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`
@@ -18,8 +17,8 @@ export default function TeamSettingsPage() {
     
     const teamSlug = params.teamSlug
     
-    const teams = useWireValue(store.teams)
-    const members = useWireValue(store.teamMembers)
+    const teams = useTeamStore(s => s.teams)
+    const members = useTeamStore(s => s.teamMembers)
     
     // @todo !!!!! need to figure this out
     const canManage = true

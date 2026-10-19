@@ -1,7 +1,7 @@
 import type { Project, Task, TaskLane } from '@repo/shared/types'
 import { useEffect, useMemo, useState } from 'react'
 
-import { hexToLaneColor } from '@/lib/constants/lane-colors.constants'
+import { normalizeLaneHexForStorage } from '@/lib/constants/lane-colors.constants'
 import { useUpdateTaskLaneMutation } from '@/lib/mutations/lanes.mutations'
 
 const ListViewViewModel = (
@@ -38,7 +38,7 @@ const ListViewViewModel = (
     const handleLaneColorChange = (laneId: string, hex: string) => {
         updateTaskLaneMutation.mutate({
             laneId,
-            data: { color: hexToLaneColor(hex) },
+            data: { color: normalizeLaneHexForStorage(hex) },
         })
     }
     

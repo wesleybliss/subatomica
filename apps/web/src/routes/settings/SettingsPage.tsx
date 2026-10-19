@@ -1,9 +1,9 @@
 'use client'
 
-import { useWireValue } from '@forminator/react-wire'
-import { Link, useNavigate } from 'react-router-dom'
+import type { Team } from '@repo/shared/types'
+import { ChevronRight,Pencil, Plus, Trash2, Users } from 'lucide-react'
 import { useState } from 'react'
-import { Plus, Pencil, Trash2, Users, ChevronRight } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -24,20 +24,19 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useGetTeamsQuery } from '@/lib/queries/teams.queries'
 import {
     useCreateTeamMutation,
-    useUpdateTeamMutation,
     useDeleteTeamMutation,
+    useUpdateTeamMutation,
 } from '@/lib/mutations/teams.mutations'
-import * as store from '@/store'
-import type { Team } from '@repo/shared/types'
+import { useGetTeamsQuery } from '@/lib/queries/teams.queries'
+import { useTeamStore } from '@/store'
 
 export default function SettingsPage() {
-    const teams = useWireValue(store.teams)
-
+    const teams = useTeamStore(s => s.teams)
+    
     useGetTeamsQuery()
-
+    
     return (
         <div className="flex-1 overflow-y-auto">
             <div className="border-b border-border">
@@ -53,7 +52,7 @@ export default function SettingsPage() {
                     </div>
                 </div>
             </div>
-
+            
             <div className="mx-auto max-w-5xl px-6 py-10">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
@@ -121,7 +120,7 @@ function CreateTeamDialog() {
     const [name, setName] = useState('')
     const createTeam = useCreateTeamMutation()
     const navigate = useNavigate()
-
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!name.trim()) return
@@ -130,7 +129,7 @@ function CreateTeamDialog() {
         setOpen(false)
         navigate(`/t/${team.slug}`)
     }
-
+    
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger render={<Button />}>
@@ -153,16 +152,14 @@ function CreateTeamDialog() {
                                 value={name}
                                 onChange={e => setName(e.target.value)}
                                 placeholder="e.g., Engineering"
-                                autoFocus
-                            />
+                                autoFocus/>
                         </div>
                     </div>
                     <DialogFooter>
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setOpen(false)}
-                        >
+                            onClick={() => setOpen(false)}>
                             Cancel
                         </Button>
                         <Button type="submit" disabled={!name.trim() || createTeam.isPending}>
@@ -179,14 +176,14 @@ function EditTeamDialog({ team }: { team: Team }) {
     const [open, setOpen] = useState(false)
     const [name, setName] = useState(team.name)
     const updateTeam = useUpdateTeamMutation()
-
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!name.trim() || name === team.name) return
         await updateTeam.mutateAsync({ teamId: team.id, name })
         setOpen(false)
     }
-
+    
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger render={
@@ -211,22 +208,19 @@ function EditTeamDialog({ team }: { team: Team }) {
                                 value={name}
                                 onChange={e => setName(e.target.value)}
                                 placeholder="Team name"
-                                autoFocus
-                            />
+                                autoFocus/>
                         </div>
                     </div>
                     <DialogFooter>
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setOpen(false)}
-                        >
+                            onClick={() => setOpen(false)}>
                             Cancel
                         </Button>
                         <Button 
                             type="submit" 
-                            disabled={!name.trim() || name === team.name || updateTeam.isPending}
-                        >
+                            disabled={!name.trim() || name === team.name || updateTeam.isPending}>
                             {updateTeam.isPending ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </DialogFooter>
@@ -240,7 +234,7 @@ function DeleteTeamDialog({ team }: { team: Team }) {
     const [open, setOpen] = useState(false)
     const [confirmName, setConfirmName] = useState('')
     const deleteTeam = useDeleteTeamMutation()
-
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (confirmName !== team.name) return
@@ -248,7 +242,7 @@ function DeleteTeamDialog({ team }: { team: Team }) {
         setOpen(false)
         setConfirmName('')
     }
-
+    
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger render={
@@ -276,23 +270,20 @@ function DeleteTeamDialog({ team }: { team: Team }) {
                                 value={confirmName}
                                 onChange={e => setConfirmName(e.target.value)}
                                 placeholder={team.name}
-                                autoFocus
-                            />
+                                autoFocus/>
                         </div>
                     </div>
                     <DialogFooter>
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setOpen(false)}
-                        >
+                            onClick={() => setOpen(false)}>
                             Cancel
                         </Button>
                         <Button 
                             type="submit" 
                             variant="destructive"
-                            disabled={confirmName !== team.name || deleteTeam.isPending}
-                        >
+                            disabled={confirmName !== team.name || deleteTeam.isPending}>
                             {deleteTeam.isPending ? 'Deleting...' : 'Delete Team'}
                         </Button>
                     </DialogFooter>

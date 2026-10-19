@@ -1,4 +1,3 @@
-import { useWireValue } from '@forminator/react-wire'
 import { Team } from '@repo/shared/types'
 import { FolderKanban, LayoutGrid, Loader2, Users } from 'lucide-react'
 import { SyntheticEvent, useMemo } from 'react'
@@ -13,7 +12,7 @@ import { useCreateProjectMutation } from '@/lib/mutations/projects'
 import { useGetProjectsQuery } from '@/lib/queries/projects.queries'
 import { useGetTasksQuery } from '@/lib/queries/tasks.queries'
 import { useGetTeamMembersQuery } from '@/lib/queries/teams.queries'
-import * as store from '@/store'
+import { useTeamStore } from '@/store'
 
 const activeProjectsQueryKey = ['projects']
 
@@ -22,7 +21,7 @@ export default function TeamPage() {
     const params = useParams()
     const teamSlug = params.teamSlug as string
     
-    const teams = useWireValue(store.teams)
+    const teams = useTeamStore(s => s.teams)
     
     const team = useMemo<Team | undefined>(() => (
         teams?.find(it => it.slug === teamSlug)

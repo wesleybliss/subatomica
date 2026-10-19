@@ -1,4 +1,3 @@
-import { useWireValue } from '@forminator/react-wire'
 import { Project, Task } from '@repo/shared/types'
 import { getUnixTime } from 'date-fns'
 import { MoreHorizontalIcon } from 'lucide-react'
@@ -16,7 +15,7 @@ import {
 import { Progress } from '@/components/ui/progress'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { calculateProjectProgress } from '@/lib/utils'
-import * as store from '@/store'
+import { useTeamStore } from '@/store'
 
 interface RecentProjectsTableProps {
     className?: string
@@ -36,7 +35,7 @@ const RecentProjectsTable = ({
     projects,
     tasks,
 }: RecentProjectsTableProps) => {
-    const teams = useWireValue(store.teams)
+    const teams = useTeamStore(s => s.teams)
     
     const teamSlug = useMemo(() => {
         return teams?.find(t => t.id === teamId)?.slug

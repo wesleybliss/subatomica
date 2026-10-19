@@ -1,8 +1,6 @@
-import { useWire } from '@forminator/react-wire'
+import { useDialogStore } from '@/store'
 import logger from '@repo/shared/utils/logger'
 import { useHotkeys } from 'react-hotkeys-hook'
-
-import * as store from '@/store'
 
 const log = logger('hooks/useGlobalHotkeys')
 
@@ -31,12 +29,11 @@ const useHotkey = (
 
 const useGlobalHotkeys = () => {
     
-    const globalCommandOpen = useWire(store.globalCommandOpen)
+    const globalCommandOpen = useDialogStore(s => s.globalCommandOpen)
+    const setGlobalCommandOpen = useDialogStore(s => s.setGlobalCommandOpen)
     
     useHotkey('ctrl+projects', () => {
-        
-        globalCommandOpen.setValue(!globalCommandOpen.getValue())
-        
+        setGlobalCommandOpen(!globalCommandOpen)
     })
     
     useHotkey('ctrl+/', () => {

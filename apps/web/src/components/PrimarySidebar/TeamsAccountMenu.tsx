@@ -1,4 +1,3 @@
-import { useWireValue } from '@forminator/react-wire'
 import { getUnixTime } from 'date-fns'
 import { ChevronDown, Plus } from 'lucide-react'
 import { useMemo } from 'react'
@@ -12,7 +11,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import { teams as storeTeams } from '@/store/teams'
+import { useTeamStore } from '@/store'
 
 type TeamsAccountMenuProps = {
     collapsed?: boolean
@@ -23,7 +22,7 @@ const TeamsAccountMenu = ({ collapsed = false }: TeamsAccountMenuProps) => {
     const navigate = useNavigate()
     const pathname = location.pathname
     
-    const teams = useWireValue(storeTeams)
+    const teams = useTeamStore(s => s.teams)
     
     const activeTeamSlug = useMemo(() => {
         const match = pathname?.match(/\/t\/([^/]+)/)

@@ -1,11 +1,10 @@
-import { useWireValue } from '@forminator/react-wire'
 import { Loader2 } from 'lucide-react'
 import { useMemo } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 
 import { useGetProjectsQuery } from '@/lib/queries/projects.queries'
 import { useGetTasksQuery } from '@/lib/queries/tasks.queries'
-import * as store from '@/store'
+import { useTeamStore } from '@/store'
 
 export default function ProjectsLayout() {
     
@@ -13,7 +12,7 @@ export default function ProjectsLayout() {
     const navigate = useNavigate()
     const teamSlug: string | null = params.teamSlug as string
     
-    const teams = useWireValue(store.teams)
+    const teams = useTeamStore(s => s.teams)
     const team = useMemo(() => (
         teams?.find(it => it.slug === teamSlug)
     ), [teams, teamSlug])

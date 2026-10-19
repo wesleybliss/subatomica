@@ -1,11 +1,10 @@
-import { useWireValue } from '@forminator/react-wire'
 import { Link } from 'react-router-dom'
 
-import { teams as storeTeams } from '@/store/teams'
+import { useTeamStore } from '@/store'
 
 export default function TeamsPage() {
     
-    const teams = useWireValue(storeTeams)
+    const teams = useTeamStore(s => s.teams)
     
     return (
         

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { request } from '@/lib/api/client'
-import * as store from '@/store'
+import { useLaneStore, useProjectStore } from '@/store'
 
 export const useGetProjectsQuery = (teamId: string) => {
     
@@ -18,7 +18,7 @@ export const useGetProjectsQuery = (teamId: string) => {
             try {
                 const res = await request<Project[]>(`/projects?teamId=${teamId}`)
                 
-                store.projects.setValue(res || [])
+                useProjectStore.getState().setProjects(res || [])
                 
                 const taskLanes: TaskLane[] = []
                 
@@ -26,7 +26,7 @@ export const useGetProjectsQuery = (teamId: string) => {
                     if (it.taskLanes?.length)
                         taskLanes.push(...it.taskLanes)
                 })
-                store.lanes.setValue(taskLanes)
+                useLaneStore.getState().setLanes(taskLanes)
                 
                 return res || []
             } catch (e) {
@@ -59,7 +59,7 @@ export const useGetProjectQuery = (teamId: string, projectId: string) => {
                 
                 if (res?.id) {
                     
-                    const next = store.projects.getValue() || []
+                    const next = useProjectStore.getState().projects || []
                     const idx = next.findIndex(it => it.id === res.id)
                     
                     if (idx >= 0)
@@ -67,13 +67,13 @@ export const useGetProjectQuery = (teamId: string, projectId: string) => {
                     else
                         next.push(res)
                     
-                    store.projects.setValue(next)
+                    useProjectStore.getState().setProjects(next)
                     
                     if (res.taskLanes?.length) {
                         const taskLanes = new Map<string, TaskLane[]>()
                         res.taskLanes.forEach((it: TaskLane) => taskLanes.set(it.id, [it]))
-                        store.lanes.setValue([
-                            ...store.lanes.getValue(),
+                        useLaneStore.getState().setLanes([
+                            ...useLaneStore.getState().lanes,
                             ...Array.from(taskLanes.values()).flat(),
                         ])
                     }

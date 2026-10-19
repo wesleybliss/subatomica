@@ -5,9 +5,11 @@ import { GripVertical, Plus } from 'lucide-react'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
 import ManageLaneDropdown from '@/components/kanban/ManageLaneDropdown'
+import LaneIconColorPicker from '@/components/lanes/LaneIconColorPicker'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import useLaneColor from '@/hooks/useLaneColor'
 import { cn } from '@/lib/utils'
 
 import { isLaneDragData } from './dragTypes'
@@ -36,6 +38,7 @@ interface TaskLaneProps {
     handleCancelRenameLane: () => void
     handleDeleteLane: (laneId: string) => Promise<void>
     handleReorderLane: (sourceLaneId: string, targetLaneId: string) => void
+    handleLaneColorChange: (laneId: string, hex: string) => void
 }
 
 const KanbanTaskLane = ({
@@ -61,6 +64,7 @@ const KanbanTaskLane = ({
     handleCancelRenameLane,
     handleDeleteLane,
     handleReorderLane,
+    handleLaneColorChange,
 }: TaskLaneProps) => {
     const laneRef = useRef<HTMLDivElement>(null)
     const dragHandleRef = useRef<HTMLDivElement>(null)
@@ -102,17 +106,24 @@ const KanbanTaskLane = ({
         )
     }, [canManageLanes, handleReorderLane, lane.id])
     
+    const laneColor = useLaneColor(lane.color)
+    
     return (
         
         <div
+            data-testid="TaskLane"
             ref={laneRef}
-            className={cn('shrink-0 flex flex-col h-full min-h-0 rounded', {
+            className={cn('shrink-0 flex flex-col h-full min-h-0 rounded ring-2 p-2', laneColor.tailwindBackground, {
+                'bg-primary/5 ring-primary/20': !isDragging && !isDragOver
+                    && !isCollapsed && !laneColor.backgroundColor,
                 'opacity-60': isDragging,
-                'ring-2 ring-primary/60 ring-offset-1 ring-offset-background': isDragOver,
+                'ring-2': !isDragOver,
+                'ring-primary/60 ring-offset-1 ring-offset-background': isDragOver,
                 'w-[320px]': !isCollapsed,
                 'w-10 overflow-hidden pt-4': isCollapsed,
-                'bg-linear-to-b from-accent/10 to-transparent': isCollapsed,
-            })}>
+                'bg-linear-to-b from-accent/70 to-transparent': isCollapsed,
+            })}
+            style={laneColor.styles}>
             
             <div className={cn('flex items-center mb-3', {
                 'justify-center': isCollapsed,
@@ -134,10 +145,15 @@ const KanbanTaskLane = ({
                         </div>
                     )}
                     
-                    <div className={cn(
-                        'w-2 h-2 rounded-full',
-                        lane.color || 'bg-black/20',
-                    )} />
+                    <LaneIconColorPicker
+                        lane={lane}
+                        iconSize={isCollapsed ? 16 : 18}
+                        onColorChange={
+                            canManageLanes
+                                ? hex => handleLaneColorChange(lane.id, hex)
+                                : undefined
+                        }
+                        onTriggerClick={e => e.stopPropagation()}/>
                     
                     {(!isCollapsed && editingLaneId === lane.id) ? (
                         <Input

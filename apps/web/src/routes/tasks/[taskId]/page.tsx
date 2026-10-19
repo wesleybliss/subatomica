@@ -1,9 +1,8 @@
-import { useWireValue } from '@forminator/react-wire'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { TaskDetailForm } from '@/components/tasks/TaskDetailForm'
-import * as store from '@/store'
+import { useTaskStore, useTeamStore } from '@/store'
 
 export default function TaskPage() {
     
@@ -13,8 +12,8 @@ export default function TaskPage() {
     const teamId = params.teamId as string
     const projectId = params.projectId as string
     
-    const tasks = useWireValue(store.tasks)
-    const teamMembers = useWireValue(store.teamMembers)
+    const tasks = useTaskStore(s => s.tasks)
+    const teamMembers = useTeamStore(s => s.teamMembers)
     
     const task = useMemo(() => (
         tasks?.find(it => it.id === taskId)

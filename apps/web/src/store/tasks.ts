@@ -1,14 +1,44 @@
-import { createSelector, createWire } from '@forminator/react-wire'
 import type { Task } from '@repo/shared/types'
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-export const tasks = createWire<Task[]>([])
+import { getStoreName } from '@/lib/constants'
+import { createSetterFns } from '@/lib/utils/store.utils'
 
-export const selectedTaskSlug = createWire<string | null>(null)
+interface TaskStore {
+    tasks: Task[]
+    setTasks: (value: Task[]) => void
+    selectedTaskSlug: string | null
+    setSelectedTaskSlug: (value: string | null) => void
+    // selectedTask: Task | null
+    // selectedTaskId: string | null
+}
 
-export const selectedTask = createSelector<Task | null>({
-    get: ({ get }) => get(tasks)?.find(it => it.slug === get(selectedTaskSlug)) || null,
-})
+const initialValues = {
+    tasks: [],
+    selectedTaskSlug: null,
+    // selectedTask: null,
+    // selectedTaskId: null,
+} satisfies Partial<TaskStore>
 
-export const selectedTaskId = createSelector<string | null>({
-    get: ({ get }) => get(selectedTask)?.id || null,
-})
+export const useTaskStore = create<TaskStore>()(
+    persist(
+        set => ({
+            ...initialValues,
+            ...createSetterFns<TaskStore>()(set, initialValues),
+        }),
+        {
+            name: getStoreName('project'),
+            partialize: state => ({
+                selectedTaskSlug: state.selectedTaskSlug,
+            }),
+        },
+    ),
+)
+
+export const useSelectedTask = () =>
+    useTaskStore(state =>
+        state.tasks.find(it => it.slug === state.selectedTaskSlug) ?? null,
+    )
+
+export const useSelectedTaskId = () => useSelectedTask()?.id
