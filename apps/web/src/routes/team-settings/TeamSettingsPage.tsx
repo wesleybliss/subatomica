@@ -62,7 +62,9 @@ export default function TeamSettingsPage() {
                 
                 <section className="rounded-2xl border border-neutral-200 shadow-sm">
                     <div className="border-b border-neutral-100 px-6 py-4">
-                        <p className="text-xs uppercase tracking-[0.2em] text-neutral-400">Account</p>
+                        <p className="text-xs uppercase tracking-[0.2em] text-neutral-400">
+                            Account
+                        </p>
                     </div>
                     <SettingsAccountHeader name={name} email={email} avatarUrl={avatarUrl} />
                 </section>

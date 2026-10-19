@@ -1,10 +1,23 @@
 /* eslint-disable no-console */
 
+/// <reference path="../env.d.ts" />
+
 import c from 'ansi-colors'
 
 import type { LogLevel } from '../types/logger.types'
 
-declare const process: { env: { NEXT_PUBLIC_LOG_ENABLED?: string } }
+function isClientLogEnabled(): boolean {
+    // Static `import.meta.env.VITE_*` access so Vite can inline it in the client bundle.
+    return import.meta.env.VITE_LOG_ENABLED === 'true'
+}
+
+function isServerLogEnabled(): boolean {
+    const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env
+    if (!env)
+        return false
+    return env.LOG_ENABLED === 'true'
+        || env.NEXT_PUBLIC_LOG_ENABLED === 'true'
+}
 
 export const LogLevels = {
     log: 'log',
@@ -32,8 +45,7 @@ export class Logger {
         
         this.tag = tag
         const isBrowser = typeof window !== 'undefined'
-        // Must be a literal property access so Next.js can inline it into the client bundle.
-        const envEnabled = process.env.NEXT_PUBLIC_LOG_ENABLED === 'true'
+        const envEnabled = isBrowser ? isClientLogEnabled() : isServerLogEnabled()
         // On the server there's no client env var, so default to enabled.
         // In the browser, only enable when explicitly opted in.
         const enabledByDefault = !isBrowser
