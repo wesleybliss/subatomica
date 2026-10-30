@@ -3,6 +3,7 @@ import { Navigate, useParams } from 'react-router-dom'
 
 import { MembersSection } from '@/components/team-settings/MembersSection'
 import SettingsAccountHeader from '@/components/team-settings/SettingsAccountHeader'
+import { TrelloImportSection } from '@/components/team-settings/TrelloImportSection'
 import { useSession } from '@/lib/auth-client'
 import { useTeamStore } from '@/store'
 
@@ -70,6 +71,12 @@ export default function TeamSettingsPage() {
                 </section>
                 
                 <MembersSection teamId={team.id} members={members} canManage={canManage} />
+
+                <TrelloImportSection
+                    teamId={team.id}
+                    teamSlug={team.slug}
+                    teamName={team.name}
+                />
             
             </div>
         
