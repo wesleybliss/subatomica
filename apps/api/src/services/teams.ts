@@ -30,7 +30,7 @@ const ensureOwnerMembership = async (teamId: string) => {
     return team.ownerId
 }
 
-const getTeamRole = async (userId: string, teamId: string) => {
+export const getTeamRole = async (userId: string, teamId: string) => {
     const [team] = await db
         .select({ ownerId: teams.ownerId })
         .from(teams)

@@ -156,9 +156,12 @@ export const comments = table('comments', {
     userIdIndex: index('comments_user_id_idx').on(table.userId),
 }))
 
-// Trello OAuth connection (one per user)
+// Trello OAuth connection (one Trello account per team; shared by members)
 export const trelloConnections = table('trelloConnections', {
-    userId: uuid('userId')
+    teamId: uuid('teamId')
+        .notNull()
+        .references(() => teams.id, { onDelete: 'cascade' }),
+    connectedByUserId: uuid('connectedByUserId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
     trelloMemberId: text('trelloMemberId').notNull(),
@@ -168,8 +171,9 @@ export const trelloConnections = table('trelloConnections', {
     accessTokenExpiresAt: timestamp('accessTokenExpiresAt').notNull(),
     scope: text('scope'),
 }, table => ({
-    userIdUnique: uniqueIndex('trello_connections_user_id_unique').on(table.userId),
+    teamIdUnique: uniqueIndex('trello_connections_team_id_unique').on(table.teamId),
     memberIdIndex: index('trello_connections_member_id_idx').on(table.trelloMemberId),
+    connectedByUserIdIndex: index('trello_connections_connected_by_user_id_idx').on(table.connectedByUserId),
 }))
 
 // Short-lived PKCE state for OAuth authorize → callback
@@ -177,11 +181,16 @@ export const trelloOauthStates = table('trelloOauthStates', {
     userId: uuid('userId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
+    teamId: uuid('teamId')
+        .notNull()
+        .references(() => teams.id, { onDelete: 'cascade' }),
     codeVerifier: text('codeVerifier').notNull(),
+    /** Team slug used for post-OAuth redirect (not the uuid). */
     returnTeamId: text('returnTeamId'),
     expiresAt: timestamp('expiresAt').notNull(),
 }, table => ({
     userIdIndex: index('trello_oauth_states_user_id_idx').on(table.userId),
+    teamIdIndex: index('trello_oauth_states_team_id_idx').on(table.teamId),
 }))
 
 // Trello workspace (org) ↔ team. Use trelloWorkspaceId = 'personal' for boards with no org.
@@ -195,7 +204,7 @@ export const trelloWorkspaceLinks = table('trelloWorkspaceLinks', {
         .notNull()
         .references(() => teams.id, { onDelete: 'cascade' }),
 }, table => ({
-    workspaceUnique: uniqueIndex('trello_workspace_links_workspace_unique').on(table.userId, table.trelloWorkspaceId),
+    workspaceUnique: uniqueIndex('trello_workspace_links_workspace_unique').on(table.teamId, table.trelloWorkspaceId),
     teamIdIndex: index('trello_workspace_links_team_id_idx').on(table.teamId),
 }))
 

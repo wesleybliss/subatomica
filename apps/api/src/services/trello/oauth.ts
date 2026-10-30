@@ -8,6 +8,7 @@ import Logger from '@repo/shared/utils/logger'
 import { and, eq, lt } from 'drizzle-orm'
 
 import { db } from '@/db/client'
+import { getTeamRole } from '@/services/teams'
 import { getMe } from '@/services/trello/client'
 import {
     getTrelloOAuthConfig,
@@ -34,18 +35,34 @@ const createPkcePair = () => {
     return { codeVerifier, codeChallenge }
 }
 
-export async function getConnectionStatus(userId: string) {
+async function assertTeamMember(userId: string, teamId: string) {
+    const role = await getTeamRole(userId, teamId)
+    if (!role)
+        throw new Error('Forbidden: Not a team member')
+    return role
+}
+
+async function assertCanManageTrello(userId: string, teamId: string) {
+    const role = await assertTeamMember(userId, teamId)
+    if (role !== 'owner' && role !== 'admin')
+        throw new Error('Forbidden: Only owners and admins can manage the Trello connection')
+    return role
+}
+
+export async function getConnectionStatus(userId: string, teamId: string) {
+    await assertTeamMember(userId, teamId)
     const configured = isTrelloConfigured()
     
     const [connection] = await db
         .select({
             id: trelloConnections.id,
+            teamId: trelloConnections.teamId,
             trelloMemberId: trelloConnections.trelloMemberId,
             trelloUsername: trelloConnections.trelloUsername,
             createdAt: trelloConnections.createdAt,
         })
         .from(trelloConnections)
-        .where(eq(trelloConnections.userId, userId))
+        .where(eq(trelloConnections.teamId, teamId))
         .limit(1)
     
     return {
@@ -55,7 +72,8 @@ export async function getConnectionStatus(userId: string) {
     }
 }
 
-export async function startAuthorize(userId: string, returnTeamSlug?: string) {
+export async function startAuthorize(userId: string, teamId: string, returnTeamSlug?: string) {
+    await assertCanManageTrello(userId, teamId)
     const { clientId, redirectUri } = getTrelloOAuthConfig()
     const { codeVerifier, codeChallenge } = createPkcePair()
     const stateId = randomBytes(16).toString('hex')
@@ -63,11 +81,15 @@ export async function startAuthorize(userId: string, returnTeamSlug?: string) {
     
     await db
         .delete(trelloOauthStates)
-        .where(eq(trelloOauthStates.userId, userId))
+        .where(and(
+            eq(trelloOauthStates.userId, userId),
+            eq(trelloOauthStates.teamId, teamId),
+        ))
     
     await db.insert(trelloOauthStates).values({
         id: stateId,
         userId,
+        teamId,
         codeVerifier,
         returnTeamId: returnTeamSlug || null,
         expiresAt,
@@ -104,6 +126,9 @@ export async function handleOAuthCallback(code: string, state: string) {
         throw new Error('OAuth state expired')
     }
     
+    const teamId = oauthState.teamId
+    const userId = oauthState.userId
+    
     const tokenResponse = await fetch(TRELLO_TOKEN_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json; charset=utf-8' },
@@ -132,13 +157,13 @@ export async function handleOAuthCallback(code: string, state: string) {
     
     const expiresAt = new Date(Date.now() + tokens.expires_in * 1000).toISOString()
     
-    // Temporarily upsert with placeholder member id, then fetch /me
     await db
         .delete(trelloConnections)
-        .where(eq(trelloConnections.userId, oauthState.userId))
+        .where(eq(trelloConnections.teamId, teamId))
     
     await db.insert(trelloConnections).values({
-        userId: oauthState.userId,
+        teamId,
+        connectedByUserId: userId,
         trelloMemberId: 'pending',
         trelloUsername: null,
         accessToken: tokens.access_token,
@@ -147,7 +172,7 @@ export async function handleOAuthCallback(code: string, state: string) {
         scope: tokens.scope ?? TRELLO_OAUTH_SCOPES,
     })
     
-    const me = await getMe(oauthState.userId)
+    const me = await getMe(teamId)
     
     await db
         .update(trelloConnections)
@@ -156,11 +181,10 @@ export async function handleOAuthCallback(code: string, state: string) {
             trelloUsername: me.username,
             updatedAt: new Date().toISOString(),
         })
-        .where(eq(trelloConnections.userId, oauthState.userId))
+        .where(eq(trelloConnections.teamId, teamId))
     
     await db.delete(trelloOauthStates).where(eq(trelloOauthStates.id, state))
     
-    // Cleanup expired states opportunistically
     await db
         .delete(trelloOauthStates)
         .where(lt(trelloOauthStates.expiresAt, new Date().toISOString()))
@@ -171,33 +195,34 @@ export async function handleOAuthCallback(code: string, state: string) {
     
     return {
         redirectUrl: `${frontendOrigin}${returnPath}`,
-        userId: oauthState.userId,
+        userId,
+        teamId,
     }
 }
 
-export async function disconnectTrello(userId: string) {
+export async function disconnectTrello(userId: string, teamId: string) {
+    await assertCanManageTrello(userId, teamId)
+    
     await db
         .delete(trelloConnections)
-        .where(eq(trelloConnections.userId, userId))
+        .where(eq(trelloConnections.teamId, teamId))
     
     await db
         .delete(trelloOauthStates)
-        .where(eq(trelloOauthStates.userId, userId))
+        .where(eq(trelloOauthStates.teamId, teamId))
     
     return { ok: true }
 }
 
-export async function assertConnected(userId: string) {
+export async function assertConnected(teamId: string) {
     const [connection] = await db
-        .select({ id: trelloConnections.id })
+        .select({ id: trelloConnections.id, teamId: trelloConnections.teamId })
         .from(trelloConnections)
-        .where(and(
-            eq(trelloConnections.userId, userId),
-        ))
+        .where(eq(trelloConnections.teamId, teamId))
         .limit(1)
     
     if (!connection)
-        throw new Error('NotFound: Trello is not connected')
+        throw new Error('NotFound: Trello is not connected for this team')
     
     return connection
 }

@@ -4,6 +4,7 @@ import { request } from '@/lib/api/client'
 import { trelloCatalogQueryKey, trelloStatusQueryKey } from '@/lib/queries/trello.queries'
 
 export type TrelloImportBody = {
+    teamId: string
     workspaceMappings: Array<{
         trelloWorkspaceId: string
         trelloWorkspaceName: string
@@ -21,28 +22,31 @@ export type TrelloImportBody = {
 
 export function useTrelloAuthorizeMutation() {
     return useMutation({
-        mutationFn: async (returnTeamSlug?: string) => {
-            const qs = returnTeamSlug
-                ? `?returnTeamSlug=${encodeURIComponent(returnTeamSlug)}`
-                : ''
-            return request<{ url: string }>(`/integrations/trello/authorize${qs}`)
+        mutationFn: async ({ teamId, returnTeamSlug }: { teamId: string, returnTeamSlug?: string }) => {
+            const params = new URLSearchParams({ teamId })
+            if (returnTeamSlug)
+                params.set('returnTeamSlug', returnTeamSlug)
+            return request<{ url: string }>(`/integrations/trello/authorize?${params}`)
         },
     })
 }
 
-export function useTrelloDisconnectMutation() {
+export function useTrelloDisconnectMutation(teamId: string) {
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: async () =>
-            request<{ ok: boolean }>('/integrations/trello/connection', { method: 'DELETE' }),
+            request<{ ok: boolean }>(
+                `/integrations/trello/connection?teamId=${encodeURIComponent(teamId)}`,
+                { method: 'DELETE' },
+            ),
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: trelloStatusQueryKey })
-            await queryClient.invalidateQueries({ queryKey: trelloCatalogQueryKey })
+            await queryClient.invalidateQueries({ queryKey: trelloStatusQueryKey(teamId) })
+            await queryClient.invalidateQueries({ queryKey: trelloCatalogQueryKey(teamId) })
         },
     })
 }
 
-export function useTrelloImportMutation() {
+export function useTrelloImportMutation(teamId: string) {
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: async (body: TrelloImportBody) =>
@@ -51,14 +55,14 @@ export function useTrelloImportMutation() {
                 body: JSON.stringify(body),
             }),
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: trelloCatalogQueryKey })
+            await queryClient.invalidateQueries({ queryKey: trelloCatalogQueryKey(teamId) })
             await queryClient.invalidateQueries({ queryKey: ['projects'] })
             await queryClient.invalidateQueries({ queryKey: ['teams'] })
         },
     })
 }
 
-export function useTrelloSyncMutation() {
+export function useTrelloSyncMutation(teamId: string) {
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: async ({ boardLinkId, syncEnabled }: { boardLinkId: string, syncEnabled: boolean }) =>
@@ -67,12 +71,12 @@ export function useTrelloSyncMutation() {
                 body: JSON.stringify({ syncEnabled }),
             }),
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: trelloCatalogQueryKey })
+            await queryClient.invalidateQueries({ queryKey: trelloCatalogQueryKey(teamId) })
         },
     })
 }
 
-export function useTrelloResyncMutation() {
+export function useTrelloResyncMutation(teamId: string) {
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: async (boardLinkId: string) =>
@@ -80,7 +84,7 @@ export function useTrelloResyncMutation() {
                 method: 'POST',
             }),
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: trelloCatalogQueryKey })
+            await queryClient.invalidateQueries({ queryKey: trelloCatalogQueryKey(teamId) })
             await queryClient.invalidateQueries({ queryKey: ['tasks'] })
         },
     })

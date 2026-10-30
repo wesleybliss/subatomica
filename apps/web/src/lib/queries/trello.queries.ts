@@ -7,6 +7,7 @@ export type TrelloStatus = {
     connected: boolean
     connection: {
         id: string
+        teamId: string
         trelloMemberId: string
         trelloUsername: string | null
         createdAt: string
@@ -56,20 +57,25 @@ export type TrelloCatalog = {
     }>
 }
 
-export const trelloStatusQueryKey = ['trello', 'status'] as const
-export const trelloCatalogQueryKey = ['trello', 'catalog'] as const
+export const trelloStatusQueryKey = (teamId: string) => ['trello', 'status', teamId] as const
+export const trelloCatalogQueryKey = (teamId: string) => ['trello', 'catalog', teamId] as const
 
-export function useTrelloStatusQuery() {
+export function useTrelloStatusQuery(teamId: string) {
     return useQuery({
-        queryKey: trelloStatusQueryKey,
-        queryFn: () => request<TrelloStatus>('/integrations/trello/status'),
+        queryKey: trelloStatusQueryKey(teamId),
+        queryFn: () => request<TrelloStatus>(
+            `/integrations/trello/status?teamId=${encodeURIComponent(teamId)}`,
+        ),
+        enabled: Boolean(teamId),
     })
 }
 
-export function useTrelloCatalogQuery(enabled: boolean) {
+export function useTrelloCatalogQuery(teamId: string, enabled: boolean) {
     return useQuery({
-        queryKey: trelloCatalogQueryKey,
-        queryFn: () => request<TrelloCatalog>('/integrations/trello/catalog'),
-        enabled,
+        queryKey: trelloCatalogQueryKey(teamId),
+        queryFn: () => request<TrelloCatalog>(
+            `/integrations/trello/catalog?teamId=${encodeURIComponent(teamId)}`,
+        ),
+        enabled: enabled && Boolean(teamId),
     })
 }

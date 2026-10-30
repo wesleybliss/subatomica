@@ -49,5 +49,7 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 ## Trello import
 - Plan: task/trello-import-plan.md
 - OAuth 2.0 confidential + PKCE; scopes read member/board/org + offline_access
+- Connection is **per-team** (`trelloConnections.teamId` unique); members share tokens. Owners/admins connect/disconnect.
 - Webhooks = near-realtime Trello→us; callback must be public HTTPS (HEAD check)
 - Env: TRELLO_OAUTH_CLIENT_ID/SECRET; optional TRELLO_WEBHOOK_BASE_URL (else BETTER_AUTH_URL)
+- After schema change: `pnpm --filter @repo/api db:push` (re-link Trello; old per-user rows won't migrate)
