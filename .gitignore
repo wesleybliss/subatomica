@@ -7,6 +7,7 @@ node_modules
 /.next/
 /apps/web/.next
 /out/
+dist
 
 # production
 /build
@@ -32,3 +33,4 @@ next-env.d.ts
 /*.png
 /*.jpggg
 .aider*
+.env*
