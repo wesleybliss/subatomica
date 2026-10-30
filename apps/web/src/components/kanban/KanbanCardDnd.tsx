@@ -57,7 +57,7 @@ export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps)
             <div
                 ref={cardRef}
                 className={cn(
-                    'bg-card border border-border rounded-lg p-3 cursor-move',
+                    'bg-card border border-border rounded-lg p-3 cursor-move min-w-0 overflow-hidden',
                     'transition-all hover:shadow-md hover:border-primary/50', {
                         'opacity-50': isDragging,
                         'opacity-100': !isDragging,
@@ -77,10 +77,10 @@ export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps)
                         <Flag className="w-3 h-3 text-destructive" />
                     ) : null}
                 </div>
-                <h4 className="text-sm font-medium text-foreground mb-2">
+                <h4 className="text-sm font-medium text-foreground mb-2 break-all">
                     {task.title}
                 </h4>
-                <div className="text-xs text-muted-foreground mb-2">
+                <div className="text-xs text-muted-foreground mb-2 break-all">
                     {convert(task.description, { wordwrap: false }).substring(0, 100)}
                 </div>
                 <div className="flex items-center justify-between mt-3">

@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { useGetProjectQuery } from '@/lib/queries/projects.queries'
+import { useGetTeamMembersQuery } from '@/lib/queries/teams.queries'
 import { ProjectDetailClient } from '@/routes/project/ProjectDetailClient'
 import { useProjectStore, useTaskStore, useTeamStore } from '@/store'
 
@@ -16,7 +17,6 @@ export default function ProjectDetailPage() {
     const projectSlug = params.projectSlug as string
     
     const teams = useTeamStore(s => s.teams)
-    const teamMembers = useTeamStore(s => s.teamMembers)
     const projects = useProjectStore(s => s.projects)
     const tasks = useTaskStore(s => s.tasks)
     
@@ -29,6 +29,7 @@ export default function ProjectDetailPage() {
     const projectId = project?.id
     
     const { isPending, error, data: projectData } = useGetProjectQuery(teamId || '', projectId || '')
+    const { data: teamMembers = [] } = useGetTeamMembersQuery(teamId)
     
     if (!teamSlug) {
         log.w('ProjectDetailPage: no teamSlug')

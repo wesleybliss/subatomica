@@ -262,6 +262,24 @@ export const trelloCardLinks = table('trelloCardLinks', {
     boardLinkIdIndex: index('trello_card_links_board_link_id_idx').on(table.boardLinkId),
 }))
 
+// Trello board member ↔ local user (email assigned by admin; claim on signup)
+export const trelloMemberLinks = table('trelloMemberLinks', {
+    teamId: text('teamId')
+        .notNull()
+        .references(() => teams.id, { onDelete: 'cascade' }),
+    trelloMemberId: text('trelloMemberId').notNull(),
+    trelloUsername: text('trelloUsername'),
+    trelloFullName: text('trelloFullName'),
+    email: text('email'),
+    userId: text('userId')
+        .references(() => users.id, { onDelete: 'set null' }),
+}, table => ({
+    teamMemberUnique: uniqueIndex('trello_member_links_team_member_unique')
+        .on(table.teamId, table.trelloMemberId),
+    teamIdIndex: index('trello_member_links_team_id_idx').on(table.teamId),
+    userIdIndex: index('trello_member_links_user_id_idx').on(table.userId),
+}))
+
 // Type exports
 export type UsersInsert = typeof users.$inferInsert
 
@@ -278,3 +296,4 @@ export type TrelloWorkspaceLink = typeof trelloWorkspaceLinks.$inferSelect
 export type TrelloBoardLink = typeof trelloBoardLinks.$inferSelect
 export type TrelloListLink = typeof trelloListLinks.$inferSelect
 export type TrelloCardLink = typeof trelloCardLinks.$inferSelect
+export type TrelloMemberLink = typeof trelloMemberLinks.$inferSelect

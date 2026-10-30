@@ -7,11 +7,13 @@ import { useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
     useTrelloAuthorizeMutation,
     useTrelloDisconnectMutation,
     useTrelloImportMutation,
+    useTrelloMemberMappingsMutation,
     useTrelloResyncMutation,
     useTrelloSyncMutation,
 } from '@/lib/mutations/trello.mutations'
@@ -19,6 +21,7 @@ import { useGetProjectsQuery } from '@/lib/queries/projects.queries'
 import {
     trelloStatusQueryKey,
     useTrelloCatalogQuery,
+    useTrelloMembersQuery,
     useTrelloStatusQuery,
 } from '@/lib/queries/trello.queries'
 import { useProjectStore } from '@/store'
@@ -47,6 +50,7 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
     const authorize = useTrelloAuthorizeMutation()
     const disconnect = useTrelloDisconnectMutation(teamId)
     const runImport = useTrelloImportMutation(teamId)
+    const saveMappings = useTrelloMemberMappingsMutation(teamId)
     const setSync = useTrelloSyncMutation(teamId)
     const resync = useTrelloResyncMutation(teamId)
     
@@ -54,6 +58,8 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
     const projects = useProjectStore(s => s.projects)
     
     const [boardChoices, setBoardChoices] = useState<Record<string, BoardChoice>>({})
+    const [emailOverrides, setEmailOverrides] = useState<Record<string, string>>({})
+    const [emailsBoardKey, setEmailsBoardKey] = useState('')
     
     const trelloFlag = searchParams.get('trello')
     
@@ -69,29 +75,85 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
         void queryClient.invalidateQueries({ queryKey: trelloStatusQueryKey(teamId) })
     }, [trelloFlag, searchParams, setSearchParams, queryClient, teamId])
     
-    useEffect(() => {
-        if (!catalogQuery.data) return
-        
-        setBoardChoices(prev => {
-            const next = { ...prev }
-            for (const board of catalogQuery.data.boards) {
-                if (next[board.id]) continue
-                next[board.id] = {
-                    selected: false,
-                    mode: board.existingLink ? 'existing' : 'create',
-                    projectId: board.existingLink?.projectId || '',
-                    createProjectName: board.name,
-                    syncEnabled: board.existingLink?.syncEnabled ?? false,
-                }
+    const catalogBoards = catalogQuery.data?.boards
+    
+    const nextBoardChoices = useMemo(() => {
+        if (!catalogBoards)
+            return null
+        const next: Record<string, BoardChoice> = { ...boardChoices }
+        let changed = false
+        for (const board of catalogBoards) {
+            if (next[board.id])
+                continue
+            next[board.id] = {
+                selected: false,
+                mode: board.existingLink ? 'existing' : 'create',
+                projectId: board.existingLink?.projectId || '',
+                createProjectName: board.name,
+                syncEnabled: board.existingLink?.syncEnabled ?? false,
             }
-            return next
-        })
-    }, [catalogQuery.data])
+            changed = true
+        }
+        return changed ? next : null
+    }, [catalogBoards, boardChoices])
+    
+    if (nextBoardChoices)
+        setBoardChoices(nextBoardChoices)
+    
+    const selectedOrLinkedBoardIds = useMemo(() => {
+        if (!catalogQuery.data)
+            return [] as string[]
+        return catalogQuery.data.boards
+            .filter(b => boardChoices[b.id]?.selected || b.existingLink)
+            .map(b => b.id)
+    }, [catalogQuery.data, boardChoices])
+    
+    const membersBoardKey = selectedOrLinkedBoardIds.slice().sort().join(',')
+    
+    const membersQuery = useTrelloMembersQuery(
+        teamId,
+        selectedOrLinkedBoardIds,
+        Boolean(statusQuery.data?.connected) && selectedOrLinkedBoardIds.length > 0,
+    )
+    
+    if (emailsBoardKey !== membersBoardKey) {
+        setEmailsBoardKey(membersBoardKey)
+        setEmailOverrides({})
+    }
+    
+    const memberEmails = useMemo(() => {
+        const next: Record<string, string> = {}
+        for (const member of membersQuery.data?.members ?? []) {
+            next[member.trelloMemberId] = emailOverrides[member.trelloMemberId]
+                ?? member.email
+                ?? member.suggestedEmail
+                ?? ''
+        }
+        return next
+    }, [membersQuery.data, emailOverrides])
     
     const teamProjects = useMemo(
         () => projects.filter(p => p.teamId === teamId),
         [projects, teamId],
     )
+    
+    const buildMemberMappings = () => {
+        if (!membersQuery.data)
+            return []
+        return membersQuery.data.members
+            .map(member => {
+                const email = (memberEmails[member.trelloMemberId] || '').trim()
+                if (!email || !email.includes('@'))
+                    return null
+                return {
+                    trelloMemberId: member.trelloMemberId,
+                    email,
+                    trelloUsername: member.trelloUsername,
+                    trelloFullName: member.trelloFullName,
+                }
+            })
+            .filter((m): m is NonNullable<typeof m> => Boolean(m))
+    }
     
     const handleConnect = async () => {
         try {
@@ -158,7 +220,13 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
         })
         
         try {
-            const result = await runImport.mutateAsync({ teamId, workspaceMappings, boardMappings })
+            const memberMappings = buildMemberMappings()
+            const result = await runImport.mutateAsync({
+                teamId,
+                workspaceMappings,
+                boardMappings,
+                memberMappings,
+            })
             const ok = result.results.filter(r => r.ok).length
             const fail = result.results.length - ok
             if (fail === 0)
@@ -166,9 +234,31 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
             else
                 toast.message(`Imported ${ok}, failed ${fail}`)
             await catalogQuery.refetch()
+            await membersQuery.refetch()
+            setEmailOverrides({})
         }
         catch {
             toast.error('Import failed')
+        }
+    }
+    
+    const handleSaveMappings = async () => {
+        const mappings = buildMemberMappings()
+        if (mappings.length === 0) {
+            toast.error('Enter at least one teammate email')
+            return
+        }
+        try {
+            const result = await saveMappings.mutateAsync(mappings)
+            toast.success(
+                `Saved ${result.linked} teammate${result.linked === 1 ? '' : 's'}`
+                + (result.created ? ` (${result.created} new)` : ''),
+            )
+            await membersQuery.refetch()
+            setEmailOverrides({})
+        }
+        catch {
+            toast.error('Could not save teammate emails')
         }
     }
     
@@ -330,16 +420,20 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
                                             {(choice?.selected || linked) ? (
                                                 <div className="ml-7 flex flex-wrap gap-4 items-center">
                                                     <select
-                                                        className="flex h-9 w-full sm:w-56 rounded-md border border-input bg-transparent px-3 text-sm"
+                                                        className={[
+                                                            'flex h-9 w-full sm:w-56 rounded-md',
+                                                            'border border-input bg-transparent px-3 text-sm',
+                                                        ].join(' ')}
                                                         value={projectValue}
                                                         onChange={e => {
                                                             const value = e.target.value
+                                                            const isCreate = value === CREATE_VALUE
                                                             setBoardChoices(prev => ({
                                                                 ...prev,
                                                                 [board.id]: {
                                                                     ...prev[board.id],
-                                                                    mode: value === CREATE_VALUE ? 'create' : 'existing',
-                                                                    projectId: value === CREATE_VALUE ? '' : value,
+                                                                    mode: isCreate ? 'create' : 'existing',
+                                                                    projectId: isCreate ? '' : value,
                                                                 },
                                                             }))
                                                         }}>
@@ -392,12 +486,98 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
                             </div>
                         </div>
                         
+                        {selectedOrLinkedBoardIds.length > 0 ? (
+                            <div className="space-y-4">
+                                <div>
+                                    <h3 className="text-sm font-medium">3. Map teammates</h3>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        Assign emails to Trello members. They appear as teammates now;
+                                        when they sign up with that email they claim the account.
+                                    </p>
+                                </div>
+                                {membersQuery.isLoading ? (
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        Loading board members…
+                                    </div>
+                                ) : membersQuery.isError ? (
+                                    <p className="text-sm text-destructive">
+                                        Could not load Trello members.
+                                    </p>
+                                ) : (membersQuery.data?.members.length ?? 0) === 0 ? (
+                                    <p className="text-sm text-muted-foreground">
+                                        No members found on the selected boards.
+                                    </p>
+                                ) : (
+                                    <div className="divide-y divide-border rounded-lg border">
+                                        {membersQuery.data!.members.map(member => {
+                                            const label = member.trelloFullName
+                                                || member.trelloUsername
+                                                || member.trelloMemberId
+                                            const status = member.claimed
+                                                ? 'Active'
+                                                : member.userId
+                                                    ? 'Pending claim'
+                                                    : 'Unmapped'
+                                            return (
+                                                <div
+                                                    key={member.trelloMemberId}
+                                                    className="flex flex-wrap items-center gap-3 p-4">
+                                                    <div className="min-w-[10rem] flex-1">
+                                                        <div className="font-medium text-sm">
+                                                            {label}
+                                                        </div>
+                                                        <div className="text-xs text-muted-foreground">
+                                                            {member.trelloUsername
+                                                                ? `@${member.trelloUsername}`
+                                                                : member.trelloMemberId}
+                                                            {' · '}
+                                                            {status}
+                                                        </div>
+                                                    </div>
+                                                    <Input
+                                                        type="email"
+                                                        className="h-9 w-full sm:w-64"
+                                                        placeholder="email@company.com"
+                                                        value={memberEmails[member.trelloMemberId] ?? ''}
+                                                        onChange={e => {
+                                                            const value = e.target.value
+                                                            setEmailOverrides(prev => ({
+                                                                ...prev,
+                                                                [member.trelloMemberId]: value,
+                                                            }))
+                                                        }}
+                                                        disabled={member.claimed}
+                                                    />
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                )}
+                                <div className="flex justify-end">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={handleSaveMappings}
+                                        disabled={
+                                            saveMappings.isPending
+                                            || membersQuery.isLoading
+                                        }>
+                                        {saveMappings.isPending ? (
+                                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                        ) : null}
+                                        Save teammate emails
+                                    </Button>
+                                </div>
+                            </div>
+                        ) : null}
+                        
                         <div className="flex justify-end">
                             <Button
                                 onClick={handleImport}
                                 disabled={runImport.isPending}>
                                 {runImport.isPending ? (
-                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    <Loader2 className="h-4 w-4 animate-spin" />
                                 ) : (
                                     <Check className="h-4 w-4 mr-2" />
                                 )}

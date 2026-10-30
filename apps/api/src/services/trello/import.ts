@@ -24,6 +24,7 @@ import {
     deleteWebhook,
     getBoardCards,
     getBoardLists,
+    getBoardMembers,
     listBoards,
     listOrganizations,
     type TrelloBoard,
@@ -34,6 +35,13 @@ import {
     getTrelloOAuthConfig,
     TRELLO_PERSONAL_WORKSPACE_ID,
 } from '@/services/trello/config'
+import {
+    applyMemberMappings,
+    getAssigneeMap,
+    type MemberMappingInput,
+    pickAssigneeId,
+    upsertMemberStubs,
+} from '@/services/trello/members'
 import { assertConnected } from '@/services/trello/oauth'
 
 const log = new Logger('api/trello/import')
@@ -59,6 +67,7 @@ export type BoardMappingInput = {
 export type ImportRequest = {
     workspaceMappings: WorkspaceMappingInput[]
     boardMappings: BoardMappingInput[]
+    memberMappings?: MemberMappingInput[]
 }
 
 const normalizeName = (name: string) =>
@@ -394,6 +403,7 @@ async function syncCardsToTasks(
     cards: TrelloCard[],
     listIdToLaneKey: Map<string, string>,
     fallbackKey: string,
+    assigneeByTrelloId: Map<string, string>,
 ) {
     const existingCardLinks: TrelloCardLink[] = await db
         .select()
@@ -425,6 +435,7 @@ async function syncCardsToTasks(
         ].join('').trim()
         
         const dueDate = card.due || null
+        const assigneeId = pickAssigneeId(card.idMembers, assigneeByTrelloId)
         const existingLink = existingCardLinks.find((l: TrelloCardLink) => l.trelloCardId === card.id)
         
         if (existingLink) {
@@ -435,6 +446,7 @@ async function syncCardsToTasks(
                     description,
                     status,
                     dueDate,
+                    assigneeId,
                     updatedAt: new Date().toISOString(),
                 })
                 .where(eq(tasks.id, existingLink.taskId))
@@ -455,6 +467,7 @@ async function syncCardsToTasks(
                 description,
                 status,
                 dueDate,
+                assigneeId,
                 order: nextOrder,
             })
             .returning()
@@ -548,6 +561,28 @@ export async function runImport(userId: string, teamId: string, request: ImportR
         workspaceTeamById.set(ws.trelloWorkspaceId, resolvedTeamId)
     }
     
+    // Prefetch board members + apply email mappings before card sync
+    const memberMetaById = new Map<string, Awaited<ReturnType<typeof getBoardMembers>>[number]>()
+    for (const mapping of request.boardMappings) {
+        try {
+            const members = await getBoardMembers(teamId, mapping.trelloBoardId)
+            for (const member of members)
+                memberMetaById.set(member.id, member)
+        }
+        catch (err) {
+            log.e('Failed to fetch members for board', mapping.trelloBoardId, err)
+        }
+    }
+    
+    if (memberMetaById.size > 0)
+        await upsertMemberStubs(teamId, [...memberMetaById.values()])
+    
+    if (request.memberMappings?.length) {
+        await applyMemberMappings(teamId, request.memberMappings, memberMetaById)
+    }
+    
+    const assigneeByTrelloId = await getAssigneeMap(teamId)
+    
     const results = []
     
     for (const mapping of request.boardMappings) {
@@ -605,6 +640,7 @@ export async function runImport(userId: string, teamId: string, request: ImportR
                 cards,
                 listIdToLaneKey,
                 fallbackKey,
+                assigneeByTrelloId,
             )
             
             // Webhook registration

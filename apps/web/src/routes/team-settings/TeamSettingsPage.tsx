@@ -5,6 +5,7 @@ import { MembersSection } from '@/components/team-settings/MembersSection'
 import SettingsAccountHeader from '@/components/team-settings/SettingsAccountHeader'
 import { TrelloImportSection } from '@/components/team-settings/TrelloImportSection'
 import { useSession } from '@/lib/auth-client'
+import { useGetTeamMembersQuery } from '@/lib/queries/teams.queries'
 import { useTeamStore } from '@/store'
 
 const avatarUrlFor = (name: string, email: string) =>
@@ -18,7 +19,6 @@ export default function TeamSettingsPage() {
     const teamSlug = params.teamSlug
     
     const teams = useTeamStore(s => s.teams)
-    const members = useTeamStore(s => s.teamMembers)
     
     // @todo !!!!! need to figure this out
     const canManage = true
@@ -26,6 +26,8 @@ export default function TeamSettingsPage() {
     const team = useMemo(() => (
         teams?.find(it => it.slug === teamSlug)
     ), [teams, teamSlug])
+    
+    const { data: members = [] } = useGetTeamMembersQuery(team?.id)
     
     if (!session) return <Navigate to="/sign-in" replace />
     

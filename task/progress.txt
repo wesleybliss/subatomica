@@ -53,3 +53,16 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 - Webhooks = near-realtime Trello→us; callback must be public HTTPS (HEAD check)
 - Env: TRELLO_OAUTH_CLIENT_ID/SECRET; optional TRELLO_WEBHOOK_BASE_URL (else BETTER_AUTH_URL)
 - After schema change: `pnpm --filter @repo/api db:push` (re-link Trello; old per-user rows won't migrate)
+
+## Kanban / Trello bugs (2026-10-30)
+- Lane scroll: `.no-scrollbar` in scrollbars.css; applied on KanbanTaskLane overflow container
+- Card overflow: `break-all` + `min-w-0 overflow-hidden` on KanbanCardDnd; TipTap editor same
+- Assignee empty: teamMembers store never filled (`setTeamMembers` unused). Fix: useGetTeamMembersQuery writes store + project/task/settings pages fetch via query
+- Trello create teammates BLOCKED: users.email NOT NULL unique; Trello only exposes email for /members/me not board members; assigneeId → users.id. Need user decision before implementing.
+
+## Trello member claim (2026-10-30)
+- trelloMemberLinks: teamId+trelloMemberId → email/userId
+- Placeholder = users row + teamMembers, no credential accounts row
+- Claim: POST /claim-account (invite + hash via better-auth/crypto) then sign-in
+- Import UI step 3 maps emails; cards get assigneeId from first mapped idMembers
+- hashPassword from better-auth/crypto; credential accountId = user.id
