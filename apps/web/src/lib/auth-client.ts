@@ -10,7 +10,7 @@ const baseURL = API_BASE || (typeof window !== 'undefined' ? window.location.ori
 log.d('lib/auth-client: baseURL:', baseURL || '(unresolved)')
 
 export const authClient = createAuthClient({
-    // Same-origin when API_BASE is empty (Vite proxies /auth → API)
+    // Same-origin when API_BASE is empty (Nitro serves /auth on this host)
     ...(baseURL ? { baseURL } : {}),
     basePath: '/auth',
 })

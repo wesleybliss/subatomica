@@ -38,15 +38,16 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 - Light theme shadow tokens were oversized (y:6 blur:20) which made inputs look 3D; keep shadow-y/blur minimal and prefer shadow-none on inputs.
 - AppSidebar Header/Content/Footer p-1 + NavMain px-1 py-6 caused cramped icons; use default sidebar padding and matched h-14 header rows.
 
-## Auth base URLs (Tailscale / remote)
-- Browser must not call `http://localhost:5000` when the page is opened via Tailscale — that hits the *client* machine.
-- Match flowstate: leave `VITE_BETTER_AUTH_URL` empty → same-origin; Vite proxies `/auth`, `/teams`, etc. to `127.0.0.1:5000`.
-- Set `BETTER_AUTH_URL` to the *public* web origin (e.g. `https://geekom-a7.ide-cherimoya.ts.net:3011`), not the API listen port.
-- `advanced.trustedProxyHeaders: true` + Vite `xfwd: true` so forwarded host/proto are honored.
+## Auth / Nitro (same-origin)
+- Match flowstate: Vite + `nitro()` plugin; `server/` mounts Hono via server entry for API prefixes; SPA gets the rest.
+- Leave `VITE_BETTER_AUTH_URL` empty → same-origin `/auth`. No Vite proxy / vercel.json SPA rewrite.
+- `BETTER_AUTH_URL` = public web origin (e.g. `https://subatomica.apps.gammagamma.co` or Tailscale `:3011`).
+- On Vercel: `VERCEL=1` → nitro preset `vercel`, output `.vercel/output`. Include prod domain in `BETTER_AUTH_TRUSTED_ORIGINS`.
+- `@/` alias: web vs api via importer path (`aliases.ts`); server uses `@api/`.
+- Standalone `pnpm dev:api` still runs Hono on :5000 for scripts/tests.
 
 ## Trello import
 - Plan: task/trello-import-plan.md
 - OAuth 2.0 confidential + PKCE; scopes read member/board/org + offline_access
 - Webhooks = near-realtime Trello→us; callback must be public HTTPS (HEAD check)
 - Env: TRELLO_OAUTH_CLIENT_ID/SECRET; optional TRELLO_WEBHOOK_BASE_URL (else BETTER_AUTH_URL)
-- Vite proxy includes /integrations
