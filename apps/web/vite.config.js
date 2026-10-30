@@ -40,6 +40,7 @@ const apiProxyPaths = [
     '/projects',
     '/lanes',
     '/tasks',
+    '/integrations',
     '/health',
     '/openapi.json',
     '/docs',

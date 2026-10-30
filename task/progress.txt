@@ -43,3 +43,10 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 - Match flowstate: leave `VITE_BETTER_AUTH_URL` empty → same-origin; Vite proxies `/auth`, `/teams`, etc. to `127.0.0.1:5000`.
 - Set `BETTER_AUTH_URL` to the *public* web origin (e.g. `https://geekom-a7.ide-cherimoya.ts.net:3011`), not the API listen port.
 - `advanced.trustedProxyHeaders: true` + Vite `xfwd: true` so forwarded host/proto are honored.
+
+## Trello import
+- Plan: task/trello-import-plan.md
+- OAuth 2.0 confidential + PKCE; scopes read member/board/org + offline_access
+- Webhooks = near-realtime Trello→us; callback must be public HTTPS (HEAD check)
+- Env: TRELLO_OAUTH_CLIENT_ID/SECRET; optional TRELLO_WEBHOOK_BASE_URL (else BETTER_AUTH_URL)
+- Vite proxy includes /integrations

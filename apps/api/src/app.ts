@@ -16,6 +16,7 @@ import lanesRoutes from '@/routes/lanes'
 import projectsRoutes from '@/routes/projects'
 import tasksRoutes from '@/routes/tasks'
 import teamsRoutes from '@/routes/teams'
+import { trelloProtectedRoutes, trelloPublicRoutes } from '@/routes/trello'
 import { auth as defaultAuth } from '@/services/auth' // BetterAuth instance
 
 import pkg from '../../../package.json' assert { type: 'json' }
@@ -113,6 +114,9 @@ export const createApiServer = (auth = defaultAuth) => {
         
     })
     
+    // Trello OAuth callback + webhooks (no session required)
+    finalApi.route('/integrations/trello', trelloPublicRoutes)
+    
     const protectedRoutes = new OpenAPIHono<ApiAppEnv>().use('*', async (c, next) => {
         const user = c.get('user')
         if (!user) {
@@ -125,6 +129,7 @@ export const createApiServer = (auth = defaultAuth) => {
         .route('/projects', projectsRoutes)
         .route('/lanes', lanesRoutes)
         .route('/tasks', tasksRoutes)
+        .route('/integrations/trello', trelloProtectedRoutes)
     
     const finalApp = finalApi.route('/', protectedRoutes)
     
