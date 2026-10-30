@@ -51,7 +51,9 @@ export const useGetTeamMembersQuery = (teamId: string | undefined) => {
         queryKey: teamMembersQueryKey,
         queryFn: async () => {
             try {
-                return await request<TeamMemberProfile[]>(`/teams/${teamId}/members`)
+                const res = await request<TeamMemberProfile[]>(`/teams/${teamId}/members`)
+                useTeamStore.getState().setTeamMembers(res || [])
+                return res || []
             } catch (e) {
                 log.e('useGetTeamMembersQuery', e)
                 return []

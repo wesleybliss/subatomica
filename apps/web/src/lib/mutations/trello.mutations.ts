@@ -1,7 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { request } from '@/lib/api/client'
-import { trelloCatalogQueryKey, trelloStatusQueryKey } from '@/lib/queries/trello.queries'
+import {
+    trelloCatalogQueryKey,
+    trelloStatusQueryKey,
+} from '@/lib/queries/trello.queries'
+
+export type TrelloMemberMapping = {
+    trelloMemberId: string
+    email: string
+    trelloUsername?: string | null
+    trelloFullName?: string | null
+}
 
 export type TrelloImportBody = {
     teamId: string
@@ -18,6 +28,7 @@ export type TrelloImportBody = {
         createProjectName?: string
         syncEnabled?: boolean
     }>
+    memberMappings?: TrelloMemberMapping[]
 }
 
 export function useTrelloAuthorizeMutation() {
@@ -56,8 +67,28 @@ export function useTrelloImportMutation(teamId: string) {
             }),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: trelloCatalogQueryKey(teamId) })
+            await queryClient.invalidateQueries({ queryKey: ['trello', 'members', teamId] })
             await queryClient.invalidateQueries({ queryKey: ['projects'] })
             await queryClient.invalidateQueries({ queryKey: ['teams'] })
+            await queryClient.invalidateQueries({ queryKey: ['teamMembers'] })
+        },
+    })
+}
+
+export function useTrelloMemberMappingsMutation(teamId: string) {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async (mappings: TrelloMemberMapping[]) =>
+            request<{ created: number, linked: number }>(
+                '/integrations/trello/member-mappings',
+                {
+                    method: 'POST',
+                    body: JSON.stringify({ teamId, mappings }),
+                },
+            ),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['trello', 'members', teamId] })
+            await queryClient.invalidateQueries({ queryKey: ['teamMembers'] })
         },
     })
 }

@@ -18,6 +18,7 @@ import tasksRoutes from '@/routes/tasks'
 import teamsRoutes from '@/routes/teams'
 import { trelloProtectedRoutes, trelloPublicRoutes } from '@/routes/trello'
 import { auth as defaultAuth } from '@/services/auth' // BetterAuth instance
+import { claimPlaceholderAccount } from '@/services/claim'
 
 import pkg from '../../../package.json' assert { type: 'json' }
 // import { env } from './env'
@@ -112,6 +113,36 @@ export const createApiServer = (auth = defaultAuth) => {
             user,
         })
         
+    })
+    
+    // Claim a Trello-imported placeholder user (no session yet)
+    finalApi.post('/claim-account', async c => {
+        try {
+            const body = await c.req.json() as {
+                email?: string
+                password?: string
+                name?: string
+                inviteCode?: string
+            }
+            const result = await claimPlaceholderAccount({
+                email: body.email || '',
+                password: body.password || '',
+                name: body.name,
+                inviteCode: body.inviteCode || '',
+            })
+            return c.json(result, 200)
+        }
+        catch (err) {
+            const message = err instanceof Error ? err.message : 'Claim failed'
+            if (message.startsWith('BadRequest:'))
+                return c.json({ error: message.replace(/^BadRequest:\s*/, '') }, 400)
+            if (message.startsWith('NotFound:'))
+                return c.json({ error: message.replace(/^NotFound:\s*/, '') }, 404)
+            if (message.startsWith('Conflict:'))
+                return c.json({ error: message.replace(/^Conflict:\s*/, '') }, 409)
+            log.e('claim-account failed', err)
+            return c.json({ error: 'Claim failed' }, 500)
+        }
     })
     
     // Trello OAuth callback + webhooks (no session required)

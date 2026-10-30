@@ -5,6 +5,7 @@ import { ApiAppEnv } from '@/env'
 import { createResponses } from '@/openapi/responses'
 import { getTrelloOAuthConfig } from '@/services/trello/config'
 import * as trelloImport from '@/services/trello/import'
+import * as trelloMembers from '@/services/trello/members'
 import * as trelloOauth from '@/services/trello/oauth'
 import {
     handleWebhookPayload,
@@ -29,6 +30,13 @@ const TeamIdQuery = z.object({
     teamId: z.string().min(1),
 })
 
+const MemberMappingSchema = z.object({
+    trelloMemberId: z.string().min(1),
+    email: z.string().email(),
+    trelloUsername: z.string().nullable().optional(),
+    trelloFullName: z.string().nullable().optional(),
+})
+
 const ImportBodySchema = z.object({
     teamId: z.string().min(1),
     workspaceMappings: z.array(z.object({
@@ -44,7 +52,13 @@ const ImportBodySchema = z.object({
         createProjectName: z.string().optional(),
         syncEnabled: z.boolean().optional(),
     })).min(1),
+    memberMappings: z.array(MemberMappingSchema).optional(),
 }).openapi('TrelloImportRequest')
+
+const MemberMappingsBodySchema = z.object({
+    teamId: z.string().min(1),
+    mappings: z.array(MemberMappingSchema).min(1),
+}).openapi('TrelloMemberMappingsRequest')
 
 const SyncBodySchema = z.object({
     syncEnabled: z.boolean(),
@@ -109,6 +123,43 @@ const catalogRoute = createRoute({
     }),
 })
 
+const membersRoute = createRoute({
+    method: 'get',
+    path: '/members',
+    tags: ['Trello'],
+    security: [{ bearerAuth: [] }],
+    request: {
+        query: z.object({
+            teamId: z.string().min(1),
+            boardIds: z.string().optional(),
+        }),
+    },
+    responses: createResponses(z.any(), {
+        successDescription: 'Trello members for selected or linked boards',
+        errorStatuses: [401, 403, 404, 500],
+    }),
+})
+
+const memberMappingsRoute = createRoute({
+    method: 'post',
+    path: '/member-mappings',
+    tags: ['Trello'],
+    security: [{ bearerAuth: [] }],
+    request: {
+        body: {
+            content: {
+                'application/json': {
+                    schema: MemberMappingsBodySchema,
+                },
+            },
+        },
+    },
+    responses: createResponses(z.any(), {
+        successDescription: 'Saved member email mappings',
+        errorStatuses: [400, 401, 403, 404, 500],
+    }),
+})
+
 const importRoute = createRoute({
     method: 'post',
     path: '/import',
@@ -170,6 +221,10 @@ const mapServiceError = (err: unknown) => {
         return { status: 404 as const, message }
     if (message.startsWith('Forbidden:'))
         return { status: 403 as const, message }
+    if (message.startsWith('BadRequest:'))
+        return { status: 400 as const, message }
+    if (message.startsWith('Conflict:'))
+        return { status: 409 as const, message }
     return { status: 500 as const, message }
 }
 
@@ -223,6 +278,41 @@ protectedRoutes.openapi(catalogRoute, async c => {
     try {
         const catalog = await trelloImport.getCatalog(user.id, teamId)
         return c.json(catalog, 200)
+    }
+    catch (err) {
+        log.e(err)
+        const mapped = mapServiceError(err)
+        return c.json({ error: mapped.message }, mapped.status)
+    }
+})
+
+protectedRoutes.openapi(membersRoute, async c => {
+    const user = c.get('user')!
+    const { teamId, boardIds } = c.req.valid('query')
+    try {
+        const ids = boardIds
+            ? boardIds.split(',').map(s => s.trim()).filter(Boolean)
+            : []
+        const result = await trelloMembers.listTeamMembersForBoards(user.id, teamId, ids)
+        return c.json(result, 200)
+    }
+    catch (err) {
+        log.e(err)
+        const mapped = mapServiceError(err)
+        return c.json({ error: mapped.message }, mapped.status)
+    }
+})
+
+protectedRoutes.openapi(memberMappingsRoute, async c => {
+    const user = c.get('user')!
+    const body = c.req.valid('json')
+    try {
+        const result = await trelloMembers.saveMemberMappings(
+            user.id,
+            body.teamId,
+            body.mappings,
+        )
+        return c.json(result, 200)
     }
     catch (err) {
         log.e(err)

@@ -9,9 +9,28 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { API_BASE } from '@/lib/api-base'
 import { signIn, signUp } from '@/lib/auth-client'
 
 const log = new Logger('web/routes/sign-up/page')
+
+async function claimPlaceholderAccount(params: {
+    email: string
+    password: string
+    name: string
+    inviteCode: string
+}) {
+    const res = await fetch(`${API_BASE}/claim-account`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+    })
+    const body = await res.json().catch(() => ({})) as { error?: string, ok?: boolean }
+    if (!res.ok)
+        throw new Error(body.error || `Claim failed (${res.status})`)
+    return body
+}
 
 export default function SignUpPage() {
     const [name, setName] = useState('')
@@ -22,25 +41,18 @@ export default function SignUpPage() {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     
-    const signInExistingUser = async (email: string, password: string) => {
-        try {
-            const result = await signIn.email({
-                email,
-                password,
-            })
-            
-            if (result?.error) {
-                log.e('handleSubmit (result)', result.error)
-                throw new Error(result.error.message ?? 'Unknown error')
-            }
-            
-            navigate('/')
-        } catch (e) {
-            log.e('handleSubmit', e)
-            setError('Invalid email or password')
-        } finally {
-            setLoading(false)
+    const signInAndGo = async (nextEmail: string, nextPassword: string) => {
+        const result = await signIn.email({
+            email: nextEmail,
+            password: nextPassword,
+        })
+        
+        if (result?.error) {
+            log.e('signIn after claim/signup', result.error)
+            throw new Error(result.error.message ?? 'Sign in failed')
         }
+        
+        navigate('/')
     }
     
     const handleSubmit = async (e: React.FormEvent) => {
@@ -58,8 +70,37 @@ export default function SignUpPage() {
             })
             
             if (result?.error) {
-                if (result.error.code === 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL')
-                    return await signInExistingUser(email, password)
+                if (result.error.code === 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL') {
+                    try {
+                        await claimPlaceholderAccount({
+                            email,
+                            password,
+                            name,
+                            inviteCode,
+                        })
+                        await signInAndGo(email, password)
+                        return
+                    }
+                    catch (claimErr) {
+                        log.e('claimPlaceholderAccount', claimErr)
+                        const message = claimErr instanceof Error
+                            ? claimErr.message
+                            : 'Could not claim account'
+                        // Already-claimed → try normal sign-in with the password they entered
+                        if (/already claimed/i.test(message)) {
+                            try {
+                                await signInAndGo(email, password)
+                                return
+                            }
+                            catch {
+                                setError('An account with this email already exists. Sign in instead.')
+                                return
+                            }
+                        }
+                        setError(message)
+                        return
+                    }
+                }
                 
                 log.e('handleSubmit (result)', result.error)
                 throw new Error(result.error.message ?? 'Unknown error')

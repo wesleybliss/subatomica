@@ -40,6 +40,7 @@ export function TaskDetailForm({ task, teamId, teamMembers, projectId, onSaved, 
                 class: [
                     'min-h-[140px] rounded-md border border-border',
                     'bg-background px-3 py-2 text-sm focus:outline-none',
+                    'break-all overflow-x-hidden',
                 ].join(' '),
             },
         },

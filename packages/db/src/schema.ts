@@ -37,6 +37,7 @@ export const trelloWorkspaceLinks = schema.trelloWorkspaceLinks
 export const trelloBoardLinks = schema.trelloBoardLinks
 export const trelloListLinks = schema.trelloListLinks
 export const trelloCardLinks = schema.trelloCardLinks
+export const trelloMemberLinks = schema.trelloMemberLinks
 
 export type UsersInsert = ActiveSchema['users']['$inferInsert']
 
@@ -53,3 +54,4 @@ export type TrelloWorkspaceLink = ActiveSchema['trelloWorkspaceLinks']['$inferSe
 export type TrelloBoardLink = ActiveSchema['trelloBoardLinks']['$inferSelect']
 export type TrelloListLink = ActiveSchema['trelloListLinks']['$inferSelect']
 export type TrelloCardLink = ActiveSchema['trelloCardLinks']['$inferSelect']
+export type TrelloMemberLink = ActiveSchema['trelloMemberLinks']['$inferSelect']

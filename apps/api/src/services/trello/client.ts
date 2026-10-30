@@ -17,6 +17,7 @@ export type TrelloMember = {
     id: string
     username: string
     fullName?: string
+    email?: string | null
 }
 
 export type TrelloOrganization = {
@@ -51,6 +52,7 @@ export type TrelloCard = {
     due?: string | null
     idList: string
     idBoard: string
+    idMembers?: string[]
     pos?: number
     url?: string
     shortUrl?: string
@@ -147,7 +149,17 @@ async function trelloFetch<T>(teamId: string, path: string, init?: RequestInit):
 }
 
 export async function getMe(teamId: string) {
-    return trelloFetch<TrelloMember>(teamId, '/members/me?fields=id,username,fullName')
+    return trelloFetch<TrelloMember>(
+        teamId,
+        '/members/me?fields=id,username,fullName,email',
+    )
+}
+
+export async function getBoardMembers(teamId: string, boardId: string) {
+    return trelloFetch<TrelloMember[]>(
+        teamId,
+        `/boards/${boardId}/members?fields=id,username,fullName`,
+    )
 }
 
 export async function listOrganizations(teamId: string) {
@@ -174,14 +186,14 @@ export async function getBoardLists(teamId: string, boardId: string) {
 export async function getBoardCards(teamId: string, boardId: string) {
     return trelloFetch<TrelloCard[]>(
         teamId,
-        `/boards/${boardId}/cards?fields=id,name,desc,closed,due,idList,idBoard,pos,url,shortUrl&filter=open`,
+        `/boards/${boardId}/cards?fields=id,name,desc,closed,due,idList,idBoard,idMembers,pos,url,shortUrl&filter=open`,
     )
 }
 
 export async function getCard(teamId: string, cardId: string) {
     return trelloFetch<TrelloCard>(
         teamId,
-        `/cards/${cardId}?fields=id,name,desc,closed,due,idList,idBoard,pos,url,shortUrl`,
+        `/cards/${cardId}?fields=id,name,desc,closed,due,idList,idBoard,idMembers,pos,url,shortUrl`,
     )
 }
 

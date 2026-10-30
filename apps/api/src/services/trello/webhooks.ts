@@ -15,6 +15,7 @@ import { and, eq } from 'drizzle-orm'
 import { db } from '@/db/client'
 import { getCard, getList } from '@/services/trello/client'
 import { getTrelloOAuthConfig } from '@/services/trello/config'
+import { getAssigneeMap, pickAssigneeId } from '@/services/trello/members'
 
 const log = new Logger('api/trello/webhooks')
 
@@ -149,6 +150,9 @@ async function upsertCardFromWebhook(
         card.shortUrl || card.url ? `\n\n[Open in Trello](${card.shortUrl || card.url})` : '',
     ].join('').trim()
     
+    const assigneeByTrelloId = await getAssigneeMap(teamId)
+    const assigneeId = pickAssigneeId(card.idMembers, assigneeByTrelloId)
+    
     const [existingLink] = await db
         .select()
         .from(trelloCardLinks)
@@ -163,6 +167,7 @@ async function upsertCardFromWebhook(
                 description,
                 status,
                 dueDate: card.due || null,
+                assigneeId,
                 updatedAt: new Date().toISOString(),
             })
             .where(eq(tasks.id, existingLink.taskId))
@@ -187,6 +192,7 @@ async function upsertCardFromWebhook(
             description,
             status,
             dueDate: card.due || null,
+            assigneeId,
             order: 0,
         })
         .returning()
