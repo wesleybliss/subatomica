@@ -71,7 +71,7 @@ export default function TeamSettingsPage() {
                 </section>
                 
                 <MembersSection teamId={team.id} members={members} canManage={canManage} />
-
+                
                 <TrelloImportSection
                     teamId={team.id}
                     teamSlug={team.slug}

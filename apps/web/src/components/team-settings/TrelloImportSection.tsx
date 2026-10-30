@@ -55,15 +55,15 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
     const runImport = useTrelloImportMutation()
     const setSync = useTrelloSyncMutation()
     const resync = useTrelloResyncMutation()
-
+    
     useGetProjectsQuery(teamId)
     const projects = useProjectStore(s => s.projects)
-
+    
     const [workspaceChoices, setWorkspaceChoices] = useState<Record<string, WorkspaceChoice>>({})
     const [boardChoices, setBoardChoices] = useState<Record<string, BoardChoice>>({})
-
+    
     const trelloFlag = searchParams.get('trello')
-
+    
     useEffect(() => {
         if (!trelloFlag) return
         if (trelloFlag === 'connected')
@@ -75,10 +75,10 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
         setSearchParams(next, { replace: true })
         void queryClient.invalidateQueries({ queryKey: trelloStatusQueryKey })
     }, [trelloFlag, searchParams, setSearchParams, queryClient])
-
+    
     useEffect(() => {
         if (!catalogQuery.data) return
-
+        
         setWorkspaceChoices(prev => {
             const next = { ...prev }
             for (const ws of catalogQuery.data.workspaces) {
@@ -94,7 +94,7 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
             }
             return next
         })
-
+        
         setBoardChoices(prev => {
             const next = { ...prev }
             for (const board of catalogQuery.data.boards) {
@@ -110,12 +110,12 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
             return next
         })
     }, [catalogQuery.data, teamId])
-
+    
     const teamProjects = useMemo(
         () => projects.filter(p => p.teamId === teamId),
         [projects, teamId],
     )
-
+    
     const handleConnect = async () => {
         try {
             const { url } = await authorize.mutateAsync(teamSlug)
@@ -125,7 +125,7 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
             toast.error('Could not start Trello authorization')
         }
     }
-
+    
     const handleDisconnect = async () => {
         try {
             await disconnect.mutateAsync()
@@ -135,23 +135,23 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
             toast.error('Could not disconnect Trello')
         }
     }
-
+    
     const handleImport = async () => {
         if (!catalogQuery.data) return
-
+        
         const selectedBoards = catalogQuery.data.boards.filter(
             b => boardChoices[b.id]?.selected,
         )
-
+        
         if (selectedBoards.length === 0) {
             toast.error('Select at least one board to import')
             return
         }
-
+        
         const neededWorkspaceIds = new Set(
             selectedBoards.map(b => b.trelloWorkspaceId),
         )
-
+        
         const workspaceMappings = catalogQuery.data.workspaces
             .filter(ws => neededWorkspaceIds.has(ws.id))
             .map(ws => {
@@ -169,14 +169,14 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
                     teamId: choice?.teamId || teamId,
                 }
             })
-
+        
         const boardMappings = selectedBoards.map(board => {
             const choice = boardChoices[board.id]
             const wsChoice = workspaceChoices[board.trelloWorkspaceId]
             const resolvedTeamId = wsChoice?.mode === 'create'
                 ? undefined
                 : (wsChoice?.teamId || teamId)
-
+            
             if (choice?.mode === 'existing' && choice.projectId) {
                 return {
                     trelloBoardId: board.id,
@@ -185,7 +185,7 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
                     syncEnabled: choice.syncEnabled,
                 }
             }
-
+            
             return {
                 trelloBoardId: board.id,
                 teamId: resolvedTeamId,
@@ -193,7 +193,7 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
                 syncEnabled: choice?.syncEnabled ?? false,
             }
         })
-
+        
         try {
             const result = await runImport.mutateAsync({ workspaceMappings, boardMappings })
             const ok = result.results.filter(r => r.ok).length
@@ -208,10 +208,10 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
             toast.error('Import failed')
         }
     }
-
+    
     const status = statusQuery.data
     const catalog = catalogQuery.data
-
+    
     return (
         <section className="rounded-2xl border border-neutral-200 shadow-sm">
             <div className="border-b border-neutral-100 px-6 py-4 flex items-center justify-between gap-4">
@@ -235,7 +235,7 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
                     </Button>
                 ) : null}
             </div>
-
+            
             <div className="px-6 py-6 space-y-6">
                 {statusQuery.isLoading ? (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -280,7 +280,7 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
                                 @{status.connection?.trelloUsername || status.connection?.trelloMemberId}
                             </span>
                         </div>
-
+                        
                         <div className="space-y-4">
                             <h3 className="text-sm font-medium">1. Map workspaces → teams</h3>
                             <div className="divide-y divide-border rounded-lg border">
@@ -333,7 +333,7 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
                                 })}
                             </div>
                         </div>
-
+                        
                         <div className="space-y-4">
                             <h3 className="text-sm font-medium">2. Choose boards → projects</h3>
                             <div className="divide-y divide-border rounded-lg border">
@@ -393,7 +393,7 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
                                                     </Button>
                                                 ) : null}
                                             </div>
-
+                                            
                                             {(choice?.selected || linked) ? (
                                                 <div className="ml-7 flex flex-wrap gap-4 items-center">
                                                     <select
@@ -458,7 +458,7 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
                                 })}
                             </div>
                         </div>
-
+                        
                         <div className="flex justify-end">
                             <Button
                                 onClick={handleImport}

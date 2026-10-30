@@ -34,6 +34,8 @@ export default tseslint.config(
     {
         ignores: [
             'dist',
+            '.vercel/**',
+            '.output/**',
             'apps/web/src/components/ui/**',
             'apps/web/src/components/charts/**',
             'apps/mobile/**',

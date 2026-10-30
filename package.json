@@ -8,17 +8,21 @@
         "packages/*"
     ],
     "scripts": {
-        "dev:web": "pnpm --filter web dev",
-        "dev:api": "pnpm --filter api dev",
-        "dev": "pnpm -r dev",
-        "build": "pnpm -r build",
+        "dev": "pnpm --filter @repo/web dev",
+        "dev:web": "pnpm --filter @repo/web dev",
+        "dev:api": "pnpm --filter @repo/api dev",
+        "build": "pnpm --filter @repo/web build",
+        "preview": "pnpm --filter @repo/web preview",
         "check": "tsc -b --noEmit",
         "lint": "eslint . --fix --cache --cache-location node_modules/.cache/eslint/.eslintcache",
         "validate": "pnpm check && pnpm lint",
-        "test:web": "pnpm --filter web test",
-        "test:api": "pnpm --filter api test",
+        "test:web": "pnpm --filter @repo/web test",
+        "test:api": "pnpm --filter @repo/api test",
         "test": "pnpm -r test",
         "update-shared": "pnpm -r update-shared"
+    },
+    "dependencies": {
+        "nitro": "3.0.260610-beta"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.2",
