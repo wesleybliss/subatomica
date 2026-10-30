@@ -2,6 +2,7 @@ import { DebugToolsMode } from '@repo/shared/types'
 import { Bug, Expand, Minimize2 } from 'lucide-react'
 
 import AblyDebugPanel from '@/components/debug/AblyDebugPanel'
+import KanbanDebugPanel from '@/components/debug/KanbanDebugPanel'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { DebugPanelSection } from '@/store/debug'
@@ -10,6 +11,7 @@ import useDebugToolsViewModel from './DebugToolsViewModel'
 
 const NAV_ITEMS: { id: DebugPanelSection; label: string }[] = [
     { id: 'ably', label: 'Ably' },
+    { id: 'kanban', label: 'Kanban' },
 ]
 
 const panelClasses = 'top-3 right-3 bottom-3 flex w-[min(38rem,92vw)] flex-col' +
@@ -102,6 +104,7 @@ const DebugTools = () => {
                         
                         <div className="min-h-0 min-w-0 flex-1 bg-slate-50">
                             {vm.debugPanelSection === 'ably' && <AblyDebugPanel />}
+                            {vm.debugPanelSection === 'kanban' && <KanbanDebugPanel />}
                         </div>
                     </div>
                 </>

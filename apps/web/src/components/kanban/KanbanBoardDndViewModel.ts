@@ -1,10 +1,9 @@
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { Task, TaskLane, TaskStatus } from '@repo/shared/types'
-import { DropIndicatorData } from '@repo/shared/types'
 import Logger from '@repo/shared/utils/logger'
 import { generateSlug } from '@repo/shared/utils/slugs'
 import { useQueryClient } from '@tanstack/react-query'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { v7 as uuidv7 } from 'uuid'
 
 import { normalizeLaneHexForStorage } from '@/lib/constants/lane-colors.constants'
@@ -16,7 +15,7 @@ import {
 import { useCreateTaskMutation, useUpdateTaskOrderMutation } from '@/lib/mutations/tasks.mutations'
 import { useLaneStore } from '@/store'
 
-import { type ColumnDropData, isColumnDropData, isTaskDragData, isTaskDropData,type TaskDropData } from './dragTypes'
+import { type ColumnDropData, isColumnDropData, isTaskDragData, isTaskDropData, type TaskDropData } from './dragTypes'
 
 const log = new Logger('web/components/kanban/KanbanBoardDndViewModel')
 
@@ -35,8 +34,6 @@ const KanbanBoardDndViewModel = (
     const [localLanes, setLocalLanes] = useState<TaskLane[]>(lanes)
     const [isCreating, setIsCreating] = useState<string | null>(null)
     const [isAddingLane, setIsAddingLane] = useState(false)
-    const [dropIndicator, setDropIndicator] = useState<DropIndicatorData | null>(null)
-    const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null)
     const [editingLaneId, setEditingLaneId] = useState<string | null>(null)
     const [editingLaneName, setEditingLaneName] = useState('')
     const [savingLaneId, setSavingLaneId] = useState<string | null>(null)
@@ -109,32 +106,24 @@ const KanbanBoardDndViewModel = (
         onRefresh,
     )
     
-    const tasksByStatus = useMemo<Record<string, Task[]>>(() => (
-        
-        localTasks
-            .sort((a, b) => a.order - b.order)
-            .reduce((acc, task) => {
-                
-                // Sanity check warning if there are tasks that don't have a corresponding lane
-                // This should never happen, but it's an edge case if a lane is renamed, but
-                // it's key or the tasks' keys don't get properly updated too
-                // @todo put these tasks in an "Unorganized" lane so the user can at least organize them
-                if (!localLanes.some(it => it.key === task.status))
-                    log.w('Lane not found for task status:', task.status,
-                        'in lanes', localLanes.map(it => it.key))
-                
-                if (!acc[task.status])
-                    acc[task.status] = []
-                
-                // log.d(task.title, '->', task.status)
-                
-                acc[task.status].push(task)
-                
-                return acc
-                
-            }, {} as Record<string, Task[]>)
-        
-    ), [localLanes, localTasks])
+    const tasksByStatus = useMemo<Record<string, Task[]>>(() => {
+        const sorted = [...localTasks].sort((a, b) => a.order - b.order)
+        return sorted.reduce((acc, task) => {
+            // Sanity check warning if there are tasks that don't have a corresponding lane
+            // This should never happen, but it's an edge case if a lane is renamed, but
+            // it's key or the tasks' keys don't get properly updated too
+            // @todo put these tasks in an "Unorganized" lane so the user can at least organize them
+            if (!localLanes.some(it => it.key === task.status))
+                log.w('Lane not found for task status:', task.status,
+                    'in lanes', localLanes.map(it => it.key))
+            
+            if (!acc[task.status])
+                acc[task.status] = []
+            
+            acc[task.status].push(task)
+            return acc
+        }, {} as Record<string, Task[]>)
+    }, [localLanes, localTasks])
     
     const handleAddLane = async () => {
         if (!projectId || !onLanesChange) return
@@ -224,54 +213,22 @@ const KanbanBoardDndViewModel = (
         updateTaskOrderMutation.mutate({ taskId, status: newStatus, order: newOrder })
     }, [localTasks, updateTaskOrderMutation])
     
+    // Keep monitor registration stable — do not re-bind when handleDrop identity changes
+    const handleDropRef = useRef(handleDrop)
+    handleDropRef.current = handleDrop
+    
     useEffect(() => {
         if (!enablePragmaticMonitor) return
         
         const monitor = monitorForElements as unknown as (args: {
-            onDragStart?: (args: { source: { data: Record<string, unknown> } }) => void
-            onDrag?: (args: {
-                location: { current: { dropTargets: Array<{ data: unknown }> } }
-            }) => void
             onDrop?: (args: {
                 source: { data: Record<string, unknown> }
                 location: { current: { dropTargets: Array<{ data: unknown }> } }
             }) => void
-            onDragEnd?: () => void
         }) => () => void
         return monitor({
-            onDragStart: (args: { source: { data: Record<string, unknown> } }) => {
-                if (isTaskDragData(args.source.data))
-                    setDraggingTaskId(args.source.data.taskId)
-            },
-            onDrag: (args: {
-                location: { current: { dropTargets: Array<{ data: unknown }> } }
-            }) => {
-                const dropTargets = args.location.current.dropTargets
-                if (!dropTargets.length) {
-                    setDropIndicator(null)
-                    return
-                }
-                const taskTarget = dropTargets.find((target: { data: unknown }) =>
-                    isTaskDropData(target.data as Record<string, unknown>),
-                )
-                if (taskTarget?.data && isTaskDropData(taskTarget.data as Record<string, unknown>)) {
-                    const taskTargetData = taskTarget.data as TaskDropData
-                    setDropIndicator({
-                        status: taskTargetData.status,
-                        taskId: taskTargetData.taskId,
-                    })
-                    return
-                }
-                const columnTarget = dropTargets.find((target: { data: unknown }) =>
-                    isColumnDropData(target.data as Record<string, unknown>),
-                )
-                if (columnTarget?.data && isColumnDropData(columnTarget.data as Record<string, unknown>)) {
-                    const columnTargetData = columnTarget.data as ColumnDropData
-                    setDropIndicator({ status: columnTargetData.status })
-                    return
-                }
-                setDropIndicator(null)
-            },
+            // Visual drop indicators live on each card/column (enter/leave) — never
+            // set React state from onDrag pointer samples at the board level.
             onDrop: (args: {
                 source: { data: Record<string, unknown> }
                 location: { current: { dropTargets: Array<{ data: unknown }> } }
@@ -286,7 +243,7 @@ const KanbanBoardDndViewModel = (
                 const taskTargetData = taskTarget?.data
                 if (taskTargetData && isTaskDropData(taskTargetData as Record<string, unknown>)) {
                     const taskData = taskTargetData as TaskDropData
-                    void handleDrop(
+                    void handleDropRef.current(
                         source.data.taskId,
                         taskData.status,
                         taskData.taskId,
@@ -299,20 +256,14 @@ const KanbanBoardDndViewModel = (
                 const columnTargetData = columnTarget?.data
                 if (columnTargetData && isColumnDropData(columnTargetData as Record<string, unknown>)) {
                     const columnData = columnTargetData as ColumnDropData
-                    void handleDrop(
+                    void handleDropRef.current(
                         source.data.taskId,
                         columnData.status,
                     )
                 }
-                setDropIndicator(null)
-                setDraggingTaskId(null)
-            },
-            onDragEnd: () => {
-                setDropIndicator(null)
-                setDraggingTaskId(null)
             },
         })
-    }, [enablePragmaticMonitor, handleDrop])
+    }, [enablePragmaticMonitor])
     
     const handleStartRenameLane = (lane: TaskLane) => {
         setEditingLaneId(lane.id)
@@ -438,10 +389,6 @@ const KanbanBoardDndViewModel = (
         setIsCreating,
         isAddingLane,
         setIsAddingLane,
-        dropIndicator,
-        setDropIndicator,
-        draggingTaskId,
-        setDraggingTaskId,
         editingLaneId,
         setEditingLaneId,
         editingLaneName,

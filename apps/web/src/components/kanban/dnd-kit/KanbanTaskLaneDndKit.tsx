@@ -1,8 +1,8 @@
 import { useDraggable, useDroppable } from '@dnd-kit/core'
-import type { DropIndicatorData, Task, TaskLane, TaskStatus, TeamMemberProfile } from '@repo/shared/types'
+import type { Task, TaskLane, TaskStatus, TeamMemberProfile } from '@repo/shared/types'
 import { GripVertical, Plus } from 'lucide-react'
 import type { Dispatch, SetStateAction } from 'react'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import ManageLaneDropdown from '@/components/kanban/ManageLaneDropdown'
 import LaneIconColorPicker from '@/components/lanes/LaneIconColorPicker'
@@ -21,7 +21,6 @@ type KanbanTaskLaneDndKitProps = {
     teamMembers: TeamMemberProfile[]
     isCollapsed: boolean
     onToggleCollapsed: (laneId: string) => void
-    dropIndicator: DropIndicatorData | null
     editingLaneId: string | null
     editingLaneName: string | null
     setEditingLaneName: Dispatch<SetStateAction<string>>
@@ -45,7 +44,6 @@ export const KanbanTaskLaneDndKit = ({
     teamMembers,
     isCollapsed,
     onToggleCollapsed,
-    dropIndicator,
     editingLaneId,
     editingLaneName,
     setEditingLaneName,
@@ -63,6 +61,14 @@ export const KanbanTaskLaneDndKit = ({
 }: KanbanTaskLaneDndKitProps) => {
     const laneColor = useLaneColor(lane.color ?? '')
     
+    // Lane DnD lives on the header only — never wrap the whole lane. That way
+    // lane droppables can't steal task collisions, and we avoid useDndContext
+    // (which re-renders every lane on every pointer sample).
+    const laneData = useMemo(
+        () => ({ type: 'lane' as const, laneId: lane.id }),
+        [lane.id],
+    )
+    
     const {
         attributes,
         listeners,
@@ -70,17 +76,17 @@ export const KanbanTaskLaneDndKit = ({
         isDragging,
     } = useDraggable({
         id: `lane:${lane.id}`,
-        data: { type: 'lane', laneId: lane.id },
+        data: laneData,
         disabled: !canManageLanes,
     })
     
     const { setNodeRef: setDropRef, isOver } = useDroppable({
         id: `lane-drop:${lane.id}`,
-        data: { type: 'lane', laneId: lane.id },
+        data: laneData,
         disabled: !canManageLanes,
     })
     
-    const setRef = useCallback((node: HTMLElement | null) => {
+    const setHeaderRef = useCallback((node: HTMLElement | null) => {
         setDragRef(node)
         setDropRef(node)
     }, [setDragRef, setDropRef])
@@ -88,7 +94,6 @@ export const KanbanTaskLaneDndKit = ({
     return (
         <div
             data-testid="TaskLane"
-            ref={setRef}
             className={cn('shrink-0 flex flex-col h-full min-h-0 rounded ring-2 p-2', laneColor.tailwindBackground, {
                 'bg-primary/5 ring-primary/20': !isDragging && !isOver
                     && !isCollapsed && !laneColor.backgroundColor,
@@ -101,10 +106,12 @@ export const KanbanTaskLaneDndKit = ({
             })}
             style={laneColor.styles}>
             
-            <div className={cn('flex items-center mb-3', {
-                'justify-center': isCollapsed,
-                'justify-between': !isCollapsed,
-            })}>
+            <div
+                ref={setHeaderRef}
+                className={cn('flex items-center mb-3', {
+                    'justify-center': isCollapsed,
+                    'justify-between': !isCollapsed,
+                })}>
                 <div className={cn('flex items-center gap-2', {
                     'rotate-180 [writing-mode:vertical-rl]': isCollapsed,
                     '[text-orientation:mixed] whitespace-nowrap': isCollapsed,
@@ -195,8 +202,7 @@ export const KanbanTaskLaneDndKit = ({
                     status={lane.key}
                     tasks={tasks}
                     teamId={teamId}
-                    teamMembers={teamMembers}
-                    dropIndicator={dropIndicator} />
+                    teamMembers={teamMembers} />
             </div>
         </div>
     )

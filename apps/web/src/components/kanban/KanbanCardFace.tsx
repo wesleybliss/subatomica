@@ -2,6 +2,7 @@ import type { Task, TeamMemberProfile } from '@repo/shared/types'
 import { format } from 'date-fns'
 import { convert } from 'html-to-text'
 import { Calendar, Flag } from 'lucide-react'
+import { memo, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 import { cn } from '@/lib/utils'
@@ -15,21 +16,32 @@ type KanbanCardFaceProps = {
     onOpen?: () => void
 }
 
-export const KanbanCardFace = ({
+export const KanbanCardFace = memo(function KanbanCardFace({
     task,
     teamId,
     className,
     isDragging = false,
     onOpen,
-}: KanbanCardFaceProps) => {
+}: KanbanCardFaceProps) {
     const teamSegment = teamId ?? task.projectId
     const taskHref = `/t/${teamSegment}/p/${task.projectId}/s/${task.id}`
+    
+    // html-to-text is expensive — never re-run it on every dnd-kit context tick
+    const descriptionPreview = useMemo(
+        () => convert(task.description ?? '', { wordwrap: false }).substring(0, 100),
+        [task.description],
+    )
+    
+    const createdLabel = useMemo(
+        () => format(task.createdAt, 'MMM d'),
+        [task.createdAt],
+    )
     
     return (
         <div
             className={cn(
                 'bg-card border border-border rounded-lg p-3 cursor-move min-w-0 overflow-hidden',
-                'transition-all hover:shadow-md hover:border-primary/50',
+                'transition-shadow transition-colors hover:shadow-md hover:border-primary/50',
                 isDragging ? 'opacity-50' : 'opacity-100',
                 className,
             )}
@@ -41,7 +53,7 @@ export const KanbanCardFace = ({
                     to={taskHref}
                     className="text-xs text-muted-foreground hover:text-primary transition-colors font-mono"
                     onClick={e => e.stopPropagation()}>
-                    {format(task.createdAt, 'MMM d')}
+                    {createdLabel}
                 </Link>
                 {task.priority === 'high' || task.priority === 'urgent' ? (
                     <Flag className="w-3 h-3 text-destructive" />
@@ -50,9 +62,11 @@ export const KanbanCardFace = ({
             <h4 className="text-sm font-medium text-foreground mb-2 break-all">
                 {task.title}
             </h4>
-            <div className="text-xs text-muted-foreground mb-2 break-all">
-                {convert(task.description, { wordwrap: false }).substring(0, 100)}
-            </div>
+            {descriptionPreview ? (
+                <div className="text-xs text-muted-foreground mb-2 break-all">
+                    {descriptionPreview}
+                </div>
+            ) : null}
             <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center gap-2">
                     {task.assigneeId && (
@@ -73,4 +87,4 @@ export const KanbanCardFace = ({
             </div>
         </div>
     )
-}
+})

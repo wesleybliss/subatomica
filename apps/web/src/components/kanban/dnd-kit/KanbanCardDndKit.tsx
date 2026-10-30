@@ -1,9 +1,9 @@
-import { useDraggable, useDroppable } from '@dnd-kit/core'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import type { Task, TeamMemberProfile } from '@repo/shared/types'
-import { useCallback, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { TaskDetailDialog } from '@/components/tasks/TaskDetailDialog'
-import { cn } from '@/lib/utils'
 
 import { KanbanCardFace } from '../KanbanCardFace'
 
@@ -15,40 +15,54 @@ type KanbanCardDndKitProps = {
     teamMembers: TeamMemberProfile[]
 }
 
+const noLayoutAnim = () => false
+
+/**
+ * Thin sortable shell. Card face is memoized so dnd-kit's per-frame transform
+ * updates only touch this wrapper — matching the official demo pattern.
+ */
 export const KanbanCardDndKit = ({ task, teamId, teamMembers }: KanbanCardDndKitProps) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const dragEndedAt = useRef(0)
+    const wasDragging = useRef(false)
+    
+    const data = useMemo(
+        () => ({ type: 'task' as const, taskId: task.id, status: task.status }),
+        [task.id, task.status],
+    )
     
     const {
         attributes,
         listeners,
-        setNodeRef: setDragRef,
+        setNodeRef,
+        transform,
+        transition,
         isDragging,
-    } = useDraggable({
+    } = useSortable({
         id: task.id,
-        data: { type: 'task', taskId: task.id, status: task.status },
+        data,
+        animateLayoutChanges: noLayoutAnim,
     })
     
-    const { setNodeRef: setDropRef } = useDroppable({
-        id: `task:${task.id}`,
-        data: { type: 'task', taskId: task.id, status: task.status },
-    })
-    
-    const setRef = useCallback((node: HTMLElement | null) => {
-        setDragRef(node)
-        setDropRef(node)
-    }, [setDragRef, setDropRef])
-    
-    if (isDragging)
-        dragEndedAt.current = Date.now()
+    useEffect(() => {
+        if (wasDragging.current && !isDragging)
+            dragEndedAt.current = Date.now()
+        wasDragging.current = isDragging
+    }, [isDragging])
     
     return (
         <>
             <div
-                ref={setRef}
+                ref={setNodeRef}
+                style={{
+                    transform: CSS.Transform.toString(transform),
+                    // Skip transition while dragging — snappier like the demos
+                    transition: isDragging ? undefined : transition,
+                    opacity: isDragging ? 0 : 1,
+                }}
                 {...listeners}
                 {...attributes}
-                className={cn('touch-manipulation outline-none', isDragging && 'opacity-40')}>
+                className="touch-manipulation outline-none">
                 <KanbanCardFace
                     task={task}
                     teamId={teamId}
@@ -59,11 +73,13 @@ export const KanbanCardDndKit = ({ task, teamId, teamMembers }: KanbanCardDndKit
                         setIsDialogOpen(true)
                     }} />
             </div>
-            <TaskDetailDialog
-                task={task}
-                teamMembers={teamMembers}
-                open={isDialogOpen}
-                onOpenChange={setIsDialogOpen} />
+            {isDialogOpen ? (
+                <TaskDetailDialog
+                    task={task}
+                    teamMembers={teamMembers}
+                    open={isDialogOpen}
+                    onOpenChange={setIsDialogOpen} />
+            ) : null}
         </>
     )
 }

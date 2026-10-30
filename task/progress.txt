@@ -75,7 +75,8 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 - Sync: Doska SyncEngine+HLC for offline-first; Electric+TanStack DB (Vibe) for live shapes.
 
 ## Sync + dual DnD (2026-10)
-- Toggle: apps/web/src/lib/constants/kanban.constants.ts KANBAN_DND_ENGINE
+- Toggle: debug panel Kanban section; default dnd-kit (kanban.constants DEFAULT_KANBAN_DND_ENGINE)
 - Sync: Tier0 Query refetch + Tier1 IDB dirty/push-pull + Ably invalidate (docs/sync-and-local-db.md)
 - Local DB: IndexedDB via idb for dirty+cursors; Neon remains SoT. Skip PGlite unless offline SQL needed.
+- DnD: dnd-kit onDragOver ONLY cross-container (same-col setState↔collision = max update depth); sortable transforms + onDragEnd for same-col; collision lastOverId stabilize. Pragmatic: ghost inside drop-target.
 

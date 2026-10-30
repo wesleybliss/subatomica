@@ -1,6 +1,6 @@
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { DropIndicatorData, Task, TaskLane, TaskStatus, TeamMemberProfile } from '@repo/shared/types'
+import { Task, TaskLane, TaskStatus, TeamMemberProfile } from '@repo/shared/types'
 import { GripVertical, Plus } from 'lucide-react'
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
@@ -22,8 +22,6 @@ interface TaskLaneProps {
     teamMembers: TeamMemberProfile[]
     isCollapsed: boolean
     onToggleCollapsed: (laneId: string) => void
-    dropIndicator: DropIndicatorData | null
-    draggingTaskId: string | null
     editingLaneId: string | null
     editingLaneName: string | null
     setEditingLaneName: Dispatch<SetStateAction<string>>
@@ -48,8 +46,6 @@ const KanbanTaskLane = ({
     teamMembers,
     isCollapsed,
     onToggleCollapsed,
-    dropIndicator,
-    draggingTaskId,
     editingLaneId,
     editingLaneName,
     setEditingLaneName,
@@ -223,9 +219,7 @@ const KanbanTaskLane = ({
                     status={lane.key}
                     tasks={tasks}
                     teamId={teamId}
-                    teamMembers={teamMembers}
-                    dropIndicator={dropIndicator}
-                    draggingTaskId={draggingTaskId} />
+                    teamMembers={teamMembers} />
             </div>
         
         </div>

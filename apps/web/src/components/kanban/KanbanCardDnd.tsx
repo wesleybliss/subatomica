@@ -4,9 +4,13 @@ import { Task, TeamMemberProfile } from '@repo/shared/types'
 import { useEffect, useRef, useState } from 'react'
 
 import { TaskDetailDialog } from '@/components/tasks/TaskDetailDialog'
+import { cn } from '@/lib/utils'
 
 import { isTaskDragData } from './dragTypes'
 import { KanbanCardFace } from './KanbanCardFace'
+import { KanbanDropGhost } from './KanbanDropGhost'
+
+const CLICK_SUPPRESS_MS = 250
 
 interface KanbanCardDndProps {
     task: Task
@@ -16,7 +20,9 @@ interface KanbanCardDndProps {
 
 export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps) {
     const cardRef = useRef<HTMLDivElement>(null)
+    const dragEndedAt = useRef(0)
     const [isDragging, setIsDragging] = useState(false)
+    const [isDropTarget, setIsDropTarget] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     
     useEffect(() => {
@@ -31,7 +37,11 @@ export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps)
                     status: task.status,
                 }),
                 onDragStart: () => setIsDragging(true),
-                onDrop: () => setIsDragging(false),
+                onDrop: () => {
+                    dragEndedAt.current = Date.now()
+                    setIsDragging(false)
+                    setIsDropTarget(false)
+                },
             }),
             dropTargetForElements({
                 element,
@@ -43,25 +53,41 @@ export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps)
                 canDrop: (args: { source: { data: Record<string, unknown> } }) =>
                     isTaskDragData(args.source.data)
                     && args.source.data.taskId !== task.id,
+                onDragEnter: () => setIsDropTarget(true),
+                onDragLeave: () => setIsDropTarget(false),
+                onDrop: () => setIsDropTarget(false),
             }),
         )
     }, [task.id, task.status])
     
     return (
         <>
-            <div ref={cardRef}>
+            {/*
+              Ghost MUST sit inside the drop-target element. A sibling ghost above
+              the target pushes the card out from under the pointer → leave → remove
+              ghost → enter → infinite flicker (the "stutter like crazy" bug).
+            */}
+            <div
+                ref={cardRef}
+                className={cn('space-y-2', isDragging && 'opacity-40')}>
+                {isDropTarget ? <KanbanDropGhost /> : null}
                 <KanbanCardFace
                     task={task}
                     teamId={teamId}
                     teamMembers={teamMembers}
                     isDragging={isDragging}
-                    onOpen={() => setIsDialogOpen(true)} />
+                    onOpen={() => {
+                        if (Date.now() - dragEndedAt.current < CLICK_SUPPRESS_MS) return
+                        setIsDialogOpen(true)
+                    }} />
             </div>
-            <TaskDetailDialog
-                task={task}
-                teamMembers={teamMembers}
-                open={isDialogOpen}
-                onOpenChange={setIsDialogOpen} />
+            {isDialogOpen ? (
+                <TaskDetailDialog
+                    task={task}
+                    teamMembers={teamMembers}
+                    open={isDialogOpen}
+                    onOpenChange={setIsDialogOpen} />
+            ) : null}
         </>
     )
 }

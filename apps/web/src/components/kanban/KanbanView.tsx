@@ -2,7 +2,7 @@ import type { Project, Task, TaskLane, TeamMemberProfile } from '@repo/shared/ty
 import { useState } from 'react'
 
 import KanbanBoardDndKit from '@/components/kanban/dnd-kit/KanbanBoardDndKit'
-import { useKanbanUiStore } from '@/store'
+import { useDebugStore } from '@/store'
 
 import KanbanBoardDnd from './KanbanBoardDnd'
 
@@ -25,11 +25,11 @@ const KanbanView = ({
 }: KanbanViewProps) => {
     
     const projectId = project.id
-    const dndEngine = useKanbanUiStore(s => s.dndEngine)
+    const kanbanDndEngine = useDebugStore(s => s.kanbanDndEngine)
     
     const [lanes, setLanes] = useState<TaskLane[]>(initialLanes)
     
-    const Board = dndEngine === 'dnd-kit'
+    const Board = kanbanDndEngine === 'dnd-kit'
         ? KanbanBoardDndKit
         : KanbanBoardDnd
     
@@ -37,7 +37,7 @@ const KanbanView = ({
         
         <div
             data-testid="KanbanView"
-            data-dnd-engine={dndEngine}
+            data-dnd-engine={kanbanDndEngine}
             className="flex-1 overflow-hidden px-6 py-5">
             
             <Board
