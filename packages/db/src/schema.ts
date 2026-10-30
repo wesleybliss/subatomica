@@ -31,6 +31,12 @@ export const projects = schema.projects
 export const taskLanes = schema.taskLanes
 export const tasks = schema.tasks
 export const comments = schema.comments
+export const trelloConnections = schema.trelloConnections
+export const trelloOauthStates = schema.trelloOauthStates
+export const trelloWorkspaceLinks = schema.trelloWorkspaceLinks
+export const trelloBoardLinks = schema.trelloBoardLinks
+export const trelloListLinks = schema.trelloListLinks
+export const trelloCardLinks = schema.trelloCardLinks
 
 export type UsersInsert = ActiveSchema['users']['$inferInsert']
 
@@ -42,3 +48,8 @@ export type Project = ActiveSchema['projects']['$inferSelect']
 export type TaskLane = ActiveSchema['taskLanes']['$inferSelect']
 export type Task = ActiveSchema['tasks']['$inferSelect']
 export type Comment = ActiveSchema['comments']['$inferSelect']
+export type TrelloConnection = ActiveSchema['trelloConnections']['$inferSelect']
+export type TrelloWorkspaceLink = ActiveSchema['trelloWorkspaceLinks']['$inferSelect']
+export type TrelloBoardLink = ActiveSchema['trelloBoardLinks']['$inferSelect']
+export type TrelloListLink = ActiveSchema['trelloListLinks']['$inferSelect']
+export type TrelloCardLink = ActiveSchema['trelloCardLinks']['$inferSelect']

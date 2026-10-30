@@ -156,6 +156,103 @@ export const comments = table('comments', {
     userIdIndex: index('comments_user_id_idx').on(table.userId),
 }))
 
+// Trello OAuth connection (one per user)
+export const trelloConnections = table('trelloConnections', {
+    userId: text('userId')
+        .notNull()
+        .references(() => users.id, { onDelete: 'cascade' }),
+    trelloMemberId: text('trelloMemberId').notNull(),
+    trelloUsername: text('trelloUsername'),
+    accessToken: text('accessToken').notNull(),
+    refreshToken: text('refreshToken').notNull(),
+    accessTokenExpiresAt: timestamp('accessTokenExpiresAt').notNull(),
+    scope: text('scope'),
+}, table => ({
+    userIdUnique: uniqueIndex('trello_connections_user_id_unique').on(table.userId),
+    memberIdIndex: index('trello_connections_member_id_idx').on(table.trelloMemberId),
+}))
+
+// Short-lived PKCE state for OAuth authorize → callback
+export const trelloOauthStates = table('trelloOauthStates', {
+    userId: text('userId')
+        .notNull()
+        .references(() => users.id, { onDelete: 'cascade' }),
+    codeVerifier: text('codeVerifier').notNull(),
+    returnTeamId: text('returnTeamId'),
+    expiresAt: timestamp('expiresAt').notNull(),
+}, table => ({
+    userIdIndex: index('trello_oauth_states_user_id_idx').on(table.userId),
+}))
+
+// Trello workspace (org) ↔ team. Use trelloWorkspaceId = 'personal' for boards with no org.
+export const trelloWorkspaceLinks = table('trelloWorkspaceLinks', {
+    userId: text('userId')
+        .notNull()
+        .references(() => users.id, { onDelete: 'cascade' }),
+    trelloWorkspaceId: text('trelloWorkspaceId').notNull(),
+    trelloWorkspaceName: text('trelloWorkspaceName').notNull(),
+    teamId: text('teamId')
+        .notNull()
+        .references(() => teams.id, { onDelete: 'cascade' }),
+}, table => ({
+    workspaceUnique: uniqueIndex('trello_workspace_links_workspace_unique').on(table.userId, table.trelloWorkspaceId),
+    teamIdIndex: index('trello_workspace_links_team_id_idx').on(table.teamId),
+}))
+
+// Trello board ↔ project
+export const trelloBoardLinks = table('trelloBoardLinks', {
+    userId: text('userId')
+        .notNull()
+        .references(() => users.id, { onDelete: 'cascade' }),
+    trelloBoardId: text('trelloBoardId').notNull(),
+    trelloBoardName: text('trelloBoardName').notNull(),
+    trelloWorkspaceId: text('trelloWorkspaceId').notNull(),
+    projectId: text('projectId')
+        .notNull()
+        .references(() => projects.id, { onDelete: 'cascade' }),
+    teamId: text('teamId')
+        .notNull()
+        .references(() => teams.id, { onDelete: 'cascade' }),
+    webhookId: text('webhookId'),
+    syncEnabled: integer('syncEnabled', { mode: 'boolean' }).notNull().default(false),
+    lastSyncedAt: timestamp('lastSyncedAt'),
+}, table => ({
+    boardUnique: uniqueIndex('trello_board_links_board_unique').on(table.trelloBoardId),
+    projectUnique: uniqueIndex('trello_board_links_project_unique').on(table.projectId),
+    teamIdIndex: index('trello_board_links_team_id_idx').on(table.teamId),
+    userIdIndex: index('trello_board_links_user_id_idx').on(table.userId),
+}))
+
+// Trello list ↔ lane
+export const trelloListLinks = table('trelloListLinks', {
+    trelloListId: text('trelloListId').notNull(),
+    laneId: text('laneId')
+        .notNull()
+        .references(() => taskLanes.id, { onDelete: 'cascade' }),
+    boardLinkId: text('boardLinkId')
+        .notNull()
+        .references(() => trelloBoardLinks.id, { onDelete: 'cascade' }),
+}, table => ({
+    listUnique: uniqueIndex('trello_list_links_list_unique').on(table.trelloListId),
+    laneUnique: uniqueIndex('trello_list_links_lane_unique').on(table.laneId),
+    boardLinkIdIndex: index('trello_list_links_board_link_id_idx').on(table.boardLinkId),
+}))
+
+// Trello card ↔ task
+export const trelloCardLinks = table('trelloCardLinks', {
+    trelloCardId: text('trelloCardId').notNull(),
+    taskId: text('taskId')
+        .notNull()
+        .references(() => tasks.id, { onDelete: 'cascade' }),
+    boardLinkId: text('boardLinkId')
+        .notNull()
+        .references(() => trelloBoardLinks.id, { onDelete: 'cascade' }),
+}, table => ({
+    cardUnique: uniqueIndex('trello_card_links_card_unique').on(table.trelloCardId),
+    taskUnique: uniqueIndex('trello_card_links_task_unique').on(table.taskId),
+    boardLinkIdIndex: index('trello_card_links_board_link_id_idx').on(table.boardLinkId),
+}))
+
 // Type exports
 export type UsersInsert = typeof users.$inferInsert
 
@@ -167,3 +264,8 @@ export type Project = typeof projects.$inferSelect
 export type TaskLane = typeof taskLanes.$inferSelect
 export type Task = typeof tasks.$inferSelect
 export type Comment = typeof comments.$inferSelect
+export type TrelloConnection = typeof trelloConnections.$inferSelect
+export type TrelloWorkspaceLink = typeof trelloWorkspaceLinks.$inferSelect
+export type TrelloBoardLink = typeof trelloBoardLinks.$inferSelect
+export type TrelloListLink = typeof trelloListLinks.$inferSelect
+export type TrelloCardLink = typeof trelloCardLinks.$inferSelect
