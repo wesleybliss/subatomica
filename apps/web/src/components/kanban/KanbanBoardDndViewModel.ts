@@ -28,6 +28,7 @@ const KanbanBoardDndViewModel = (
     queryKey?: ReadonlyArray<string | number | boolean | undefined | Record<string, unknown>>,
     onRefresh?: () => void,
     onLanesChange?: (lanes: TaskLane[]) => void,
+    enablePragmaticMonitor = true,
 ) => {
     
     const [localTasks, setLocalTasks] = useState<Task[]>(tasks)
@@ -224,6 +225,8 @@ const KanbanBoardDndViewModel = (
     }, [localTasks, updateTaskOrderMutation])
     
     useEffect(() => {
+        if (!enablePragmaticMonitor) return
+        
         const monitor = monitorForElements as unknown as (args: {
             onDragStart?: (args: { source: { data: Record<string, unknown> } }) => void
             onDrag?: (args: {
@@ -309,7 +312,7 @@ const KanbanBoardDndViewModel = (
                 setDraggingTaskId(null)
             },
         })
-    }, [handleDrop])
+    }, [enablePragmaticMonitor, handleDrop])
     
     const handleStartRenameLane = (lane: TaskLane) => {
         setEditingLaneId(lane.id)

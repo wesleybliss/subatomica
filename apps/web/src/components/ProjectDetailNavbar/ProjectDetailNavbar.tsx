@@ -2,9 +2,14 @@ import type { Project, ProjectDetailView } from '@repo/shared/types'
 
 import TasksSearchInput from '@/components/list/TasksSearchInput'
 import ProjectsSelectorDropdown from '@/components/ProjectDetailNavbar/ProjectsSelectorDropdown'
+import { SyncStatusChip } from '@/components/sync/SyncStatusChip'
 import ThemeToggle from '@/components/ThemeToggle'
+import { Button } from '@/components/ui/button'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useKanbanUiStore } from '@/store'
+
+import { RealtimeStatusChip } from '../realtime/RealtimeStatusChip'
 
 interface ProjectDetailNavbarProps {
     teamId: string
@@ -25,6 +30,9 @@ const ProjectDetailNavbar = ({
     tasksQuery,
     setTasksQuery,
 }: ProjectDetailNavbarProps) => {
+    
+    const dndEngine = useKanbanUiStore(s => s.dndEngine)
+    const toggleDndEngine = useKanbanUiStore(s => s.toggleDndEngine)
     
     return (
         
@@ -56,7 +64,20 @@ const ProjectDetailNavbar = ({
                     setTasksQuery={setTasksQuery} />
             </div>
             
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="xs"
+                    title="Toggle kanban drag engine"
+                    onClick={toggleDndEngine}
+                    className="hidden text-[10px] uppercase tracking-wide text-muted-foreground sm:inline-flex">
+                    dnd:{dndEngine}
+                </Button>
+                <SyncStatusChip />
+                <RealtimeStatusChip />
+                <ThemeToggle />
+            </div>
         
         </header>
         

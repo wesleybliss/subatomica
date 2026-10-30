@@ -4,6 +4,7 @@ import { SuccessSchema, TaskSchema } from '@repo/db/openapi'
 import { HTTPException } from 'hono/http-exception'
 
 import { ApiAppEnv } from '@/env'
+import { publishProjectInvalidate } from '@/lib/ably'
 import { createResponses } from '@/openapi/responses'
 import * as tasksService from '@/services/tasks'
 
@@ -261,6 +262,7 @@ const createTask: RouteHandler<typeof createTaskRoute, ApiAppEnv> = async c => {
         
         const task = await tasksService.createTask(user.id, teamId, projectId, payload)
         const slug = await tasksService.getTaskSlug(task.projectId, task.id)
+        void publishProjectInvalidate(projectId, { keys: ['tasks'], source: 'create' })
         
         return c.json({
             ...task,
@@ -287,6 +289,7 @@ const createTaskWithId: RouteHandler<typeof createTaskWithIdRoute, ApiAppEnv> = 
         const payload = c.req.valid('json')
         const task = await tasksService.createTask(user.id, teamId, projectId, { ...payload, id: taskId })
         const slug = await tasksService.getTaskSlug(task.projectId, task.id)
+        void publishProjectInvalidate(projectId, { keys: ['tasks'], source: 'create' })
         return c.json({
             ...task,
             slug,
@@ -313,6 +316,7 @@ const updateTask: RouteHandler<typeof updateTaskRoute, ApiAppEnv> = async c => {
         
         const task = await tasksService.updateTask(user.id, teamId, projectId, taskId, payload)
         const slug = await tasksService.getTaskSlug(task.projectId, task.id)
+        void publishProjectInvalidate(projectId, { keys: ['tasks'], source: 'update' })
         
         return c.json({
             ...task,
@@ -338,6 +342,7 @@ const deleteTask: RouteHandler<typeof deleteTaskRoute, ApiAppEnv> = async c => {
         const { taskId } = c.req.valid('param')
         
         await tasksService.deleteTask(user.id, teamId, projectId, taskId)
+        void publishProjectInvalidate(projectId, { keys: ['tasks'], source: 'delete' })
         
         return c.json({ success: true }, 200)
     } catch (error) {

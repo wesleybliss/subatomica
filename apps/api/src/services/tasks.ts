@@ -1,7 +1,7 @@
 import { projects, tasks } from '@repo/db/schema'
 import type { Task } from '@repo/db/types'
 import { formatTaskSlug, generateProjectAcronym } from '@repo/shared/utils/slugs'
-import { and, desc, eq, inArray, sql } from 'drizzle-orm'
+import { and, desc, eq, gt, inArray, sql } from 'drizzle-orm'
 
 import { db } from '@/db/client'
 import { getAccessibleTeamIds } from '@/services/shared'
@@ -155,6 +155,8 @@ export async function updateTask(
     if (updateData.title === '')
         throw new Error('Task name is required')
     
+    updateData.updatedAt = new Date().toISOString()
+    
     const [updated] = await db
         .update(tasks)
         .set(updateData)
@@ -184,6 +186,69 @@ export async function getTasks(userId: string, teamId: string, projectId?: strin
         .from(tasks)
         .where(query)
         .orderBy(tasks.order, desc(tasks.createdAt))
+}
+
+export async function getTasksUpdatedSince(
+    userId: string,
+    teamId: string,
+    projectId: string,
+    since: string,
+): Promise<Task[]> {
+    const teamProjectIds = getTeamProjectIds(userId, teamId)
+    
+    return db.select()
+        .from(tasks)
+        .where(and(
+            eq(tasks.projectId, projectId),
+            inArray(tasks.projectId, teamProjectIds),
+            gt(tasks.updatedAt, since),
+        ))
+        .orderBy(tasks.updatedAt)
+}
+
+type SyncTaskChange = {
+    id: string
+    updatedAt: string
+    title?: string
+    description?: string
+    status?: string
+    order?: number
+}
+
+/**
+ * Apply client changes with last-write-wins on updatedAt.
+ * Returns applied rows (server view after merge).
+ */
+export async function applyTaskSyncPush(
+    userId: string,
+    teamId: string,
+    projectId: string,
+    changes: SyncTaskChange[],
+): Promise<Task[]> {
+    const applied: Task[] = []
+    
+    for (const change of changes) {
+        const existing = await getTaskById(userId, teamId, projectId, change.id)
+        if (!existing) continue
+        
+        const clientTs = Date.parse(change.updatedAt)
+        const serverTs = Date.parse(existing.updatedAt ?? '')
+        if (Number.isFinite(clientTs) && Number.isFinite(serverTs) && clientTs < serverTs)
+            continue
+        
+        const patch: UpdateTaskInput = {}
+        if (typeof change.title === 'string') patch.title = change.title
+        if (typeof change.description === 'string') patch.description = change.description
+        if (typeof change.status === 'string') patch.status = change.status
+        if (typeof change.order === 'number') patch.order = change.order
+        
+        if (Object.keys(patch).length === 0) continue
+        
+        const updated = await updateTask(userId, teamId, projectId, change.id, patch)
+        applied.push(updated)
+    }
+    
+    return applied
 }
 
 export async function getTaskById(userId: string, teamId: string, projectId: string, taskId: string): Promise<Task> {

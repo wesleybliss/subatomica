@@ -11,6 +11,7 @@ const API_PREFIXES = [
     '/projects',
     '/lanes',
     '/tasks',
+    '/sync',
     '/integrations',
     '/health',
     '/openapi.json',

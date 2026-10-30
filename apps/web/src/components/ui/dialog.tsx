@@ -1,11 +1,11 @@
 'use client'
 
-import * as React from 'react'
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog'
-
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 import { XIcon } from 'lucide-react'
+import * as React from 'react'
+
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
     return <DialogPrimitive.Root data-slot="dialog" {...props} />
@@ -41,7 +41,7 @@ function DialogContent({
     showCloseButton = true,
     ...props
 }: DialogPrimitive.Popup.Props & {
-  showCloseButton?: boolean
+    showCloseButton?: boolean
 }) {
     return (
         <DialogPortal>
@@ -87,7 +87,7 @@ function DialogFooter({
     children,
     ...props
 }: React.ComponentProps<'div'> & {
-  showCloseButton?: boolean
+    showCloseButton?: boolean
 }) {
     return (
         <div
@@ -100,7 +100,7 @@ function DialogFooter({
             {children}
             {showCloseButton && (
                 <DialogPrimitive.Close render={<Button variant="outline" />}>
-          Close
+                    Close
                 </DialogPrimitive.Close>
             )}
         </div>
