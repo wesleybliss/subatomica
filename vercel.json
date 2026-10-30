@@ -1,20 +1,13 @@
 {
-    "builds": [
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "installCommand": "pnpm install",
+    "buildCommand": "pnpm --filter @repo/web build",
+    "outputDirectory": "apps/web/dist",
+    "framework": "vite",
+    "rewrites": [
         {
-            "src": "apps/api/src/index.ts",
-            "use": "@vercel/edge"
-        },
-        {
-            "src": "apps/web/package.json",
-            "use": "@vercel/static-build",
-            "config": {
-                "distDir": "dist"
-            }
+            "source": "/(.*)",
+            "destination": "/index.html"
         }
-    ],
-    "routes": [
-        { "src": "/api/(.*)", "dest": "apps/api/src/index.ts" },
-        { "handle": "filesystem" },
-        { "src": "/(.*)", "dest": "/apps/web/$1" }
     ]
 }
