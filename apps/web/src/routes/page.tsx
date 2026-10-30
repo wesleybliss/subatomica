@@ -29,10 +29,12 @@ export default function HomePage() {
     if (error)
         return <div>@todo HomePage error {error.message}</div>
     
-    if (!lastUpdatedTeam)
+    if (!lastUpdatedTeam) {
+        navigate('/sign-in', { replace: true })
         return (
             <div>@todo no lastUpdatedTeam</div>
         )
+    }
     
     // Redirect to the most recent team page
     setTimeout(() => navigate(`/t/${lastUpdatedTeam.slug}`), 300)
