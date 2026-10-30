@@ -18,13 +18,19 @@ const StatusSchema = z.object({
     connected: z.boolean(),
     connection: z.object({
         id: z.string(),
+        teamId: z.string(),
         trelloMemberId: z.string(),
         trelloUsername: z.string().nullable(),
         createdAt: z.string(),
     }).nullable(),
 }).openapi('TrelloStatus')
 
+const TeamIdQuery = z.object({
+    teamId: z.string().min(1),
+})
+
 const ImportBodySchema = z.object({
+    teamId: z.string().min(1),
     workspaceMappings: z.array(z.object({
         trelloWorkspaceId: z.string(),
         trelloWorkspaceName: z.string(),
@@ -49,9 +55,12 @@ const getStatusRoute = createRoute({
     path: '/status',
     tags: ['Trello'],
     security: [{ bearerAuth: [] }],
+    request: {
+        query: TeamIdQuery,
+    },
     responses: createResponses(StatusSchema, {
-        successDescription: 'Trello connection status',
-        errorStatuses: [401, 500],
+        successDescription: 'Trello connection status for a team',
+        errorStatuses: [401, 403, 500],
     }),
 })
 
@@ -62,12 +71,13 @@ const authorizeRoute = createRoute({
     security: [{ bearerAuth: [] }],
     request: {
         query: z.object({
+            teamId: z.string().min(1),
             returnTeamSlug: z.string().optional(),
         }),
     },
     responses: createResponses(z.object({ url: z.string() }), {
         successDescription: 'Authorization URL',
-        errorStatuses: [400, 401, 500],
+        errorStatuses: [400, 401, 403, 500],
     }),
 })
 
@@ -76,9 +86,12 @@ const disconnectRoute = createRoute({
     path: '/connection',
     tags: ['Trello'],
     security: [{ bearerAuth: [] }],
+    request: {
+        query: TeamIdQuery,
+    },
     responses: createResponses(z.object({ ok: z.boolean() }), {
         successDescription: 'Disconnected',
-        errorStatuses: [401, 500],
+        errorStatuses: [401, 403, 500],
     }),
 })
 
@@ -87,9 +100,12 @@ const catalogRoute = createRoute({
     path: '/catalog',
     tags: ['Trello'],
     security: [{ bearerAuth: [] }],
+    request: {
+        query: TeamIdQuery,
+    },
     responses: createResponses(z.any(), {
         successDescription: 'Trello workspaces, boards, and existing links',
-        errorStatuses: [401, 404, 500],
+        errorStatuses: [401, 403, 404, 500],
     }),
 })
 
@@ -109,7 +125,7 @@ const importRoute = createRoute({
     },
     responses: createResponses(z.any(), {
         successDescription: 'Import results',
-        errorStatuses: [400, 401, 404, 500],
+        errorStatuses: [400, 401, 403, 404, 500],
     }),
 })
 
@@ -130,7 +146,7 @@ const syncRoute = createRoute({
     },
     responses: createResponses(z.any(), {
         successDescription: 'Updated sync setting',
-        errorStatuses: [401, 404, 500],
+        errorStatuses: [401, 403, 404, 500],
     }),
 })
 
@@ -144,7 +160,7 @@ const resyncRoute = createRoute({
     },
     responses: createResponses(z.any(), {
         successDescription: 'Re-synced board',
-        errorStatuses: [401, 404, 500],
+        errorStatuses: [401, 403, 404, 500],
     }),
 })
 
@@ -161,15 +177,23 @@ const protectedRoutes = new OpenAPIHono<ApiAppEnv>()
 
 protectedRoutes.openapi(getStatusRoute, async c => {
     const user = c.get('user')!
-    const status = await trelloOauth.getConnectionStatus(user.id)
-    return c.json(status, 200)
+    const { teamId } = c.req.valid('query')
+    try {
+        const status = await trelloOauth.getConnectionStatus(user.id, teamId)
+        return c.json(status, 200)
+    }
+    catch (err) {
+        log.e(err)
+        const mapped = mapServiceError(err)
+        return c.json({ error: mapped.message }, mapped.status)
+    }
 })
 
 protectedRoutes.openapi(authorizeRoute, async c => {
     const user = c.get('user')!
-    const { returnTeamSlug } = c.req.valid('query')
+    const { teamId, returnTeamSlug } = c.req.valid('query')
     try {
-        const url = await trelloOauth.startAuthorize(user.id, returnTeamSlug)
+        const url = await trelloOauth.startAuthorize(user.id, teamId, returnTeamSlug)
         return c.json({ url }, 200)
     }
     catch (err) {
@@ -181,14 +205,23 @@ protectedRoutes.openapi(authorizeRoute, async c => {
 
 protectedRoutes.openapi(disconnectRoute, async c => {
     const user = c.get('user')!
-    const result = await trelloOauth.disconnectTrello(user.id)
-    return c.json(result, 200)
+    const { teamId } = c.req.valid('query')
+    try {
+        const result = await trelloOauth.disconnectTrello(user.id, teamId)
+        return c.json(result, 200)
+    }
+    catch (err) {
+        log.e(err)
+        const mapped = mapServiceError(err)
+        return c.json({ error: mapped.message }, mapped.status)
+    }
 })
 
 protectedRoutes.openapi(catalogRoute, async c => {
     const user = c.get('user')!
+    const { teamId } = c.req.valid('query')
     try {
-        const catalog = await trelloImport.getCatalog(user.id)
+        const catalog = await trelloImport.getCatalog(user.id, teamId)
         return c.json(catalog, 200)
     }
     catch (err) {
@@ -202,7 +235,8 @@ protectedRoutes.openapi(importRoute, async c => {
     const user = c.get('user')!
     const body = c.req.valid('json')
     try {
-        const result = await trelloImport.runImport(user.id, body)
+        const { teamId, ...request } = body
+        const result = await trelloImport.runImport(user.id, teamId, request)
         return c.json(result, 200)
     }
     catch (err) {

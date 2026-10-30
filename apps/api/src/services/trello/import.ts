@@ -116,14 +116,15 @@ async function assertTeamAccess(userId: string, teamId: string) {
         throw new Error('NotFound: Team not found')
 }
 
-export async function getCatalog(userId: string) {
-    await assertConnected(userId)
+export async function getCatalog(userId: string, teamId: string) {
+    await assertTeamAccess(userId, teamId)
+    await assertConnected(teamId)
     
     const [orgs, boards, workspaceLinks, boardLinks, userTeams] = await Promise.all([
-        listOrganizations(userId),
-        listBoards(userId),
-        db.select().from(trelloWorkspaceLinks).where(eq(trelloWorkspaceLinks.userId, userId)),
-        db.select().from(trelloBoardLinks).where(eq(trelloBoardLinks.userId, userId)),
+        listOrganizations(teamId),
+        listBoards(teamId),
+        db.select().from(trelloWorkspaceLinks).where(eq(trelloWorkspaceLinks.teamId, teamId)),
+        db.select().from(trelloBoardLinks).where(eq(trelloBoardLinks.teamId, teamId)),
         teamsService.getUserTeams(userId),
     ])
     
@@ -164,32 +165,14 @@ export async function getCatalog(userId: string) {
 
 async function resolveWorkspaceTeam(
     userId: string,
+    connectionTeamId: string,
     mapping: WorkspaceMappingInput,
 ): Promise<string> {
-    if (mapping.teamId) {
-        await assertTeamAccess(userId, mapping.teamId)
-        await upsertWorkspaceLink(userId, mapping.trelloWorkspaceId, mapping.trelloWorkspaceName, mapping.teamId)
-        return mapping.teamId
-    }
-    
-    const [existing] = await db
-        .select()
-        .from(trelloWorkspaceLinks)
-        .where(and(
-            eq(trelloWorkspaceLinks.userId, userId),
-            eq(trelloWorkspaceLinks.trelloWorkspaceId, mapping.trelloWorkspaceId),
-        ))
-        .limit(1)
-    
-    if (existing) {
-        await assertTeamAccess(userId, existing.teamId)
-        return existing.teamId
-    }
-    
-    const name = (mapping.createTeamName || mapping.trelloWorkspaceName || 'Imported from Trello').trim()
-    const team = await teamsService.createTeam(name, userId)
-    await upsertWorkspaceLink(userId, mapping.trelloWorkspaceId, mapping.trelloWorkspaceName, team.id)
-    return team.id
+    // Connection is per-team: always import into the team that owns the Trello link.
+    const teamId = connectionTeamId
+    await assertTeamAccess(userId, teamId)
+    await upsertWorkspaceLink(userId, mapping.trelloWorkspaceId, mapping.trelloWorkspaceName, teamId)
+    return teamId
 }
 
 async function upsertWorkspaceLink(
@@ -202,7 +185,7 @@ async function upsertWorkspaceLink(
         .select()
         .from(trelloWorkspaceLinks)
         .where(and(
-            eq(trelloWorkspaceLinks.userId, userId),
+            eq(trelloWorkspaceLinks.teamId, teamId),
             eq(trelloWorkspaceLinks.trelloWorkspaceId, trelloWorkspaceId),
         ))
         .limit(1)
@@ -211,7 +194,6 @@ async function upsertWorkspaceLink(
         await db
             .update(trelloWorkspaceLinks)
             .set({
-                teamId,
                 trelloWorkspaceName,
                 updatedAt: new Date().toISOString(),
             })
@@ -552,17 +534,18 @@ async function upsertBoardLink(params: {
     return created
 }
 
-export async function runImport(userId: string, request: ImportRequest) {
-    await assertConnected(userId)
+export async function runImport(userId: string, teamId: string, request: ImportRequest) {
+    await assertTeamAccess(userId, teamId)
+    await assertConnected(teamId)
     
-    const boards = await listBoards(userId)
+    const boards = await listBoards(teamId)
     const boardById = new Map(boards.map(b => [b.id, b]))
     
     const workspaceTeamById = new Map<string, string>()
     
     for (const ws of request.workspaceMappings) {
-        const teamId = await resolveWorkspaceTeam(userId, ws)
-        workspaceTeamById.set(ws.trelloWorkspaceId, teamId)
+        const resolvedTeamId = await resolveWorkspaceTeam(userId, teamId, ws)
+        workspaceTeamById.set(ws.trelloWorkspaceId, resolvedTeamId)
     }
     
     const results = []
@@ -579,19 +562,18 @@ export async function runImport(userId: string, request: ImportRequest) {
         }
         
         const workspaceId = board.idOrganization || TRELLO_PERSONAL_WORKSPACE_ID
-        const teamId = mapping.teamId
+        const resolvedTeamId = teamId
+            || mapping.teamId
             || workspaceTeamById.get(workspaceId)
         
-        if (!teamId) {
+        if (!resolvedTeamId || resolvedTeamId !== teamId) {
             results.push({
                 trelloBoardId: board.id,
                 ok: false,
-                error: 'No team mapping for board workspace — map the workspace first',
+                error: 'Boards must import into the team that owns the Trello connection',
             })
             continue
         }
-        
-        await assertTeamAccess(userId, teamId)
         
         try {
             const project = await resolveProject(userId, teamId, board, mapping)
@@ -606,8 +588,8 @@ export async function runImport(userId: string, request: ImportRequest) {
             })
             
             const [lists, cards] = await Promise.all([
-                getBoardLists(userId, board.id),
-                getBoardCards(userId, board.id),
+                getBoardLists(teamId, board.id),
+                getBoardCards(teamId, board.id),
             ])
             
             const { listIdToLaneKey, fallbackKey } = await syncListsToLanes(
@@ -631,13 +613,13 @@ export async function runImport(userId: string, request: ImportRequest) {
                     const { webhookCallbackUrl } = getTrelloOAuthConfig()
                     if (boardLink.webhookId) {
                         try {
-                            await deleteWebhook(userId, boardLink.webhookId)
+                            await deleteWebhook(teamId, boardLink.webhookId)
                         }
                         catch (err) {
                             log.e('Failed to delete old webhook', err)
                         }
                     }
-                    const webhook = await createBoardWebhook(userId, board.id, webhookCallbackUrl)
+                    const webhook = await createBoardWebhook(teamId, board.id, webhookCallbackUrl)
                     boardLink = await upsertBoardLink({
                         userId,
                         board,
@@ -685,24 +667,22 @@ export async function runImport(userId: string, request: ImportRequest) {
 }
 
 export async function setBoardSync(userId: string, boardLinkId: string, syncEnabled: boolean) {
-    await assertConnected(userId)
-    
     const [link] = await db
         .select()
         .from(trelloBoardLinks)
-        .where(and(
-            eq(trelloBoardLinks.id, boardLinkId),
-            eq(trelloBoardLinks.userId, userId),
-        ))
+        .where(eq(trelloBoardLinks.id, boardLinkId))
         .limit(1)
     
     if (!link)
         throw new Error('NotFound: Board link not found')
     
+    await assertTeamAccess(userId, link.teamId)
+    await assertConnected(link.teamId)
+    
     if (!syncEnabled) {
         if (link.webhookId) {
             try {
-                await deleteWebhook(userId, link.webhookId)
+                await deleteWebhook(link.teamId, link.webhookId)
             }
             catch (err) {
                 log.e('Failed to delete webhook', err)
@@ -725,14 +705,14 @@ export async function setBoardSync(userId: string, boardLinkId: string, syncEnab
     const { webhookCallbackUrl } = getTrelloOAuthConfig()
     if (link.webhookId) {
         try {
-            await deleteWebhook(userId, link.webhookId)
+            await deleteWebhook(link.teamId, link.webhookId)
         }
         catch (err) {
             log.e('Failed to delete old webhook', err)
         }
     }
     
-    const webhook = await createBoardWebhook(userId, link.trelloBoardId, webhookCallbackUrl)
+    const webhook = await createBoardWebhook(link.teamId, link.trelloBoardId, webhookCallbackUrl)
     
     const [updated] = await db
         .update(trelloBoardLinks)
@@ -748,21 +728,18 @@ export async function setBoardSync(userId: string, boardLinkId: string, syncEnab
 }
 
 export async function reSyncBoard(userId: string, boardLinkId: string) {
-    await assertConnected(userId)
-    
     const [link] = await db
         .select()
         .from(trelloBoardLinks)
-        .where(and(
-            eq(trelloBoardLinks.id, boardLinkId),
-            eq(trelloBoardLinks.userId, userId),
-        ))
+        .where(eq(trelloBoardLinks.id, boardLinkId))
         .limit(1)
     
     if (!link)
         throw new Error('NotFound: Board link not found')
     
-    return runImport(userId, {
+    await assertTeamAccess(userId, link.teamId)
+    
+    return runImport(userId, link.teamId, {
         workspaceMappings: [{
             trelloWorkspaceId: link.trelloWorkspaceId,
             trelloWorkspaceName: link.trelloWorkspaceId,

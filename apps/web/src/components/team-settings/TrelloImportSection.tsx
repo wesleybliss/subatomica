@@ -23,12 +23,6 @@ import {
 } from '@/lib/queries/trello.queries'
 import { useProjectStore } from '@/store'
 
-type WorkspaceChoice = {
-    mode: 'existing' | 'create'
-    teamId: string
-    createTeamName: string
-}
-
 type BoardChoice = {
     selected: boolean
     mode: 'create' | 'existing'
@@ -48,18 +42,17 @@ type TrelloImportSectionProps = {
 export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImportSectionProps) {
     const [searchParams, setSearchParams] = useSearchParams()
     const queryClient = useQueryClient()
-    const statusQuery = useTrelloStatusQuery()
-    const catalogQuery = useTrelloCatalogQuery(Boolean(statusQuery.data?.connected))
+    const statusQuery = useTrelloStatusQuery(teamId)
+    const catalogQuery = useTrelloCatalogQuery(teamId, Boolean(statusQuery.data?.connected))
     const authorize = useTrelloAuthorizeMutation()
-    const disconnect = useTrelloDisconnectMutation()
-    const runImport = useTrelloImportMutation()
-    const setSync = useTrelloSyncMutation()
-    const resync = useTrelloResyncMutation()
+    const disconnect = useTrelloDisconnectMutation(teamId)
+    const runImport = useTrelloImportMutation(teamId)
+    const setSync = useTrelloSyncMutation(teamId)
+    const resync = useTrelloResyncMutation(teamId)
     
     useGetProjectsQuery(teamId)
     const projects = useProjectStore(s => s.projects)
     
-    const [workspaceChoices, setWorkspaceChoices] = useState<Record<string, WorkspaceChoice>>({})
     const [boardChoices, setBoardChoices] = useState<Record<string, BoardChoice>>({})
     
     const trelloFlag = searchParams.get('trello')
@@ -67,33 +60,17 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
     useEffect(() => {
         if (!trelloFlag) return
         if (trelloFlag === 'connected')
-            toast.success('Trello connected')
+            toast.success('Trello connected for this team')
         if (trelloFlag === 'error')
             toast.error('Trello connection failed')
         const next = new URLSearchParams(searchParams)
         next.delete('trello')
         setSearchParams(next, { replace: true })
-        void queryClient.invalidateQueries({ queryKey: trelloStatusQueryKey })
-    }, [trelloFlag, searchParams, setSearchParams, queryClient])
+        void queryClient.invalidateQueries({ queryKey: trelloStatusQueryKey(teamId) })
+    }, [trelloFlag, searchParams, setSearchParams, queryClient, teamId])
     
     useEffect(() => {
         if (!catalogQuery.data) return
-        
-        setWorkspaceChoices(prev => {
-            const next = { ...prev }
-            for (const ws of catalogQuery.data.workspaces) {
-                if (next[ws.id]) continue
-                const existing = catalogQuery.data.workspaceLinks.find(
-                    l => l.trelloWorkspaceId === ws.id,
-                )
-                next[ws.id] = {
-                    mode: 'existing',
-                    teamId: existing?.teamId || teamId,
-                    createTeamName: ws.name,
-                }
-            }
-            return next
-        })
         
         setBoardChoices(prev => {
             const next = { ...prev }
@@ -109,7 +86,7 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
             }
             return next
         })
-    }, [catalogQuery.data, teamId])
+    }, [catalogQuery.data])
     
     const teamProjects = useMemo(
         () => projects.filter(p => p.teamId === teamId),
@@ -118,7 +95,7 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
     
     const handleConnect = async () => {
         try {
-            const { url } = await authorize.mutateAsync(teamSlug)
+            const { url } = await authorize.mutateAsync({ teamId, returnTeamSlug: teamSlug })
             window.location.href = url
         }
         catch {
@@ -129,7 +106,7 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
     const handleDisconnect = async () => {
         try {
             await disconnect.mutateAsync()
-            toast.success('Trello disconnected')
+            toast.success('Trello disconnected from this team')
         }
         catch {
             toast.error('Could not disconnect Trello')
@@ -154,33 +131,19 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
         
         const workspaceMappings = catalogQuery.data.workspaces
             .filter(ws => neededWorkspaceIds.has(ws.id))
-            .map(ws => {
-                const choice = workspaceChoices[ws.id]
-                if (choice?.mode === 'create') {
-                    return {
-                        trelloWorkspaceId: ws.id,
-                        trelloWorkspaceName: ws.name,
-                        createTeamName: choice.createTeamName || ws.name,
-                    }
-                }
-                return {
-                    trelloWorkspaceId: ws.id,
-                    trelloWorkspaceName: ws.name,
-                    teamId: choice?.teamId || teamId,
-                }
-            })
+            .map(ws => ({
+                trelloWorkspaceId: ws.id,
+                trelloWorkspaceName: ws.name,
+                teamId,
+            }))
         
         const boardMappings = selectedBoards.map(board => {
             const choice = boardChoices[board.id]
-            const wsChoice = workspaceChoices[board.trelloWorkspaceId]
-            const resolvedTeamId = wsChoice?.mode === 'create'
-                ? undefined
-                : (wsChoice?.teamId || teamId)
             
             if (choice?.mode === 'existing' && choice.projectId) {
                 return {
                     trelloBoardId: board.id,
-                    teamId: resolvedTeamId,
+                    teamId,
                     projectId: choice.projectId,
                     syncEnabled: choice.syncEnabled,
                 }
@@ -188,14 +151,14 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
             
             return {
                 trelloBoardId: board.id,
-                teamId: resolvedTeamId,
+                teamId,
                 createProjectName: choice?.createProjectName || board.name,
                 syncEnabled: choice?.syncEnabled ?? false,
             }
         })
         
         try {
-            const result = await runImport.mutateAsync({ workspaceMappings, boardMappings })
+            const result = await runImport.mutateAsync({ teamId, workspaceMappings, boardMappings })
             const ok = result.results.filter(r => r.ok).length
             const fail = result.results.length - ok
             if (fail === 0)
@@ -221,7 +184,8 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
                     </p>
                     <h2 className="text-lg font-medium mt-1">Trello</h2>
                     <p className="text-sm text-neutral-500 mt-1">
-                        Import workspaces and boards into {teamName}. Optionally keep boards in sync via webhooks.
+                        Link a Trello account to {teamName} (shared with team members).
+                        Import boards and optionally keep them in sync.
                     </p>
                 </div>
                 {status?.connected ? (
@@ -253,7 +217,8 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
                 ) : !status.connected ? (
                     <div className="space-y-3">
                         <p className="text-sm text-muted-foreground">
-                            Connect your Trello account to import boards into this team.
+                            Connect a Trello account for this team.
+                            Other teams can link a different account.
                         </p>
                         <Button onClick={handleConnect} disabled={authorize.isPending}>
                             {authorize.isPending ? (
@@ -282,55 +247,23 @@ export function TrelloImportSection({ teamId, teamSlug, teamName }: TrelloImport
                         </div>
                         
                         <div className="space-y-4">
-                            <h3 className="text-sm font-medium">1. Map workspaces → teams</h3>
+                            <h3 className="text-sm font-medium">1. Workspaces on this Trello account</h3>
+                            <p className="text-xs text-muted-foreground">
+                                Boards import into {teamName}.
+                                Other teams can link a different Trello account.
+                            </p>
                             <div className="divide-y divide-border rounded-lg border">
-                                {catalog.workspaces.map(ws => {
-                                    const choice = workspaceChoices[ws.id]
-                                    const selectValue = choice?.mode === 'create'
-                                        ? CREATE_VALUE
-                                        : (choice?.teamId || teamId)
-                                    return (
-                                        <div key={ws.id} className="flex flex-wrap items-center gap-4 p-4">
-                                            <div className="min-w-[10rem] flex-1">
-                                                <div className="font-medium text-sm">{ws.name}</div>
-                                                <div className="text-xs text-muted-foreground">
-                                                    {ws.boardCount} board{ws.boardCount === 1 ? '' : 's'}
-                                                    {ws.isPersonal ? ' · personal' : ''}
-                                                </div>
-                                            </div>
-                                            <div className="w-full sm:w-64">
-                                                <Label className="sr-only">Team destination</Label>
-                                                <select
-                                                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-                                                    value={selectValue}
-                                                    onChange={e => {
-                                                        const value = e.target.value
-                                                        setWorkspaceChoices(prev => ({
-                                                            ...prev,
-                                                            [ws.id]: value === CREATE_VALUE
-                                                                ? {
-                                                                    mode: 'create',
-                                                                    teamId: '',
-                                                                    createTeamName: ws.name,
-                                                                }
-                                                                : {
-                                                                    mode: 'existing',
-                                                                    teamId: value,
-                                                                    createTeamName: ws.name,
-                                                                },
-                                                        }))
-                                                    }}>
-                                                    {catalog.teams.map(t => (
-                                                        <option key={t.id} value={t.id}>
-                                                            {t.name}
-                                                        </option>
-                                                    ))}
-                                                    <option value={CREATE_VALUE}>Create new team…</option>
-                                                </select>
+                                {catalog.workspaces.map(ws => (
+                                    <div key={ws.id} className="flex flex-wrap items-center gap-4 p-4">
+                                        <div className="min-w-[10rem] flex-1">
+                                            <div className="font-medium text-sm">{ws.name}</div>
+                                            <div className="text-xs text-muted-foreground">
+                                                {ws.boardCount} board{ws.boardCount === 1 ? '' : 's'}
+                                                {ws.isPersonal ? ' · personal' : ''}
                                             </div>
                                         </div>
-                                    )
-                                })}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                         

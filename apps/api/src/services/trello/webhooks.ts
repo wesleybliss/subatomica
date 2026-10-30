@@ -65,7 +65,7 @@ async function findBoardLinkByTrelloBoardId(trelloBoardId: string) {
     return link ?? null
 }
 
-async function ensureListLane(userId: string, boardLinkId: string, projectId: string, listId: string) {
+async function ensureListLane(teamId: string, boardLinkId: string, projectId: string, listId: string) {
     const [existing] = await db
         .select()
         .from(trelloListLinks)
@@ -81,7 +81,7 @@ async function ensureListLane(userId: string, boardLinkId: string, projectId: st
         return lane ?? null
     }
     
-    const list = await getList(userId, listId)
+    const list = await getList(teamId, listId)
     if (!list || list.closed)
         return null
     
@@ -122,10 +122,15 @@ async function ensureListLane(userId: string, boardLinkId: string, projectId: st
     return lane
 }
 
-async function upsertCardFromWebhook(userId: string, boardLink: typeof trelloBoardLinks.$inferSelect, cardId: string) {
+async function upsertCardFromWebhook(
+    teamId: string,
+    actorUserId: string,
+    boardLink: typeof trelloBoardLinks.$inferSelect,
+    cardId: string,
+) {
     let card
     try {
-        card = await getCard(userId, cardId)
+        card = await getCard(teamId, cardId)
     }
     catch (err) {
         log.e('Failed to fetch card for webhook', cardId, err)
@@ -137,7 +142,7 @@ async function upsertCardFromWebhook(userId: string, boardLink: typeof trelloBoa
         return
     }
     
-    const lane = await ensureListLane(userId, boardLink.id, boardLink.projectId, card.idList)
+    const lane = await ensureListLane(teamId, boardLink.id, boardLink.projectId, card.idList)
     const status = lane?.key || 'todo'
     const description = [
         card.desc || '',
@@ -175,7 +180,7 @@ async function upsertCardFromWebhook(userId: string, boardLink: typeof trelloBoa
     const [task] = await db
         .insert(tasks)
         .values({
-            userId,
+            userId: actorUserId,
             projectId: boardLink.projectId,
             localId,
             title: card.name,
@@ -233,7 +238,7 @@ export async function handleWebhookPayload(payload: TrelloWebhookPayload) {
     const [connection] = await db
         .select()
         .from(trelloConnections)
-        .where(eq(trelloConnections.userId, boardLink.userId))
+        .where(eq(trelloConnections.teamId, boardLink.teamId))
         .limit(1)
     
     if (!connection) {
@@ -241,7 +246,8 @@ export async function handleWebhookPayload(payload: TrelloWebhookPayload) {
         return { ok: true, ignored: true }
     }
     
-    const userId = boardLink.userId
+    const teamId = boardLink.teamId
+    const actorUserId = boardLink.userId
     const cardId = payload.action?.data?.card?.id
     
     switch (actionType) {
@@ -251,7 +257,7 @@ export async function handleWebhookPayload(payload: TrelloWebhookPayload) {
         case 'emailCard':
         case 'moveCardToBoard':
             if (cardId)
-                await upsertCardFromWebhook(userId, boardLink, cardId)
+                await upsertCardFromWebhook(teamId, actorUserId, boardLink, cardId)
             break
         
         case 'deleteCard':
@@ -264,7 +270,7 @@ export async function handleWebhookPayload(payload: TrelloWebhookPayload) {
         case 'updateList':
             if (payload.action?.data?.list?.id) {
                 await ensureListLane(
-                    userId,
+                    teamId,
                     boardLink.id,
                     boardLink.projectId,
                     payload.action.data.list.id,

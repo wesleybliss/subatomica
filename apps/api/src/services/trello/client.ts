@@ -101,15 +101,15 @@ async function refreshAccessToken(connectionId: string, refreshToken: string): P
     return tokens
 }
 
-export async function getValidAccessToken(userId: string): Promise<string> {
+export async function getValidAccessToken(teamId: string): Promise<string> {
     const [connection] = await db
         .select()
         .from(trelloConnections)
-        .where(eq(trelloConnections.userId, userId))
+        .where(eq(trelloConnections.teamId, teamId))
         .limit(1)
     
     if (!connection)
-        throw new Error('NotFound: Trello is not connected')
+        throw new Error('NotFound: Trello is not connected for this team')
     
     const expiresAt = new Date(connection.accessTokenExpiresAt).getTime()
     const skewMs = 60_000
@@ -121,8 +121,8 @@ export async function getValidAccessToken(userId: string): Promise<string> {
     return tokens.access_token
 }
 
-async function trelloFetch<T>(userId: string, path: string, init?: RequestInit): Promise<T> {
-    const accessToken = await getValidAccessToken(userId)
+async function trelloFetch<T>(teamId: string, path: string, init?: RequestInit): Promise<T> {
+    const accessToken = await getValidAccessToken(teamId)
     const url = path.startsWith('http') ? path : `${TRELLO_API_BASE}${path}`
     
     const response = await fetch(url, {
@@ -146,54 +146,54 @@ async function trelloFetch<T>(userId: string, path: string, init?: RequestInit):
     return await response.json() as T
 }
 
-export async function getMe(userId: string) {
-    return trelloFetch<TrelloMember>(userId, '/members/me?fields=id,username,fullName')
+export async function getMe(teamId: string) {
+    return trelloFetch<TrelloMember>(teamId, '/members/me?fields=id,username,fullName')
 }
 
-export async function listOrganizations(userId: string) {
+export async function listOrganizations(teamId: string) {
     return trelloFetch<TrelloOrganization[]>(
-        userId,
+        teamId,
         '/members/me/organizations?fields=id,name,displayName',
     )
 }
 
-export async function listBoards(userId: string) {
+export async function listBoards(teamId: string) {
     return trelloFetch<TrelloBoard[]>(
-        userId,
+        teamId,
         '/members/me/boards?fields=id,name,desc,closed,idOrganization,url,shortUrl&filter=open',
     )
 }
 
-export async function getBoardLists(userId: string, boardId: string) {
+export async function getBoardLists(teamId: string, boardId: string) {
     return trelloFetch<TrelloList[]>(
-        userId,
+        teamId,
         `/boards/${boardId}/lists?fields=id,name,closed,pos,idBoard&filter=open`,
     )
 }
 
-export async function getBoardCards(userId: string, boardId: string) {
+export async function getBoardCards(teamId: string, boardId: string) {
     return trelloFetch<TrelloCard[]>(
-        userId,
+        teamId,
         `/boards/${boardId}/cards?fields=id,name,desc,closed,due,idList,idBoard,pos,url,shortUrl&filter=open`,
     )
 }
 
-export async function getCard(userId: string, cardId: string) {
+export async function getCard(teamId: string, cardId: string) {
     return trelloFetch<TrelloCard>(
-        userId,
+        teamId,
         `/cards/${cardId}?fields=id,name,desc,closed,due,idList,idBoard,pos,url,shortUrl`,
     )
 }
 
-export async function getList(userId: string, listId: string) {
+export async function getList(teamId: string, listId: string) {
     return trelloFetch<TrelloList>(
-        userId,
+        teamId,
         `/lists/${listId}?fields=id,name,closed,pos,idBoard`,
     )
 }
 
-export async function createBoardWebhook(userId: string, boardId: string, callbackURL: string) {
-    return trelloFetch<{ id: string }>(userId, '/webhooks', {
+export async function createBoardWebhook(teamId: string, boardId: string, callbackURL: string) {
+    return trelloFetch<{ id: string }>(teamId, '/webhooks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -204,8 +204,8 @@ export async function createBoardWebhook(userId: string, boardId: string, callba
     })
 }
 
-export async function deleteWebhook(userId: string, webhookId: string) {
-    return trelloFetch<void>(userId, `/webhooks/${webhookId}`, {
+export async function deleteWebhook(teamId: string, webhookId: string) {
+    return trelloFetch<void>(teamId, `/webhooks/${webhookId}`, {
         method: 'DELETE',
     })
 }

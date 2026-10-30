@@ -32,28 +32,28 @@ Env: `TRELLO_OAUTH_CLIENT_ID`, `TRELLO_OAUTH_CLIENT_SECRET`, webhook base URL (o
 
 ## Persistence
 
-- `trelloConnections` — user OAuth tokens + Trello member id
-- `trelloOauthStates` — short-lived PKCE state
-- `trelloWorkspaceLinks` — workspace ↔ team
+- `trelloConnections` — **per-team** OAuth tokens + Trello member id (`teamId` unique; `connectedByUserId` audit)
+- `trelloOauthStates` — short-lived PKCE state (includes `teamId`)
+- `trelloWorkspaceLinks` — workspace ↔ team (unique on team + workspace)
 - `trelloBoardLinks` — board ↔ project, webhook id, sync flag
 - `trelloListLinks` — list ↔ lane
 - `trelloCardLinks` — card ↔ task
 
 ## Wizard UX (team settings → Integrations)
 
-1. Connect / Disconnect Trello
-2. Map workspaces → teams (and personal boards destination)
+1. Connect / Disconnect Trello for **this team** (owners/admins); members can import/sync
+2. List workspaces on the linked Trello account
 3. Per board: create project or link existing; Keep in sync toggle
 4. Run import; show status / re-sync for already-linked boards
 
 ## API surface
 
-- `GET /integrations/trello/status`
-- `GET /integrations/trello/authorize`
+- `GET /integrations/trello/status?teamId=`
+- `GET /integrations/trello/authorize?teamId=&returnTeamSlug=`
 - `GET /integrations/trello/callback` (public)
-- `DELETE /integrations/trello/connection`
-- `GET /integrations/trello/catalog` (workspaces + boards + existing links)
-- `POST /integrations/trello/import`
+- `DELETE /integrations/trello/connection?teamId=`
+- `GET /integrations/trello/catalog?teamId=` (workspaces + boards + existing links)
+- `POST /integrations/trello/import` (body includes `teamId`)
 - `POST /integrations/trello/boards/:linkId/sync` (toggle / re-sync)
 - `GET|HEAD|POST /integrations/trello/webhooks` (public)
 
