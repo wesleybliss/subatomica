@@ -2,9 +2,12 @@ import type { Project, ProjectDetailView } from '@repo/shared/types'
 
 import TasksSearchInput from '@/components/list/TasksSearchInput'
 import ProjectsSelectorDropdown from '@/components/ProjectDetailNavbar/ProjectsSelectorDropdown'
+import { SyncStatusChip } from '@/components/sync/SyncStatusChip'
 import ThemeToggle from '@/components/ThemeToggle'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
+import { RealtimeStatusChip } from '../realtime/RealtimeStatusChip'
 
 interface ProjectDetailNavbarProps {
     teamId: string
@@ -56,7 +59,11 @@ const ProjectDetailNavbar = ({
                     setTasksQuery={setTasksQuery} />
             </div>
             
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+                <SyncStatusChip />
+                <RealtimeStatusChip />
+                <ThemeToggle />
+            </div>
         
         </header>
         

@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react'
 import KanbanView from '@/components/kanban/KanbanView'
 import ListView from '@/components/list/ListView'
 import ProjectDetailNavbar from '@/components/ProjectDetailNavbar'
+import { useSyncScope } from '@/components/sync/SyncProvider'
 import TimelineView from '@/components/timeline/TimelineView'
 import { useGetTasksQuery } from '@/lib/queries/tasks.queries'
 
@@ -30,6 +31,8 @@ export function ProjectDetailClient({
     const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set())
     
     const { tasksQueryKey, data: tasks = initialTasks } = useGetTasksQuery(teamId, project.id)
+    
+    useSyncScope(teamId, project.id)
     
     const setTasksQueryAndClearSelection = useCallback((value: string) => {
         setTasksQuery(value)

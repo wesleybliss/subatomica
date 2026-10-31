@@ -1,10 +1,10 @@
 'use client'
 
-import * as React from 'react'
 import { Menu as MenuPrimitive } from '@base-ui/react/menu'
+import { CheckIcon,ChevronRightIcon } from 'lucide-react'
+import * as React from 'react'
 
 import { cn } from '@/lib/utils'
-import { ChevronRightIcon, CheckIcon } from 'lucide-react'
 
 function DropdownMenu({ ...props }: MenuPrimitive.Root.Props) {
     return <MenuPrimitive.Root data-slot="dropdown-menu" {...props} />
@@ -27,7 +27,7 @@ function DropdownMenuContent({
     ...props
 }: MenuPrimitive.Popup.Props &
   Pick<
-    MenuPrimitive.Positioner.Props,
+      MenuPrimitive.Positioner.Props,
     'align' | 'alignOffset' | 'side' | 'sideOffset'
   >) {
     return (
@@ -56,7 +56,7 @@ function DropdownMenuLabel({
     inset,
     ...props
 }: MenuPrimitive.GroupLabel.Props & {
-  inset?: boolean
+    inset?: boolean
 }) {
     return (
         <MenuPrimitive.GroupLabel
@@ -73,8 +73,8 @@ function DropdownMenuItem({
     variant = 'default',
     ...props
 }: MenuPrimitive.Item.Props & {
-  inset?: boolean
-  variant?: 'default' | 'destructive'
+    inset?: boolean
+    variant?: 'default' | 'destructive'
 }) {
     return (
         <MenuPrimitive.Item
@@ -99,7 +99,7 @@ function DropdownMenuSubTrigger({
     children,
     ...props
 }: MenuPrimitive.SubmenuTrigger.Props & {
-  inset?: boolean
+    inset?: boolean
 }) {
     return (
         <MenuPrimitive.SubmenuTrigger
@@ -143,7 +143,7 @@ function DropdownMenuCheckboxItem({
     inset,
     ...props
 }: MenuPrimitive.CheckboxItem.Props & {
-  inset?: boolean
+    inset?: boolean
 }) {
     return (
         <MenuPrimitive.CheckboxItem
@@ -181,7 +181,7 @@ function DropdownMenuRadioItem({
     inset,
     ...props
 }: MenuPrimitive.RadioItem.Props & {
-  inset?: boolean
+    inset?: boolean
 }) {
     return (
         <MenuPrimitive.RadioItem
@@ -230,18 +230,18 @@ function DropdownMenuShortcut({
 
 export {
     DropdownMenu,
-    DropdownMenuPortal,
-    DropdownMenuTrigger,
+    DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuGroup,
-    DropdownMenuLabel,
     DropdownMenuItem,
-    DropdownMenuCheckboxItem,
+    DropdownMenuLabel,
+    DropdownMenuPortal,
     DropdownMenuRadioGroup,
     DropdownMenuRadioItem,
     DropdownMenuSeparator,
     DropdownMenuShortcut,
     DropdownMenuSub,
-    DropdownMenuSubTrigger,
     DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
 }

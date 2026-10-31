@@ -1,16 +1,16 @@
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { Task, TeamMemberProfile } from '@repo/shared/types'
-import { format } from 'date-fns'
-import { convert } from 'html-to-text'
-import { Calendar,Flag } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { TaskDetailDialog } from '@/components/tasks/TaskDetailDialog'
 import { cn } from '@/lib/utils'
 
 import { isTaskDragData } from './dragTypes'
+import { KanbanCardFace } from './KanbanCardFace'
+import { KanbanDropGhost } from './KanbanDropGhost'
+
+const CLICK_SUPPRESS_MS = 250
 
 interface KanbanCardDndProps {
     task: Task
@@ -20,8 +20,11 @@ interface KanbanCardDndProps {
 
 export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps) {
     const cardRef = useRef<HTMLDivElement>(null)
+    const dragEndedAt = useRef(0)
     const [isDragging, setIsDragging] = useState(false)
+    const [isDropTarget, setIsDropTarget] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+    
     useEffect(() => {
         const element = cardRef.current
         if (!element) return
@@ -34,7 +37,11 @@ export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps)
                     status: task.status,
                 }),
                 onDragStart: () => setIsDragging(true),
-                onDrop: () => setIsDragging(false),
+                onDrop: () => {
+                    dragEndedAt.current = Date.now()
+                    setIsDragging(false)
+                    setIsDropTarget(false)
+                },
             }),
             dropTargetForElements({
                 element,
@@ -46,67 +53,41 @@ export function KanbanCardDnd({ task, teamId, teamMembers }: KanbanCardDndProps)
                 canDrop: (args: { source: { data: Record<string, unknown> } }) =>
                     isTaskDragData(args.source.data)
                     && args.source.data.taskId !== task.id,
+                onDragEnter: () => setIsDropTarget(true),
+                onDragLeave: () => setIsDropTarget(false),
+                onDrop: () => setIsDropTarget(false),
             }),
         )
     }, [task.id, task.status])
-    // Format project ID display
-    const teamSegment = teamId ?? task.projectId
-    const taskHref = `/t/${teamSegment}/p/${task.projectId}/s/${task.id}`
+    
     return (
         <>
+            {/*
+              Ghost MUST sit inside the drop-target element. A sibling ghost above
+              the target pushes the card out from under the pointer → leave → remove
+              ghost → enter → infinite flicker (the "stutter like crazy" bug).
+            */}
             <div
                 ref={cardRef}
-                className={cn(
-                    'bg-card border border-border rounded-lg p-3 cursor-move min-w-0 overflow-hidden',
-                    'transition-all hover:shadow-md hover:border-primary/50', {
-                        'opacity-50': isDragging,
-                        'opacity-100': !isDragging,
-                    },
-                )}
-                onClick={() => {
-                    if (!isDragging) setIsDialogOpen(true)
-                }}>
-                <div className="flex items-start justify-between gap-2 mb-2">
-                    <Link
-                        to={taskHref}
-                        className="text-xs text-muted-foreground hover:text-primary transition-colors font-mono"
-                        onClick={e => e.stopPropagation()}>
-                        {format(task.createdAt, 'MMM d')}
-                    </Link>
-                    {task.priority === 'high' || task.priority === 'urgent' ? (
-                        <Flag className="w-3 h-3 text-destructive" />
-                    ) : null}
-                </div>
-                <h4 className="text-sm font-medium text-foreground mb-2 break-all">
-                    {task.title}
-                </h4>
-                <div className="text-xs text-muted-foreground mb-2 break-all">
-                    {convert(task.description, { wordwrap: false }).substring(0, 100)}
-                </div>
-                <div className="flex items-center justify-between mt-3">
-                    <div className="flex items-center gap-2">
-                        {task.assigneeId && (
-                            <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
-                                <span className="text-xs font-medium text-primary">
-                                    {task.assigneeId.slice(0, 1).toUpperCase()}
-                                </span>
-                            </div>
-                        )}
-                        {task.dueDate && (
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Calendar className="w-3 h-3" />
-                                <span>{new Date(task.dueDate)
-                                    .toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                className={cn('space-y-2', isDragging && 'opacity-40')}>
+                {isDropTarget ? <KanbanDropGhost /> : null}
+                <KanbanCardFace
+                    task={task}
+                    teamId={teamId}
+                    teamMembers={teamMembers}
+                    isDragging={isDragging}
+                    onOpen={() => {
+                        if (Date.now() - dragEndedAt.current < CLICK_SUPPRESS_MS) return
+                        setIsDialogOpen(true)
+                    }} />
             </div>
-            <TaskDetailDialog
-                task={task}
-                teamMembers={teamMembers}
-                open={isDialogOpen}
-                onOpenChange={setIsDialogOpen} />
+            {isDialogOpen ? (
+                <TaskDetailDialog
+                    task={task}
+                    teamMembers={teamMembers}
+                    open={isDialogOpen}
+                    onOpenChange={setIsDialogOpen} />
+            ) : null}
         </>
     )
 }

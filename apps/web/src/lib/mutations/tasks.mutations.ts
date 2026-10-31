@@ -2,6 +2,8 @@ import { CreateTaskInput, Task, UpdateTaskOrderInput } from '@repo/shared/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { request } from '@/lib/api/client'
+import { clearDirtyTasks, markDirtyTask } from '@/lib/sync/dirtyStore'
+import { hybridClock } from '@/lib/sync/hlc'
 
 interface UpdateTaskData {
     title?: string
@@ -83,11 +85,19 @@ export const useCreateTaskMutation = (
             return { previousTasks }
             
         },
-        onError: (_error: Error, _vars: CreateTaskInput, context: { previousTasks?: Task[] } | undefined) => {
+        onError: (_error: Error, vars: CreateTaskInput, context: { previousTasks?: Task[] } | undefined) => {
             if (context?.previousTasks)
                 queryClient.setQueryData(activeQueryKey, context.previousTasks)
+            if (teamId && projectId) {
+                void markDirtyTask(teamId, projectId, {
+                    id: vars.tempId,
+                    updatedAt: hybridClock.nowIso(),
+                    status: vars.status,
+                })
+            }
         },
         onSuccess: ({ created, tempId }: { created: Task; tempId: string }) => {
+            hybridClock.receive(created.updatedAt)
             queryClient.setQueryData(activeQueryKey, (current?: Task[]) =>
                 (current || []).map((task: Task) => (task.id === tempId ? created : task)),
             )
@@ -127,14 +137,25 @@ export const useUpdateTaskOrderMutation = (
         onMutate: async ({ taskId, status, order }: UpdateTaskOrderInput) => {
             await queryClient.cancelQueries({ queryKey: activeQueryKey })
             
+            const updatedAt = hybridClock.nowIso()
             const previousTasks = queryClient.getQueryData<Task[]>(activeQueryKey)
             const nextTasks = (previousTasks || localTasks).map((task: Task) =>
                 task.id === taskId
-                    ? { ...task, status, order }
+                    ? { ...task, status, order, updatedAt }
                     : task,
             )
             queryClient.setQueryData(activeQueryKey, nextTasks)
             setLocalTasks(nextTasks)
+            
+            if (teamId && projectId) {
+                void markDirtyTask(teamId, projectId, {
+                    id: taskId,
+                    updatedAt,
+                    status,
+                    order,
+                })
+            }
+            
             return { previousTasks }
         },
         onError: (_error: Error, _vars: UpdateTaskOrderInput, context: { previousTasks?: Task[] } | undefined) => {
@@ -142,6 +163,8 @@ export const useUpdateTaskOrderMutation = (
                 queryClient.setQueryData(activeQueryKey, context.previousTasks)
         },
         onSuccess: (updated: Task) => {
+            hybridClock.receive(updated.updatedAt)
+            void clearDirtyTasks([updated.id])
             queryClient.setQueryData(activeQueryKey, (current?: Task[]) =>
                 (current || []).map((task: Task) => (task.id === updated.id ? updated : task)),
             )

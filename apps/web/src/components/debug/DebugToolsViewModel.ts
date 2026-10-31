@@ -7,6 +7,8 @@ const DebugToolsViewModel = () => {
     
     const debugToolsMode = useDebugStore(s => s.debugToolsMode)
     const setDebugToolsMode = useDebugStore(s => s.setDebugToolsMode)
+    const debugPanelSection = useDebugStore(s => s.debugPanelSection)
+    const setDebugPanelSection = useDebugStore(s => s.setDebugPanelSection)
     
     const activeTheme = theme
     
@@ -15,6 +17,8 @@ const DebugToolsViewModel = () => {
         // State
         debugToolsMode,
         setDebugToolsMode,
+        debugPanelSection,
+        setDebugPanelSection,
         
         // Hooks
         activeTheme,

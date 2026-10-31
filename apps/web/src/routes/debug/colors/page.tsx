@@ -7,6 +7,7 @@ function readCssVariable(variable: string) {
 
 function subscribeToDocumentTheme(onStoreChange: () => void) {
     const observer = new MutationObserver(onStoreChange)
+    // oxlint-disable-next-line no-restricted-globals
     observer.observe(document.documentElement, {
         attributes: true,
         attributeFilter: ['class', 'style'],

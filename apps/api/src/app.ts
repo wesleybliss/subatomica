@@ -14,6 +14,7 @@ const log = new Logger('api/app')
 import healthRoutes from '@/routes/health'
 import lanesRoutes from '@/routes/lanes'
 import projectsRoutes from '@/routes/projects'
+import syncRoutes from '@/routes/sync'
 import tasksRoutes from '@/routes/tasks'
 import teamsRoutes from '@/routes/teams'
 import { trelloProtectedRoutes, trelloPublicRoutes } from '@/routes/trello'
@@ -160,6 +161,7 @@ export const createApiServer = (auth = defaultAuth) => {
         .route('/projects', projectsRoutes)
         .route('/lanes', lanesRoutes)
         .route('/tasks', tasksRoutes)
+        .route('/sync', syncRoutes)
         .route('/integrations/trello', trelloProtectedRoutes)
     
     const finalApp = finalApi.route('/', protectedRoutes)

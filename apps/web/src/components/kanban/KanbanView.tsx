@@ -1,6 +1,9 @@
 import type { Project, Task, TaskLane, TeamMemberProfile } from '@repo/shared/types'
 import { useState } from 'react'
 
+import KanbanBoardDndKit from '@/components/kanban/dnd-kit/KanbanBoardDndKit'
+import { useDebugStore } from '@/store'
+
 import KanbanBoardDnd from './KanbanBoardDnd'
 
 interface KanbanViewProps {
@@ -22,16 +25,22 @@ const KanbanView = ({
 }: KanbanViewProps) => {
     
     const projectId = project.id
+    const kanbanDndEngine = useDebugStore(s => s.kanbanDndEngine)
     
     const [lanes, setLanes] = useState<TaskLane[]>(initialLanes)
+    
+    const Board = kanbanDndEngine === 'dnd-kit'
+        ? KanbanBoardDndKit
+        : KanbanBoardDnd
     
     return (
         
         <div
             data-testid="KanbanView"
+            data-dnd-engine={kanbanDndEngine}
             className="flex-1 overflow-hidden px-6 py-5">
             
-            <KanbanBoardDnd
+            <Board
                 tasks={tasks}
                 lanes={lanes}
                 projectId={projectId}

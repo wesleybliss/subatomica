@@ -1,7 +1,7 @@
 'use client'
 
-import * as React from 'react'
 import { Avatar as AvatarPrimitive } from '@base-ui/react/avatar'
+import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -10,7 +10,7 @@ function Avatar({
     size = 'default',
     ...props
 }: AvatarPrimitive.Root.Props & {
-  size?: 'default' | 'sm' | 'lg'
+    size?: 'default' | 'sm' | 'lg'
 }) {
     return (
         <AvatarPrimitive.Root
@@ -92,9 +92,9 @@ function AvatarGroupCount({
 
 export {
     Avatar,
-    AvatarImage,
+    AvatarBadge,
     AvatarFallback,
     AvatarGroup,
     AvatarGroupCount,
-    AvatarBadge,
+    AvatarImage,
 }

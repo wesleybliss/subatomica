@@ -45,6 +45,7 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 - On Vercel: `VERCEL=1` → nitro preset `vercel`, output `.vercel/output`. Include prod domain in `BETTER_AUTH_TRUSTED_ORIGINS`.
 - `@/` alias: web vs api via importer path (`aliases.ts`); server uses `@api/`.
 - Standalone `pnpm dev:api` still runs Hono on :5000 for scripts/tests.
+- Nitro `server/server.ts` API_PREFIXES must include new routes (e.g. `/sync`, `/integrations`).
 
 ## Trello import
 - Plan: task/trello-import-plan.md
@@ -56,7 +57,7 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 
 ## Kanban / Trello bugs (2026-10-30)
 - Lane scroll: `.no-scrollbar` in scrollbars.css; applied on KanbanTaskLane overflow container
-- Card overflow: `break-all` + `min-w-0 overflow-hidden` on KanbanCardDnd; TipTap editor same
+- Card overflow: `break-all` + `min-w-0 overflow-hidden` on KanbanCardFace; TipTap editor same
 - Assignee empty: teamMembers store never filled (`setTeamMembers` unused). Fix: useGetTeamMembersQuery writes store + project/task/settings pages fetch via query
 - Trello create teammates BLOCKED: users.email NOT NULL unique; Trello only exposes email for /members/me not board members; assigneeId → users.id. Need user decision before implementing.
 
@@ -66,3 +67,16 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 - Claim: POST /claim-account (invite + hash via better-auth/crypto) then sign-in
 - Import UI step 3 maps emails; cards get assigneeId from first mapped idMembers
 - hashPassword from better-auth/crypto; credential accountId = user.id
+
+## Inspiration review (2026-10)
+- Findings: docs/inspiration-review.md
+- Prefer @reui/gantt over custom TimelineView (Base UI/shadcn aligned).
+- Keep pragmatic-dnd; steal Kargul overlay/edge-scroll/click-suppress patterns.
+- Sync: Doska SyncEngine+HLC for offline-first; Electric+TanStack DB (Vibe) for live shapes.
+
+## Sync + dual DnD (2026-10)
+- Toggle: debug panel Kanban section; default dnd-kit (kanban.constants DEFAULT_KANBAN_DND_ENGINE)
+- Sync: Tier0 Query refetch + Tier1 IDB dirty/push-pull + Ably invalidate (docs/sync-and-local-db.md)
+- Local DB: IndexedDB via idb for dirty+cursors; Neon remains SoT. Skip PGlite unless offline SQL needed.
+- DnD: dnd-kit onDragOver ONLY cross-container (same-col setState↔collision = max update depth); sortable transforms + onDragEnd for same-col; collision lastOverId stabilize. Pragmatic: ghost inside drop-target.
+

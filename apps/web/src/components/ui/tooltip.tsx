@@ -34,7 +34,7 @@ function TooltipContent({
     ...props
 }: TooltipPrimitive.Popup.Props &
   Pick<
-    TooltipPrimitive.Positioner.Props,
+      TooltipPrimitive.Positioner.Props,
     'align' | 'alignOffset' | 'side' | 'sideOffset'
   >) {
     return (
@@ -60,4 +60,4 @@ function TooltipContent({
     )
 }
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
+export { Tooltip, TooltipContent, TooltipProvider,TooltipTrigger }
