@@ -17,7 +17,12 @@
         "test:watch": "vitest run --watch",
         "test:ui": "vitest --ui",
         "update-shared": "pnpm up @repo/shared",
+        "db:studio": "drizzle-kit studio",
+        "db:pull": "drizzle-kit pull",
         "db:push": "drizzle-kit push",
+        "db:push:prod": "DRIZZLE_USE_REMOTE=true drizzle-kit push",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
         "db:dump": "turso db shell subatomica .dump > backups/dump_`ts`.sql",
         "db:restore": "echo 'turso db shell subatomica < backups/dump-.sql'",
         "import:clickup": "tsx bin/importClickupTasks.ts"
