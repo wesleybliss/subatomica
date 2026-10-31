@@ -233,8 +233,8 @@ importers:
         specifier: ^8.0.4
         version: 8.0.4
       lucide-react:
-        specifier: ^0.563.0
-        version: 0.563.0(react@19.2.4)
+        specifier: ^1.64.0
+        version: 1.65.0(@types/react@19.2.13)(react@19.2.4)
       nitro:
         specifier: 3.0.260610-beta
         version: 3.0.260610-beta(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.0)(chokidar@4.0.3)(dotenv@17.2.4)(drizzle-orm@0.30.10(@electric-sql/pglite@0.3.15)(@libsql/client@0.17.0)(@neondatabase/serverless@1.0.2)(@types/pg@8.16.0)(@types/react@19.2.13)(kysely@0.28.11)(mysql2@3.15.3)(postgres@3.4.7)(react@19.2.4))(giget@2.0.0)(jiti@2.7.0)(mongodb@7.1.0)(mysql2@3.15.3)(vite@7.3.1(@types/node@25.2.2)(jiti@2.7.0)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2))
@@ -6394,10 +6394,14 @@ packages:
     resolution: {integrity: sha512-DqC6n3QQ77zdFpCMASA1a3Jlb64Hv2N2DciFGkO/4L9+q/IpIAuRlKOvCXabtRW6cQf8usbmM6BE/TOPysCdIA==}
     engines: {bun: '>=1.0.0', deno: '>=1.30.0', node: '>=8.0.0'}
 
-  lucide-react@0.563.0:
-    resolution: {integrity: sha512-8dXPB2GI4dI8jV4MgUDGBeLdGk8ekfqVZ0BdLcrRzocGgG75ltNEmWS+gE7uokKF/0oSUuczNDT+g9hFJ23FkA==}
+  lucide-react@1.65.0:
+    resolution: {integrity: sha512-roSdtzudEY39i2hn5LLjA8toYfhF2z4S10WSqZF4ubXpHlOmNTvaxMxZLdJfQDi6pEifQWX+cRmYihKSsvAxfA==}
     peerDependencies:
+      '@types/react': '*'
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
@@ -14120,9 +14124,11 @@ snapshots:
 
   lru.min@1.1.4: {}
 
-  lucide-react@0.563.0(react@19.2.4):
+  lucide-react@1.65.0(@types/react@19.2.13)(react@19.2.4):
     dependencies:
       react: 19.2.4
+    optionalDependencies:
+      '@types/react': 19.2.13
 
   magic-string@0.30.21:
     dependencies:
