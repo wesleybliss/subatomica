@@ -1,7 +1,4 @@
 /* eslint-disable no-console */
-
-/// <reference path="../env.d.ts" />
-
 import c from 'ansi-colors'
 
 import type { LogLevel } from '../types/logger.types'
@@ -16,6 +13,7 @@ function isServerLogEnabled(): boolean {
     if (!env)
         return false
     return env.LOG_ENABLED === 'true'
+        || env.VITE_LOG_ENABLED === 'true'
         || env.NEXT_PUBLIC_LOG_ENABLED === 'true'
 }
 

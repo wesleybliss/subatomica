@@ -7,6 +7,7 @@ import app from '@api/app'
 const API_PREFIXES = [
     '/auth',
     '/session',
+    '/users',
     '/teams',
     '/projects',
     '/lanes',

@@ -16,3 +16,7 @@ export interface SidebarGroup {
     collapsed?: boolean
     href?: string
 }
+
+export interface InviteCodeResponse {
+    inviteCode: string
+}

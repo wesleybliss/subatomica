@@ -1,4 +1,4 @@
-import 'dotenv/config'
+import '../loadEnv'
 
 import { serve } from '@hono/node-server'
 import Logger from '@repo/shared/utils/logger'

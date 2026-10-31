@@ -40,7 +40,7 @@
  */
 
 // Load environment variables first
-import 'dotenv/config'
+import '../loadEnv'
 
 import { projects, tasks } from '@repo/db/schema'
 import Logger from '@repo/shared/utils/logger'

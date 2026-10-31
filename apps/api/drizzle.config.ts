@@ -1,4 +1,4 @@
-import 'dotenv/config'
+import './loadEnv'
 
 import Logger from '@repo/shared/utils/logger'
 import { defineConfig } from 'drizzle-kit'

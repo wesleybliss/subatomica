@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import 'dotenv/config'
+import '../loadEnv'
 
 import Logger from '@repo/shared/utils/logger'
 

@@ -35,7 +35,7 @@ export function DangerZoneSection({ team }: DangerZoneSectionProps) {
                     Irreversible actions that affect this team.
                 </p>
             </div>
-
+            
             <div className="divide-y divide-red-100">
                 <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-5">
                     <div>
@@ -46,7 +46,7 @@ export function DangerZoneSection({ team }: DangerZoneSectionProps) {
                     </div>
                     <RenameTeamDialog team={team} />
                 </div>
-
+                
                 <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-5">
                     <div>
                         <p className="font-medium text-neutral-900">Delete team</p>
@@ -66,16 +66,16 @@ function RenameTeamDialog({ team }: { team: Team }) {
     const [name, setName] = useState(team.name)
     const updateTeam = useUpdateTeamMutation()
     const navigate = useNavigate()
-
+    
     const handleOpenChange = (next: boolean) => {
         setOpen(next)
         if (next) setName(team.name)
     }
-
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!name.trim() || name.trim() === team.name) return
-
+        
         try {
             const updated = await updateTeam.mutateAsync({
                 teamId: team.id,
@@ -89,7 +89,7 @@ function RenameTeamDialog({ team }: { team: Team }) {
             toast.error(error instanceof Error ? error.message : 'Failed to rename team')
         }
     }
-
+    
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger render={<Button variant="outline" size="sm" />}>
@@ -143,16 +143,16 @@ function DeleteTeamDialog({ team }: { team: Team }) {
     const [confirmName, setConfirmName] = useState('')
     const deleteTeam = useDeleteTeamMutation()
     const navigate = useNavigate()
-
+    
     const handleOpenChange = (next: boolean) => {
         setOpen(next)
         if (!next) setConfirmName('')
     }
-
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (confirmName !== team.name) return
-
+        
         try {
             await deleteTeam.mutateAsync({ teamId: team.id })
             toast.success('Team deleted')
@@ -162,7 +162,7 @@ function DeleteTeamDialog({ team }: { team: Team }) {
             toast.error(error instanceof Error ? error.message : 'Failed to delete team')
         }
     }
-
+    
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger render={<Button variant="destructive" size="sm" />}>

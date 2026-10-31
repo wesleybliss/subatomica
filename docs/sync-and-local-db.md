@@ -12,7 +12,7 @@
 ## Env
 
 ```bash
-# apps/api/.env
+# .env (repo root)
 ABLY_API_KEY=appkey.secret
 ABLY_ENABLED=true   # required for server publish + token auth (omit/false = no Ably usage)
 ```

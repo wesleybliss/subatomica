@@ -3,7 +3,7 @@
  * Run with: tsx src/scripts/backfill-slugs.ts
  */
 
-import 'dotenv/config'
+import '../../loadEnv'
 
 import { projects, teams } from '@repo/db/schema'
 import Logger from '@repo/shared/utils/logger'

@@ -1,6 +1,7 @@
 import { KnownLaneType, Task, TaskLane } from '@repo/shared/types'
 import Logger from '@repo/shared/utils/logger'
 import { ChevronDown } from 'lucide-react'
+import { memo } from 'react'
 
 import LaneIconColorPicker from '@/components/lanes/LaneIconColorPicker'
 import useListViewGroupViewModel from '@/components/list/ListViewGroupViewModel'
@@ -104,4 +105,4 @@ const ListViewGroupHeader = ({
     
 }
 
-export default ListViewGroupHeader
+export default memo(ListViewGroupHeader)

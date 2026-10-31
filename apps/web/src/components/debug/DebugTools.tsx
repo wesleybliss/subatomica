@@ -8,10 +8,12 @@ import { cn } from '@/lib/utils'
 import type { DebugPanelSection } from '@/store/debug'
 
 import useDebugToolsViewModel from './DebugToolsViewModel'
+import InvitesDebugPanel from './InvitesDebugPanel'
 
 const NAV_ITEMS: { id: DebugPanelSection; label: string }[] = [
     { id: 'ably', label: 'Ably' },
     { id: 'kanban', label: 'Kanban' },
+    { id: 'invites', label: 'Invites' },
 ]
 
 const panelClasses = 'top-3 right-3 bottom-3 flex w-[min(38rem,92vw)] flex-col' +
@@ -61,14 +63,14 @@ const DebugTools = () => {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="size-8 opacity-40 hover:opacity-100"
+                                className="opacity-40 hover:opacity-100"
                                 onClick={() => vm.setDebugToolsMode(DebugToolsMode.minified)}>
-                                <Minimize2 />
+                                <Minimize2 className="size-4" />
                             </Button>
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="size-8 opacity-40 hover:opacity-100"
+                                className="opacity-40 hover:opacity-100"
                                 onClick={() =>
                                     vm.setDebugToolsMode(
                                         vm.debugToolsMode === DebugToolsMode.panel
@@ -76,7 +78,7 @@ const DebugTools = () => {
                                             : DebugToolsMode.panel,
                                     )
                                 }>
-                                <Expand />
+                                <Expand className="size-4" />
                             </Button>
                         </div>
                     </header>
@@ -105,6 +107,7 @@ const DebugTools = () => {
                         <div className="min-h-0 min-w-0 flex-1 bg-slate-50">
                             {vm.debugPanelSection === 'ably' && <AblyDebugPanel />}
                             {vm.debugPanelSection === 'kanban' && <KanbanDebugPanel />}
+                            {vm.debugPanelSection === 'invites' && <InvitesDebugPanel />}
                         </div>
                     </div>
                 </>

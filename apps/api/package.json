@@ -40,7 +40,7 @@
         "ably": "^2.30.0",
         "better-auth": "1.5.0-beta.9",
         "dotenv": "^17.2.4",
-        "drizzle-orm": "^0.45.1",
+        "drizzle-orm": "^0.45.4",
         "drizzle-zod": "^0.8.3",
         "hono": "^4.11.9",
         "nitro": "3.0.260610-beta",
@@ -49,7 +49,7 @@
     },
     "devDependencies": {
         "@vitest/ui": "^4.0.18",
-        "drizzle-kit": "^0.31.9",
+        "drizzle-kit": "^0.31.11",
         "jsdom": "^28.0.0",
         "tsx": "^4.21.0",
         "typescript": "^5.9.3",

@@ -80,7 +80,7 @@ export default function TeamSettingsPage() {
                     teamSlug={team.slug}
                     teamName={team.name}
                 />
-
+                
                 <DangerZoneSection team={team} />
             
             </div>

@@ -1,7 +1,7 @@
 import { KnownLaneType, TaskLane } from '@repo/shared/types'
 import Logger from '@repo/shared/utils/logger'
 import { Circle } from 'lucide-react'
-import type { MouseEvent } from 'react'
+import { memo, type MouseEvent } from 'react'
 
 import {
     ColorPicker,
@@ -21,6 +21,7 @@ import {
 } from '@/lib/constants/lane-colors.constants'
 import { cn } from '@/lib/utils'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const log = new Logger('web/components/lanes/LaneIconColorPicker')
 
 interface LaneIconColorPickerProps {
@@ -41,8 +42,8 @@ const LaneIconColorPicker = ({
     onTriggerClick,
 }: LaneIconColorPickerProps) => {
     
-    if (!KNOWN_LANE_ICONS[lane.name as KnownLaneType])
-        log.w('No icon for', lane.name)
+    /* if (!KNOWN_LANE_ICONS[lane.name as KnownLaneType])
+        log.w('No icon for', lane.name) */
     
     const LaneIcon = KNOWN_LANE_ICONS[lane.name as KnownLaneType] || Circle
     const iconColor = resolveLaneIconColor(lane.color)
@@ -122,4 +123,4 @@ const LaneIconColorPicker = ({
     
 }
 
-export default LaneIconColorPicker
+export default memo(LaneIconColorPicker)

@@ -1,37 +1,22 @@
 import { useQueryClient } from '@tanstack/react-query'
 import {
-    createContext,
     type ReactNode,
-    useContext,
     useEffect,
     useMemo,
-    useRef,
     useState,
-    useSyncExternalStore,
 } from 'react'
 
+import { SyncContext, type SyncContextValue } from '@/components/sync/sync-context'
 import { disconnectAbly, subscribeProjectInvalidates } from '@/lib/sync/ablyClient'
 import { startBackgroundSync } from '@/lib/sync/backgroundSync'
-import { SyncEngine, type SyncState } from '@/lib/sync/syncEngine'
+import { SyncEngine } from '@/lib/sync/syncEngine'
 import { useAblyUiStore } from '@/store'
 
 const POLL_INTERVAL_MS = 8_000
 
-type SyncContextValue = {
-    engine: SyncEngine
-    setScope: (teamId: string, projectId: string) => void
-    clearScope: () => void
-}
-
-const SyncContext = createContext<SyncContextValue | null>(null)
-
 export function SyncProvider({ children }: { children: ReactNode }) {
     const queryClient = useQueryClient()
-    const engineRef = useRef<SyncEngine | null>(null)
-    if (!engineRef.current)
-        engineRef.current = new SyncEngine(queryClient)
-    
-    const engine = engineRef.current
+    const [engine] = useState(() => new SyncEngine(queryClient))
     const [scope, setScopeState] = useState<{ teamId: string; projectId: string } | null>(null)
     const ablyEnabled = useAblyUiStore(s => s.ablyEnabled)
     
@@ -89,28 +74,4 @@ export function SyncProvider({ children }: { children: ReactNode }) {
             {children}
         </SyncContext.Provider>
     )
-}
-
-export function useSync() {
-    const ctx = useContext(SyncContext)
-    if (!ctx)
-        throw new Error('useSync must be used within SyncProvider')
-    return ctx
-}
-
-export function useSyncState(): SyncState {
-    const { engine } = useSync()
-    return useSyncExternalStore(engine.subscribe, engine.getState, engine.getState)
-}
-
-export function useSyncScope(teamId: string | undefined, projectId: string | undefined) {
-    const { setScope, clearScope } = useSync()
-    
-    useEffect(() => {
-        if (teamId && projectId) {
-            setScope(teamId, projectId)
-            return () => clearScope()
-        }
-        clearScope()
-    }, [teamId, projectId, setScope, clearScope])
 }
