@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-import '../loadEnv'
-
 import Logger from '@repo/shared/utils/logger'
 
 import { auth } from '../src/services/auth'

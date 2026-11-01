@@ -39,9 +39,6 @@
  *   --dry-run   Preview what would be imported without modifying the database
  */
 
-// Load environment variables first
-import '../loadEnv'
-
 import { projects, tasks } from '@repo/db/schema'
 import Logger from '@repo/shared/utils/logger'
 import { and, desc, eq } from 'drizzle-orm'

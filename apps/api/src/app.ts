@@ -1,5 +1,3 @@
-import '../loadEnv'
-
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import Logger from '@repo/shared/utils/logger'

@@ -39,7 +39,7 @@ export const KanbanColumnDndKit = ({
                 ref={setNodeRef}
                 className={cn(
                     // Tall hit target so empty lanes are easy to pointerWithin
-                    'space-y-2 h-full min-h-[12rem] bg-muted/30 rounded-lg p-2 pb-4',
+                    'space-y-2 h-full min-h-[12rem] bg-muted/30 rounded-lg pb-4',
                     empty && isOver && 'ring-1 ring-primary/40 bg-primary/5',
                 )}>
                 {tasks.map(task => (
