@@ -13,7 +13,7 @@ import {
     trelloWorkspaceLinks,
 } from '@repo/db/schema'
 import Logger from '@repo/shared/utils/logger'
-import { generateSlug } from '@repo/shared/utils/slugs'
+import { formatTaskSlug, generateProjectAcronym, generateSlug } from '@repo/shared/utils/slugs'
 import { and, eq, inArray } from 'drizzle-orm'
 
 import { db } from '@/db/client'
@@ -411,12 +411,13 @@ async function syncCardsToTasks(
         .where(eq(trelloCardLinks.boardLinkId, boardLinkId))
     
     const [project] = await db
-        .select({ taskSequence: projects.taskSequence })
+        .select({ name: projects.name, taskSequence: projects.taskSequence })
         .from(projects)
         .where(eq(projects.id, projectId))
         .limit(1)
     
     let sequence = project?.taskSequence ?? 1
+    const acronym = generateProjectAcronym(project?.name ?? 'PRJ')
     let imported = 0
     let updated = 0
     
@@ -463,6 +464,7 @@ async function syncCardsToTasks(
                 userId,
                 projectId,
                 localId: sequence,
+                key: formatTaskSlug(acronym, sequence),
                 title: card.name,
                 description,
                 status,

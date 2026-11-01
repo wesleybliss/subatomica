@@ -126,6 +126,8 @@ export const tasks = table('tasks', {
         .notNull()
         .references(() => projects.id, { onDelete: 'cascade' }),
     localId: integer('localId').notNull(),
+    // Stable display/link key (e.g. CPW-01); set at create, never derived from current project name
+    key: text('key').notNull(),
     title: text('title').notNull(),
     description: text('description').notNull().default(''),
     status: text('status').notNull().default('backlog'), // 'backlog', 'todo', 'in-progress', 'done'
@@ -137,6 +139,7 @@ export const tasks = table('tasks', {
 }, table => ({
     projectIdIndex: index('tasks_project_id_idx').on(table.projectId),
     projectLocalIdUnique: uniqueIndex('tasks_project_local_id_unique').on(table.projectId, table.localId),
+    projectKeyUnique: uniqueIndex('tasks_project_key_unique').on(table.projectId, table.key),
     userIdIndex: index('tasks_user_id_idx').on(table.userId),
     assigneeIdIndex: index('tasks_assignee_id_idx').on(table.assigneeId),
     statusIndex: index('tasks_status_idx').on(table.status),

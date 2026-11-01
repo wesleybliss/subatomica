@@ -13,6 +13,13 @@ const TaskBaseSchema = createSelectSchema(tasks).extend({
     userId: z.string().openapi({
         example: '019c416f-d018-721f-b332-e9424030c6a8',
     }),
+    localId: z.number().int().openapi({
+        example: 1,
+    }),
+    key: z.string().openapi({
+        example: 'CPW-01',
+        description: 'Stable task key set at creation; does not change if the project is renamed',
+    }),
     title: z.string().openapi({
         example: 'Set up OpenAPI docs',
     }),
@@ -33,9 +40,6 @@ const TaskBaseSchema = createSelectSchema(tasks).extend({
     }),
     isStarred: z.boolean().openapi({
         example: false,
-    }),
-    slug: z.string().nullable().openapi({
-        example: 'CPW-01',
     }),
 })
 

@@ -10,6 +10,7 @@ import {
     trelloListLinks,
 } from '@repo/db/schema'
 import Logger from '@repo/shared/utils/logger'
+import { formatTaskSlug, generateProjectAcronym } from '@repo/shared/utils/slugs'
 import { and, eq } from 'drizzle-orm'
 
 import { db } from '@/db/client'
@@ -175,12 +176,13 @@ async function upsertCardFromWebhook(
     }
     
     const [project] = await db
-        .select({ taskSequence: projects.taskSequence })
+        .select({ name: projects.name, taskSequence: projects.taskSequence })
         .from(projects)
         .where(eq(projects.id, boardLink.projectId))
         .limit(1)
     
     const localId = project?.taskSequence ?? 1
+    const key = formatTaskSlug(generateProjectAcronym(project?.name ?? 'PRJ'), localId)
     
     const [task] = await db
         .insert(tasks)
@@ -188,6 +190,7 @@ async function upsertCardFromWebhook(
             userId: actorUserId,
             projectId: boardLink.projectId,
             localId,
+            key,
             title: card.name,
             description,
             status,

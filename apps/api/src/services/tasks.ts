@@ -45,7 +45,7 @@ export async function createTask(
     const accessibleTeamIds = getAccessibleTeamIds(userId)
     
     const [project] = await db
-        .select({ id: projects.id, taskSequence: projects.taskSequence })
+        .select({ id: projects.id, name: projects.name, taskSequence: projects.taskSequence })
         .from(projects)
         .where(and(
             eq(projects.id, projectId),
@@ -67,12 +67,14 @@ export async function createTask(
         : await getNextTaskOrder(project.id, status)
     
     const localId = project.taskSequence
+    const key = formatTaskSlug(generateProjectAcronym(project.name), localId)
     
     const insertValues = {
         title,
         userId,
         projectId: project.id,
         localId,
+        key,
         description: data.description || '',
         status,
         order,
@@ -280,36 +282,13 @@ const getNextTaskOrder = async (projectId: string, status: string) => {
 }
 
 /**
- * Get task key (e.g., "CPW-01") for a task
- */
-export async function getTaskSlug(projectId: string, taskId: string): Promise<string | null> {
-    const [project] = await db
-        .select({ name: projects.name })
-        .from(projects)
-        .where(eq(projects.id, projectId))
-        .limit(1)
-    
-    const [task] = await db
-        .select({ localId: tasks.localId })
-        .from(tasks)
-        .where(eq(tasks.id, taskId))
-        .limit(1)
-    
-    if (!project || !task)
-        return null
-    
-    const acronym = generateProjectAcronym(project.name)
-    return formatTaskSlug(acronym, task.localId)
-}
-
-/**
  * Get task by key (e.g., "CPW-01") within a project
  */
 export async function getTaskByKey(
     userId: string,
     teamId: string,
     projectId: string,
-    slug: string,
+    key: string,
 ): Promise<Task | null> {
     const teamProjectIds = getTeamProjectIds(userId, teamId)
     
@@ -325,19 +304,12 @@ export async function getTaskByKey(
     if (!project)
         return null
     
-    const localIdMatch = slug.match(/^[A-Z0-9]+-(\d+)$/)
-    
-    if (!localIdMatch)
-        return null
-    
-    const localId = parseInt(localIdMatch[1], 10)
-    
     const [task] = await db
         .select()
         .from(tasks)
         .where(and(
             eq(tasks.projectId, projectId),
-            eq(tasks.localId, localId),
+            eq(tasks.key, key),
         ))
         .limit(1)
     

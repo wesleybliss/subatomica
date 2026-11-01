@@ -10,7 +10,7 @@ const useLaneColor = (laneColor: string) => {
         : undefined
     
     const ringColor = hexBackground
-        ? `color-mix(in srgb, ${hexBackground}, transparent 80%)`
+        ? `color-mix(in srgb, ${hexBackground}, transparent 85%)`
         : undefined
     
     const backgroundColor = hexBackground

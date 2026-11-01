@@ -95,7 +95,7 @@ export const KanbanTaskLaneDndKit = ({
         <div
             data-testid="TaskLane"
             className={cn('shrink-0 flex flex-col h-full min-h-0 rounded ring-2 p-2', laneColor.tailwindBackground, {
-                'bg-primary/5 ring-primary/20': !isDragging && !isOver
+                'bg-primary/5 ring-primary/12': !isDragging && !isOver
                     && !isCollapsed && !laneColor.backgroundColor,
                 'opacity-60': isDragging,
                 'ring-2': !isOver,
@@ -130,7 +130,7 @@ export const KanbanTaskLaneDndKit = ({
                     
                     <LaneIconColorPicker
                         lane={lane}
-                        iconSize={isCollapsed ? 16 : 18}
+                        iconSize={isCollapsed ? 16 : 16}
                         onColorChange={
                             canManageLanes
                                 ? hex => handleLaneColorChange(lane.id, hex)

@@ -38,7 +38,7 @@ export const useTaskStore = create<TaskStore>()(
 
 export const useSelectedTask = () =>
     useTaskStore(state =>
-        state.tasks.find(it => it.slug === state.selectedTaskSlug) ?? null,
+        state.tasks.find(it => it.key === state.selectedTaskSlug) ?? null,
     )
 
 export const useSelectedTaskId = () => useSelectedTask()?.id

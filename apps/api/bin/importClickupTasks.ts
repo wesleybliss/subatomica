@@ -41,6 +41,7 @@
 
 import { projects, tasks } from '@repo/db/schema'
 import Logger from '@repo/shared/utils/logger'
+import { formatTaskSlug, generateProjectAcronym } from '@repo/shared/utils/slugs'
 import { and, desc, eq } from 'drizzle-orm'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
@@ -97,6 +98,7 @@ async function importTasks(
     
     // Get starting localId from project's taskSequence
     let nextLocalId = project.taskSequence || 1
+    const acronym = generateProjectAcronym(project.name)
     
     let imported = 0
     let skipped = 0
@@ -132,9 +134,10 @@ async function importTasks(
         
         // Create description with ClickUp URL
         const description = `Imported from ClickUp\n\nOriginal URL: ${url}`
+        const key = formatTaskSlug(acronym, nextLocalId)
         
         if (dryRun) {
-            log.d(`[DRY RUN] Would import: ${title} (${status}, order: ${order}, localId: ${nextLocalId})`)
+            log.d(`[DRY RUN] Would import: ${title} (${status}, order: ${order}, key: ${key})`)
             nextLocalId++
             imported++
         } else {
@@ -143,6 +146,7 @@ async function importTasks(
                     projectId,
                     userId,
                     localId: nextLocalId,
+                    key,
                     title: title.trim(),
                     description,
                     status,
@@ -152,7 +156,7 @@ async function importTasks(
                 
                 nextLocalId++
                 imported++
-                log.d(`✓ Imported: ${title} (${status})`)
+                log.d(`✓ Imported: ${title} (${status}, ${key})`)
             } catch (error) {
                 log.e(`✗ Failed to import: ${title}`, error)
                 skipped++
