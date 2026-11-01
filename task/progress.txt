@@ -37,6 +37,7 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 - ThemeProvider owns data-theme on documentElement only.
 - Light theme shadow tokens were oversized (y:6 blur:20) which made inputs look 3D; keep shadow-y/blur minimal and prefer shadow-none on inputs.
 - AppSidebar Header/Content/Footer p-1 + NavMain px-1 py-6 caused cramped icons; use default sidebar padding and matched h-14 header rows.
+- Collapsed icon-mode: use `group-data-[collapsible=icon]:` (not `/sidebar`). Compose via SidebarMenuButton — TeamSwitcher/NavUser as `DropdownMenuTrigger render={<SidebarMenuButton size="lg" />}`, nav via `render={<Link />}`. Don't edit `components/ui/sidebar`. This sidebar drops `render` when `tooltip` is set (shadcn#9277).
 
 ## Auth / Nitro (same-origin)
 - Match flowstate: Vite + `nitro()` plugin; `server/` mounts Hono via server entry for API prefixes; SPA gets the rest.

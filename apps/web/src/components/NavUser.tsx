@@ -25,11 +25,11 @@ import {
 } from '@/components/ui/dropdown-menu'
 import {
     SidebarMenu,
+    SidebarMenuButton,
     SidebarMenuItem,
     useSidebar,
 } from '@/components/ui/sidebar'
 import { authClient } from '@/lib/auth-client'
-import { cn } from '@/lib/utils'
 
 const log = new Logger('web/components/NavUser')
 
@@ -71,24 +71,21 @@ export function NavUser({ user }: NavUserProps) {
             <SidebarMenuItem>
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        className={cn(
-                            'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground',
-                            'flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm',
-                        )}>
+                        render={
+                            <SidebarMenuButton
+                                size="lg"
+                                className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground
+                                    group-data-[collapsible=icon]:justify-center" />
+                        }>
                         <Avatar className="h-8 w-8 rounded-lg">
                             <AvatarImage src={user.image ?? undefined} alt={user.name} />
                             <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                         </Avatar>
-                        <div
-                            className={cn(
-                                'group-data-[state=collapsed]/sidebar:hidden grid flex-1',
-                                'text-left text-sm leading-tight',
-                            )}>
+                        <div className="grid flex-1 text-left text-sm leading-tight">
                             <span className="truncate font-medium">{user.name}</span>
                             <span className="truncate text-xs">{user.email}</span>
                         </div>
-                        <ChevronsUpDown
-                            className="ml-auto size-4 group-data-[state=collapsed]/sidebar:hidden" />
+                        <ChevronsUpDown className="ml-auto size-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"

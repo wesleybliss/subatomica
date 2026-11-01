@@ -1,5 +1,5 @@
 import type { Team } from '@repo/shared/types'
-import { ChevronsUpDown, Plus, SquareTerminal } from 'lucide-react'
+import { ChevronDown, ChevronsUpDown, Plus, SquareTerminal } from 'lucide-react'
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -24,7 +24,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { SidebarMenu, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
+import {
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    useSidebar,
+} from '@/components/ui/sidebar'
 import { useCreateTeamMutation } from '@/lib/mutations/teams.mutations'
 
 type TeamSwitcherProps = {
@@ -54,27 +59,24 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
             <SidebarMenuItem>
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground
-                            hover:bg-sidebar-accent flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm
-                            transition-colors outline-none">
-                        <div
-                            className="bg-primary text-primary-foreground
-                                flex size-7 shrink-0 items-center justify-center rounded-md
-                                group-data-[state=collapsed]/sidebar:size-8">
-                            <span className="text-xs font-semibold">
-                                {activeTeamInitial}
-                            </span>
-                        </div>
-                        <div
-                            className="group-data-[state=collapsed]/sidebar:hidden grid flex-1
-                                text-left text-sm leading-tight">
-                            <span className="truncate font-medium">
-                                {teamName}
-                            </span>
-                        </div>
-                        <ChevronsUpDown
-                            className="ml-auto size-4 text-muted-foreground
-                                group-data-[state=collapsed]/sidebar:hidden" />
+                        className="w-full"
+                        render={
+                            <SidebarMenuButton className="w-full px-1.5 flex items-center justify-between gap-1">
+                                <div className="flex items-center gap-2">
+                                    <div className="flex aspect-square size-5 items-center
+                                        justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
+                                        <div className="bg-primary text-primary-foreground
+                                            flex aspect-square size-5 shrink-0 items-center justify-center rounded-md">
+                                            <span className="text-xs">
+                                                {activeTeamInitial}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <span className="truncate font-medium">{activeTeam.name}</span>
+                                </div>
+                                <ChevronDown className="ml-auto opacity-50" />
+                            </SidebarMenuButton>
+                        }>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"

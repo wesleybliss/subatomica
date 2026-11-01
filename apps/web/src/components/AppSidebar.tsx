@@ -60,7 +60,7 @@ export function AppSidebar({
     ]
     return (
         <Sidebar collapsible="icon" {...props}>
-            <SidebarHeader className="h-14 justify-center px-3 py-2">
+            <SidebarHeader className="h-14 justify-center">
                 <TeamSwitcher
                     teams={teams}
                     activeTeamId={teamId}

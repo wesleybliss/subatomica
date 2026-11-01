@@ -33,7 +33,7 @@ const ProjectDetailNavbar = ({
         
         <header
             data-testid="ProjectDetailNavbar"
-            className="flex h-14 items-center justify-between gap-6 border-b border-border px-4">
+            className="flex py-2 items-center justify-between gap-6 border-b border-border px-4">
             <div className="flex items-center gap-2">
                 <SidebarTrigger />
                 <ProjectsSelectorDropdown

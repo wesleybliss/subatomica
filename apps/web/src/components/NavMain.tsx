@@ -26,17 +26,15 @@ export function NavMain({
                 
                 {items.map(item => (
                     <SidebarMenuItem key={item.title}>
-                        <Link to={item.url}>
-                            <SidebarMenuButton
-                                size="lg"
-                                isActive={item.isActive}
-                                tooltip={item.title}>
-                                {item.icon && <item.icon className="size-5!" />}
-                                <span className="group-data-[state=collapsed]/sidebar:hidden">
-                                    {item.title}
-                                </span>
-                            </SidebarMenuButton>
-                        </Link>
+                        <SidebarMenuButton
+                            render={<Link to={item.url} />}
+                            isActive={item.isActive}
+                            className="group-data-[collapsible=icon]:justify-center">
+                            {item.icon && <item.icon />}
+                            <span className="group-data-[collapsible=icon]:hidden">
+                                {item.title}
+                            </span>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
                 ))}
             
