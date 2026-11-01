@@ -30,7 +30,8 @@ export function NavMain({
                             render={<Link to={item.url} />}
                             size="lg"
                             isActive={item.isActive}
-                            className="px-3 group-data-[collapsible=icon]:justify-center">
+                            className="px-3 group-data-[collapsible=icon]:mx-auto
+                                group-data-[collapsible=icon]:justify-center">
                             {item.icon && <item.icon className="size-5!" />}
                             <span className="group-data-[collapsible=icon]:hidden">
                                 {item.title}

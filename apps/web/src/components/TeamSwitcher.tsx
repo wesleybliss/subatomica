@@ -63,6 +63,7 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                             <SidebarMenuButton
                                 size="lg"
                                 className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground
+                                    group-data-[collapsible=icon]:mx-auto
                                     group-data-[collapsible=icon]:justify-center" />
                         }>
                         <div

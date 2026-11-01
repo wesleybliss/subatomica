@@ -75,6 +75,7 @@ export function NavUser({ user }: NavUserProps) {
                             <SidebarMenuButton
                                 size="lg"
                                 className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground
+                                    group-data-[collapsible=icon]:mx-auto
                                     group-data-[collapsible=icon]:justify-center" />
                         }>
                         <Avatar className="h-8 w-8 rounded-lg">

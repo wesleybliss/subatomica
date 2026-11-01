@@ -40,6 +40,7 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 - shadcn `@theme` needs `--radius-2xl/3xl/4xl`; `components.json` css path is `src/globals.css`, `rsc: false` for Vite.
 - AppSidebar Header/Content/Footer p-1 + NavMain px-1 py-6 caused cramped icons; use default sidebar padding and matched h-14 header rows.
 - Collapsed icon-mode: use `group-data-[collapsible=icon]:` (not `/sidebar`). Compose via SidebarMenuButton — TeamSwitcher/NavUser as `DropdownMenuTrigger render={<SidebarMenuButton size="lg" />}`, nav via `render={<Link />}`. Don't edit `components/ui/sidebar`. This sidebar drops `render` when `tooltip` is set (shadcn#9277).
+- Collapsed icon rail is 4rem with group `p-2` + `size-10` buttons (3.5rem total) so left-aligned buttons look right-heavy; add `group-data-[collapsible=icon]:mx-auto` on SidebarMenuButton.
 
 ## Auth / Nitro (same-origin)
 - Match flowstate: Vite + `nitro()` plugin; `server/` mounts Hono via server entry for API prefixes; SPA gets the rest.
