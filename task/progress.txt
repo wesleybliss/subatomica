@@ -36,6 +36,8 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 - Never set data-theme on both <html> and <body>; body overrides cascade CSS vars and can make light theme inherit dark foregrounds.
 - ThemeProvider owns data-theme on documentElement only.
 - Light theme shadow tokens were oversized (y:6 blur:20) which made inputs look 3D; keep shadow-y/blur minimal and prefer shadow-none on inputs.
+- InputGroup owns focus ring (`has-…:ring-ring/50`); InputGroupInput forces `ring-0`. Override ring on the InputGroup, not the inner input. Light `--ring` is currently `#162521` (near-black).
+- shadcn `@theme` needs `--radius-2xl/3xl/4xl`; `components.json` css path is `src/globals.css`, `rsc: false` for Vite.
 - AppSidebar Header/Content/Footer p-1 + NavMain px-1 py-6 caused cramped icons; use default sidebar padding and matched h-14 header rows.
 - Collapsed icon-mode: use `group-data-[collapsible=icon]:` (not `/sidebar`). Compose via SidebarMenuButton — TeamSwitcher/NavUser as `DropdownMenuTrigger render={<SidebarMenuButton size="lg" />}`, nav via `render={<Link />}`. Don't edit `components/ui/sidebar`. This sidebar drops `render` when `tooltip` is set (shadcn#9277).
 

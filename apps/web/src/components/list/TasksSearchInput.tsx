@@ -22,7 +22,7 @@ const TasksSearchInput = ({
     const debouncedValue = useDebounce(inputValue, 250)
     const lastEmittedValue = useRef(tasksQuery)
     const [prevTasksQuery, setPrevTasksQuery] = useState(tasksQuery)
-    const [isExpanded, setIsExpanded] = useState(true)
+    const [isExpanded, setIsExpanded] = useState(false)
     
     if (tasksQuery !== prevTasksQuery) {
         setPrevTasksQuery(tasksQuery)
@@ -41,26 +41,29 @@ const TasksSearchInput = ({
     }, [debouncedValue, setTasksQuery])
     
     return (
-        <InputGroup className={cn('bg-muted/40 shadow-none', {
-            'ml-auto w-min!': !isExpanded,
-        })}>
+        <InputGroup className={cn('max-w-160 ml-auto bg-muted/40 shadow-none',
+            'has-[[data-slot=input-group-control]:focus-visible]:ring-0!',
+            'has-[[data-slot=input-group-control]:focus-visible]:border-primary/10', {
+                'ml-auto w-min!': !isExpanded,
+            })}>
             <InputGroupAddon align="inline-start">
                 <Search className="size-4" strokeWidth={1.75} />
             </InputGroupAddon>
             <InputGroupInput
                 id="list-view-search-input"
-                className={cn('transition-all ease-in-out duration-300',
-                    'focus-visible:ring-red-500/50! focus-visible:border-red-500!', {
-                        'w-0 opacity-0': !isExpanded,
-                    })}
+                className={cn('transition-all ease-in-out duration-300', {
+                    'w-0 opacity-0': !isExpanded,
+                })}
                 value={inputValue}
                 placeholder="Search tasks..."
-                
+                onBlur={() => setIsExpanded(false)}
+                onFocus={() => setIsExpanded(true)}
                 onChange={e => setInputValue(e.target.value)}
                 onKeyDown={e => {
                     if (e.key === 'Escape') {
                         setInputValue('')
                         setTasksQuery('')
+                        setIsExpanded(false)
                     }
                 }} />
             <InputGroupAddon align="inline-end">
