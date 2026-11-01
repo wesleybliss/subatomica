@@ -72,12 +72,16 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
                                 {activeTeamInitial}
                             </span>
                         </div>
-                        <div className="grid flex-1 text-left text-sm leading-tight">
+                        <div
+                            className="grid flex-1 text-left text-sm leading-tight
+                                group-data-[collapsible=icon]:hidden">
                             <span className="truncate font-medium">
                                 {teamName}
                             </span>
                         </div>
-                        <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
+                        <ChevronsUpDown
+                            className="ml-auto size-4 text-muted-foreground
+                                group-data-[collapsible=icon]:hidden" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         className="min-w-56 rounded-lg"

@@ -81,11 +81,14 @@ export function NavUser({ user }: NavUserProps) {
                             <AvatarImage src={user.image ?? undefined} alt={user.name} />
                             <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                         </Avatar>
-                        <div className="grid flex-1 text-left text-sm leading-tight">
+                        <div
+                            className="grid flex-1 text-left text-sm leading-tight
+                                group-data-[collapsible=icon]:hidden">
                             <span className="truncate font-medium">{user.name}</span>
                             <span className="truncate text-xs">{user.email}</span>
                         </div>
-                        <ChevronsUpDown className="ml-auto size-4" />
+                        <ChevronsUpDown
+                            className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         className="min-w-56 rounded-lg"
