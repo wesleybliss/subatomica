@@ -20,6 +20,7 @@ import useKanbanBoardDndViewModel from '@/components/kanban/KanbanBoardDndViewMo
 import { KanbanCardFace } from '@/components/kanban/KanbanCardFace'
 import { moveTaskInBoard } from '@/components/kanban/kanbanDndOrder'
 import { Button } from '@/components/ui/button'
+import { resolveTarget } from '@/lib/kanban'
 
 import type { KanbanBoardProps } from '../KanbanBoardDnd'
 import { createKanbanCollisionDetection } from './collision'
@@ -46,7 +47,7 @@ const KanbanBoardDndKit = ({
         false,
     )
     
-    const [activeTask, setActiveTask] = useState<Task | null>(null)
+    
     const dragSnapshot = useRef<Task[] | null>(null)
     const tasksRef = useRef(vm.localTasks)
     // Collision stabilizer (MultipleContainers pattern) — prevents over-id thrashing
@@ -66,70 +67,7 @@ const KanbanBoardDndKit = ({
         useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 8 } }),
     )
     
-    const resolveTarget = (
-        overId: UniqueIdentifier,
-        overData: Record<string, unknown> | undefined,
-        board: Task[],
-    ): { status: TaskStatus, overTaskId?: string } | null => {
-        if (overData?.type === 'column' && typeof overData.status === 'string')
-            return { status: overData.status as TaskStatus }
-        
-        if (overData?.type === 'task') {
-            const overTaskId = String(overId)
-            // Prefer live board status — droppable data can lag one frame after a move
-            const live = board.find(t => t.id === overTaskId)?.status
-            const status = (live ?? overData.status) as TaskStatus | undefined
-            if (!status) return null
-            return { status, overTaskId }
-        }
-        
-        const col = String(overId).match(/^column:(.+)$/)
-        if (col) return { status: col[1] as TaskStatus }
-        return null
-    }
     
-    const onDragStart = (event: DragStartEvent) => {
-        lastOverId.current = null
-        recentlyMovedToNewContainer.current = false
-        const data = event.active.data.current
-        if (data?.type === 'task') {
-            dragSnapshot.current = vm.localTasks
-            const task = vm.localTasks.find(t => t.id === String(event.active.id))
-            setActiveTask(task ?? null)
-        }
-    }
-    
-    const onDragOver = (event: DragOverEvent) => {
-        const { active, over } = event
-        if (!over) return
-        if (active.id === over.id) return
-        if (active.data.current?.type !== 'task') return
-        if (over.data.current?.type === 'lane') return
-        
-        const activeId = String(active.id)
-        const board = tasksRef.current
-        const activeTaskRow = board.find(t => t.id === activeId)
-        if (!activeTaskRow) return
-        
-        const target = resolveTarget(
-            over.id,
-            over.data.current as Record<string, unknown> | undefined,
-            board,
-        )
-        if (!target) return
-        
-        // CRITICAL: only setState when crossing containers.
-        // Same-column reorder is sortable transforms + onDragEnd.
-        // Live same-column setState ↔ collision flip caused max update depth.
-        if (activeTaskRow.status === target.status) return
-        
-        const next = moveTaskInBoard(board, activeId, target.status, target.overTaskId)
-        if (!next) return
-        
-        recentlyMovedToNewContainer.current = true
-        tasksRef.current = next
-        vm.setLocalTasks(next)
-    }
     
     const persistActiveTask = (taskList: Task[], taskId: string) => {
         const task = taskList.find(t => t.id === taskId)
