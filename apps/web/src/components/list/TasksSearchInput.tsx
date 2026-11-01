@@ -1,8 +1,12 @@
-import { FileSearchCorner } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import useDebounce from '@/hooks/useDebounce'
+import { KEYBOARD_SYMBOLS } from '@/lib/constants/icons.constants'
+import { cn } from '@/lib/utils'
+
+import { Kbd, KbdGroup } from '../ui/kbd'
 
 interface ListViewSearchInputProps {
     tasksQuery: string
@@ -18,6 +22,7 @@ const TasksSearchInput = ({
     const debouncedValue = useDebounce(inputValue, 250)
     const lastEmittedValue = useRef(tasksQuery)
     const [prevTasksQuery, setPrevTasksQuery] = useState(tasksQuery)
+    const [isExpanded, setIsExpanded] = useState(true)
     
     if (tasksQuery !== prevTasksQuery) {
         setPrevTasksQuery(tasksQuery)
@@ -36,14 +41,21 @@ const TasksSearchInput = ({
     }, [debouncedValue, setTasksQuery])
     
     return (
-        <InputGroup className="bg-muted/40 shadow-none">
+        <InputGroup className={cn('bg-muted/40 shadow-none', {
+            'ml-auto w-min!': !isExpanded,
+        })}>
             <InputGroupAddon align="inline-start">
-                <FileSearchCorner className="size-4" strokeWidth={1.75} />
+                <Search className="size-4" strokeWidth={1.75} />
             </InputGroupAddon>
             <InputGroupInput
                 id="list-view-search-input"
+                className={cn('transition-all ease-in-out duration-300',
+                    'focus-visible:ring-red-500/50! focus-visible:border-red-500!', {
+                        'w-0 opacity-0': !isExpanded,
+                    })}
                 value={inputValue}
                 placeholder="Search tasks..."
+                
                 onChange={e => setInputValue(e.target.value)}
                 onKeyDown={e => {
                     if (e.key === 'Escape') {
@@ -51,6 +63,11 @@ const TasksSearchInput = ({
                         setTasksQuery('')
                     }
                 }} />
+            <InputGroupAddon align="inline-end">
+                <KbdGroup>
+                    <Kbd>{KEYBOARD_SYMBOLS.Command}/</Kbd>
+                </KbdGroup>
+            </InputGroupAddon>
         </InputGroup>
     )
     

@@ -33,12 +33,12 @@ const useGlobalHotkeys = () => {
     const globalCommandOpen = useDialogStore(s => s.globalCommandOpen)
     const setGlobalCommandOpen = useDialogStore(s => s.setGlobalCommandOpen)
     
-    useHotkey('ctrl+projects', () => {
+    useHotkey('ctrl+p', () => {
         setGlobalCommandOpen(!globalCommandOpen)
     })
     
     useHotkey('ctrl+/', () => {
-        log.d('ctrl/')
+        log.d('ctrl+/')
         try {
             // @ts-expect-error expected
             // oxlint-disable-next-line no-restricted-globals
