@@ -38,7 +38,7 @@ const KanbanView = ({
         <div
             data-testid="KanbanView"
             data-dnd-engine={kanbanDndEngine}
-            className="flex-1 overflow-hidden px-6 py-5">
+            className="flex-1 overflow-hidden p-3">
             
             <Board
                 tasks={tasks}

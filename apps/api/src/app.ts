@@ -40,7 +40,10 @@ export const createApiServer = (auth = defaultAuth) => {
         exposeHeaders: ['Content-Length'],
         maxAge: 600,
     }))
-    app.use('*', logger())
+    
+    if (import.meta.env.VITE_LOG_REQUESTS === 'true')
+        app.use('*', logger())
+    
     app.use('*', prettyJSON())
     
     const openApiConfig = {
