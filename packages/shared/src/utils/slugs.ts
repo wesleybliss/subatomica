@@ -1,4 +1,3 @@
-import acronym from '@stdlib/string-acronym'
 import ShortUniqueId from 'short-unique-id'
 import slugify from 'slugify'
 
@@ -44,19 +43,35 @@ export const generateSlug = (name: string): string => {
 }
 
 /**
- * Generates a project acronym from the project name
- * Takes the first letter of each major word, max 3 characters
+ * Stable project key prefix from the project name.
+ * Single word → first 4 chars; multi-word → first letter of each word (max 5).
+ * e.g. "Testing" → "TEST", "Status Score" → "SS"
  */
-export const generateProjectAcronym = (projectName: string): string => {
-    const acr = acronym(projectName)
-    return acr.substring(0, 3).toUpperCase()
+export const createProjectKey = (name: string): string => {
+    const words = name
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9\s]/g, '')
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+    
+    if (words.length === 0)
+        throw new Error('Project name must contain alphanumeric characters')
+    
+    if (words.length === 1)
+        return words[0].slice(0, 4).toUpperCase()
+    
+    return words
+        .map(word => word[0])
+        .join('')
+        .slice(0, 5)
+        .toUpperCase()
 }
 
 /**
- * Formats task key as [ACRONYM]-[localId]
- * e.g., "CPW-01"
+ * Stable task key: [PROJECT_KEY]-[taskNumber]
+ * e.g. createTaskKey('Engineering', 4) → "ENGI-4"
  */
-export const formatTaskSlug = (acronym: string, localId: number): string => {
-    const paddedId = String(localId).padStart(2, '0')
-    return `${acronym}-${paddedId}`
-}
+export const createTaskKey = (projectName: string, taskNumber: number): string =>
+    `${createProjectKey(projectName)}-${taskNumber}`

@@ -20,8 +20,8 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 ## Key Changes
 - Route format: /t/{teamSlug}/p/{projectSlug}
 - Slug generation: stop-word filtered, abbreviation mapped, max 24 chars
-- Task keys: {ACRONYM}-{sequence} format (e.g., CPW-01); stored on tasks.key (stable across project rename)
-- Backfill: `tsx --env-file=../../.env src/scripts/backfill-task-keys.ts` from apps/api (adds column+index on Turso)
+- Task keys: createTaskKey(name, n) e.g. TEST-23 / ENGI-4 / SS-5678; stored on tasks.key (stable across rename)
+- Backfill after db:push: `tsx --env-file=../../.env src/scripts/backfill-task-keys.ts` from apps/api
 - No redirects for old UUIDs (404 per spec)
 
 ## Build Status

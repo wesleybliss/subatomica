@@ -17,7 +17,7 @@ const TaskBaseSchema = createSelectSchema(tasks).extend({
         example: 1,
     }),
     key: z.string().openapi({
-        example: 'CPW-01',
+        example: 'ENGI-4',
         description: 'Stable task key set at creation; does not change if the project is renamed',
     }),
     title: z.string().openapi({

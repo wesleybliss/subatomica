@@ -1,6 +1,6 @@
 import { projects, tasks } from '@repo/db/schema'
 import type { Task } from '@repo/db/types'
-import { formatTaskSlug, generateProjectAcronym } from '@repo/shared/utils/slugs'
+import { createTaskKey } from '@repo/shared/utils/slugs'
 import { and, desc, eq, gt, inArray, sql } from 'drizzle-orm'
 
 import { db } from '@/db/client'
@@ -67,7 +67,7 @@ export async function createTask(
         : await getNextTaskOrder(project.id, status)
     
     const localId = project.taskSequence
-    const key = formatTaskSlug(generateProjectAcronym(project.name), localId)
+    const key = createTaskKey(project.name, localId)
     
     const insertValues = {
         title,
@@ -282,7 +282,7 @@ const getNextTaskOrder = async (projectId: string, status: string) => {
 }
 
 /**
- * Get task by key (e.g., "CPW-01") within a project
+ * Get task by key (e.g., "ENGI-4") within a project
  */
 export async function getTaskByKey(
     userId: string,

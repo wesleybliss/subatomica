@@ -123,7 +123,7 @@ export const tasks = table('tasks', {
         .notNull()
         .references(() => projects.id, { onDelete: 'cascade' }),
     localId: integer('localId').notNull(),
-    // Stable display/link key (e.g. CPW-01); set at create, never derived from current project name
+    // Stable display/link key (e.g. ENGI-4); set at create, never derived from current project name
     key: text('key').notNull(),
     userId: uuid('userId')
         .notNull()

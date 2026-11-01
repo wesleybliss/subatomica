@@ -10,7 +10,7 @@ import {
     trelloListLinks,
 } from '@repo/db/schema'
 import Logger from '@repo/shared/utils/logger'
-import { formatTaskSlug, generateProjectAcronym } from '@repo/shared/utils/slugs'
+import { createTaskKey } from '@repo/shared/utils/slugs'
 import { and, eq } from 'drizzle-orm'
 
 import { db } from '@/db/client'
@@ -182,7 +182,7 @@ async function upsertCardFromWebhook(
         .limit(1)
     
     const localId = project?.taskSequence ?? 1
-    const key = formatTaskSlug(generateProjectAcronym(project?.name ?? 'PRJ'), localId)
+    const key = createTaskKey(project?.name ?? 'PRJ', localId)
     
     const [task] = await db
         .insert(tasks)
