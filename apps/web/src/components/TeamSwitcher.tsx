@@ -1,5 +1,5 @@
 import type { Team } from '@repo/shared/types'
-import { ChevronDown, ChevronsUpDown, Plus, SquareTerminal } from 'lucide-react'
+import { ChevronsUpDown, Plus, SquareTerminal } from 'lucide-react'
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -59,27 +59,28 @@ export function TeamSwitcher({ teams, activeTeamId, teamName }: TeamSwitcherProp
             <SidebarMenuItem>
                 <DropdownMenu>
                     <DropdownMenuTrigger
-                        className="w-full"
                         render={
-                            <SidebarMenuButton className="w-full px-1.5 flex items-center justify-between gap-1">
-                                <div className="flex items-center gap-2">
-                                    <div className="flex aspect-square size-5 items-center
-                                        justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-                                        <div className="bg-primary text-primary-foreground
-                                            flex aspect-square size-5 shrink-0 items-center justify-center rounded-md">
-                                            <span className="text-xs">
-                                                {activeTeamInitial}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <span className="truncate font-medium">{activeTeam.name}</span>
-                                </div>
-                                <ChevronDown className="ml-auto opacity-50" />
-                            </SidebarMenuButton>
+                            <SidebarMenuButton
+                                size="lg"
+                                className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground
+                                    group-data-[collapsible=icon]:justify-center" />
                         }>
+                        <div
+                            className="bg-primary text-primary-foreground
+                                flex aspect-square size-8 shrink-0 items-center justify-center rounded-md">
+                            <span className="text-xs font-semibold">
+                                {activeTeamInitial}
+                            </span>
+                        </div>
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                            <span className="truncate font-medium">
+                                {teamName}
+                            </span>
+                        </div>
+                        <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
-                        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                        className="min-w-56 rounded-lg"
                         align="start"
                         side={isMobile ? 'bottom' : 'right'}
                         sideOffset={4}>
