@@ -1,5 +1,3 @@
-import 'dotenv/config'
-
 import Logger from '@repo/shared/utils/logger'
 import { defineConfig } from 'drizzle-kit'
 

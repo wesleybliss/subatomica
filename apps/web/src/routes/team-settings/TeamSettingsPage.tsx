@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 
+import { DangerZoneSection } from '@/components/team-settings/DangerZoneSection'
 import { MembersSection } from '@/components/team-settings/MembersSection'
 import SettingsAccountHeader from '@/components/team-settings/SettingsAccountHeader'
 import { TrelloImportSection } from '@/components/team-settings/TrelloImportSection'
@@ -79,6 +80,8 @@ export default function TeamSettingsPage() {
                     teamSlug={team.slug}
                     teamName={team.name}
                 />
+                
+                <DangerZoneSection team={team} />
             
             </div>
         

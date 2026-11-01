@@ -10,10 +10,8 @@ import { defineConfig } from 'vite'
 
 import aliases, { ROOT } from './aliases.ts'
 
-dotenv.config({ path: path.join(ROOT, 'apps/api/.env') })
-dotenv.config({ path: path.join(ROOT, 'apps/web/.env') })
+// Node-side config (USE_LOCAL_HTTPS, etc.). Client VITE_* come from envDir below.
 dotenv.config({ path: path.join(ROOT, '.env') })
-dotenv.config()
 
 const SERVER_DIR = path.join(ROOT, 'server')
 
@@ -32,6 +30,8 @@ const serverConfig = process.env.USE_LOCAL_HTTPS === 'true' ? {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    // Load repo-root .env so import.meta.env.VITE_* matches the shared env file.
+    envDir: ROOT,
     plugins: [
         react(),
         tailwindcss(),

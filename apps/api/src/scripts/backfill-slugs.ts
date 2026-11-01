@@ -3,8 +3,6 @@
  * Run with: tsx src/scripts/backfill-slugs.ts
  */
 
-import 'dotenv/config'
-
 import { projects, teams } from '@repo/db/schema'
 import Logger from '@repo/shared/utils/logger'
 import { generateSlug } from '@repo/shared/utils/slugs'

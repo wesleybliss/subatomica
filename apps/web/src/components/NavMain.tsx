@@ -28,9 +28,10 @@ export function NavMain({
                     <SidebarMenuItem key={item.title}>
                         <Link to={item.url}>
                             <SidebarMenuButton
+                                size="lg"
                                 isActive={item.isActive}
                                 tooltip={item.title}>
-                                {item.icon && <item.icon className="size-4" />}
+                                {item.icon && <item.icon className="size-5!" />}
                                 <span className="group-data-[state=collapsed]/sidebar:hidden">
                                     {item.title}
                                 </span>

@@ -1,6 +1,6 @@
 import { Cloud, CloudOff, Loader2, RefreshCw } from 'lucide-react'
 
-import { useSync, useSyncState } from '@/components/sync/SyncProvider'
+import { useSync, useSyncState } from '@/components/sync/sync-context'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 

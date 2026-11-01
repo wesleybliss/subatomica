@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react'
 import KanbanView from '@/components/kanban/KanbanView'
 import ListView from '@/components/list/ListView'
 import ProjectDetailNavbar from '@/components/ProjectDetailNavbar'
-import { useSyncScope } from '@/components/sync/SyncProvider'
+import { useSyncScope } from '@/components/sync/sync-context'
 import TimelineView from '@/components/timeline/TimelineView'
 import { useGetTasksQuery } from '@/lib/queries/tasks.queries'
 

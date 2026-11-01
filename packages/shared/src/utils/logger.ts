@@ -1,14 +1,15 @@
 /* eslint-disable no-console */
-
-/// <reference path="../env.d.ts" />
-
 import c from 'ansi-colors'
 
 import type { LogLevel } from '../types/logger.types'
 
+type ViteClientImportMeta = ImportMeta & {
+    env: { VITE_LOG_ENABLED?: string }
+}
+
 function isClientLogEnabled(): boolean {
     // Static `import.meta.env.VITE_*` access so Vite can inline it in the client bundle.
-    return import.meta.env.VITE_LOG_ENABLED === 'true'
+    return (import.meta as ViteClientImportMeta).env.VITE_LOG_ENABLED === 'true'
 }
 
 function isServerLogEnabled(): boolean {
@@ -16,6 +17,7 @@ function isServerLogEnabled(): boolean {
     if (!env)
         return false
     return env.LOG_ENABLED === 'true'
+        || env.VITE_LOG_ENABLED === 'true'
         || env.NEXT_PUBLIC_LOG_ENABLED === 'true'
 }
 

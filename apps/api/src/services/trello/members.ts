@@ -1,6 +1,7 @@
 import {
     accounts,
     teamMembers,
+    teams,
     trelloBoardLinks,
     type TrelloMemberLink,
     trelloMemberLinks,
@@ -39,7 +40,13 @@ export type CatalogMember = {
 
 async function assertTeamAccess(userId: string, teamId: string) {
     const accessible = getAccessibleTeamIds(userId)
-    if (!accessible.includes(teamId))
+    const [team] = await db
+        .select({ id: teams.id })
+        .from(teams)
+        .where(and(eq(teams.id, teamId), inArray(teams.id, accessible)))
+        .limit(1)
+    
+    if (!team)
         throw new Error('NotFound: Team not found')
 }
 

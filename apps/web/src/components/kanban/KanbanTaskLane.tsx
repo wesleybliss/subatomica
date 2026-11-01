@@ -109,7 +109,7 @@ const KanbanTaskLane = ({
         <div
             data-testid="TaskLane"
             ref={laneRef}
-            className={cn('shrink-0 flex flex-col h-full min-h-0 rounded ring-2 p-2', laneColor.tailwindBackground, {
+            className={cn('shrink-0 flex flex-col h-full min-h-0 rounded ring-2', laneColor.tailwindBackground, {
                 'bg-primary/5 ring-primary/20': !isDragging && !isDragOver
                     && !isCollapsed && !laneColor.backgroundColor,
                 'opacity-60': isDragging,
@@ -193,10 +193,10 @@ const KanbanTaskLane = ({
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 w-6 p-0"
+                        className="size-6 p-0"
                         onClick={() => handleCreateTask(lane.key)}
                         disabled={isCreating === lane.key}>
-                        <Plus className="w-3 h-3" />
+                        <Plus className="size-3" />
                     </Button>
                     
                     {canManageLanes && (

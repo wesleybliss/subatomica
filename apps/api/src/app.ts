@@ -1,5 +1,3 @@
-import 'dotenv/config'
-
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import Logger from '@repo/shared/utils/logger'
@@ -9,8 +7,6 @@ import { logger } from 'hono/logger'
 import { prettyJSON } from 'hono/pretty-json'
 
 import { ApiAppEnv, createApp } from '@/env'
-
-const log = new Logger('api/app')
 import healthRoutes from '@/routes/health'
 import lanesRoutes from '@/routes/lanes'
 import projectsRoutes from '@/routes/projects'
@@ -18,11 +14,14 @@ import syncRoutes from '@/routes/sync'
 import tasksRoutes from '@/routes/tasks'
 import teamsRoutes from '@/routes/teams'
 import { trelloProtectedRoutes, trelloPublicRoutes } from '@/routes/trello'
+import usersInviteCodeRoutes from '@/routes/users/invite-code'
 import { auth as defaultAuth } from '@/services/auth' // BetterAuth instance
 import { claimPlaceholderAccount } from '@/services/claim'
 
-import pkg from '../../../package.json' assert { type: 'json' }
+import pkg from '../../../package.json' with { type: 'json' }
 // import { env } from './env'
+
+const log = new Logger('api/app')
 
 type Package = {
     version: string
@@ -157,6 +156,7 @@ export const createApiServer = (auth = defaultAuth) => {
         await next()
     })
         .route('/health', healthRoutes)
+        .route('/users/invite-code', usersInviteCodeRoutes)
         .route('/teams', teamsRoutes)
         .route('/projects', projectsRoutes)
         .route('/lanes', lanesRoutes)

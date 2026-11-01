@@ -6,7 +6,7 @@ import { getStoreName } from '@/lib/constants'
 import { DEFAULT_KANBAN_DND_ENGINE, KanbanDndEngine } from '@/lib/constants/kanban.constants'
 import { createSetterFns } from '@/lib/utils/store.utils'
 
-export type DebugPanelSection = 'ably' | 'kanban'
+export type DebugPanelSection = 'ably' | 'kanban' | 'invites'
 
 interface DebugStore {
     debugToolsMode: DebugToolsMode

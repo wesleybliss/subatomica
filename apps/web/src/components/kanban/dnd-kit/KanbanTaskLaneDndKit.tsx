@@ -195,7 +195,7 @@ export const KanbanTaskLaneDndKit = ({
                 </div>
             </div>
             
-            <div className={cn('flex-1 min-h-0 overflow-y-auto', {
+            <div className={cn('flex-1 min-h-0 overflow-y-auto no-scrollbar', {
                 'hidden': isCollapsed,
             })}>
                 <KanbanColumnDndKit
