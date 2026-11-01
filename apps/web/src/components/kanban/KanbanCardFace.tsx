@@ -46,6 +46,7 @@ export const KanbanCardFace = memo(function KanbanCardFace({
                 className,
             )}
             onClick={() => {
+                console.log(task)
                 if (!isDragging) onOpen?.()
             }}>
             <div className="flex items-start justify-between gap-2 mb-2">
@@ -53,11 +54,16 @@ export const KanbanCardFace = memo(function KanbanCardFace({
                     to={taskHref}
                     className="text-xs text-muted-foreground hover:text-primary transition-colors font-mono"
                     onClick={e => e.stopPropagation()}>
-                    {createdLabel}
+                    {task.key}
                 </Link>
-                {task.priority === 'high' || task.priority === 'urgent' ? (
-                    <Flag className="w-3 h-3 text-destructive" />
-                ) : null}
+                <div className="flex items-start justify-end gap-2">
+                    <span className="text-xs text-muted-foreground hover:text-primary transition-colors font-mono">
+                        {createdLabel}
+                    </span>
+                    {task.priority === 'high' || task.priority === 'urgent' ? (
+                        <Flag className="size-3 text-destructive" />
+                    ) : null}
+                </div>
             </div>
             <h4 className="text-sm font-medium text-foreground mb-2 break-all">
                 {task.title}

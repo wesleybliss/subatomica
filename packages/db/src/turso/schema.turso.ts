@@ -127,7 +127,7 @@ export const tasks = table('tasks', {
         .references(() => projects.id, { onDelete: 'cascade' }),
     localId: integer('localId').notNull(),
     // Stable display/link key (e.g. ENGI-4); set at create, never derived from current project name
-    key: text('key').notNull(),
+    key: text('key'),
     title: text('title').notNull(),
     description: text('description').notNull().default(''),
     status: text('status').notNull().default('backlog'), // 'backlog', 'todo', 'in-progress', 'done'

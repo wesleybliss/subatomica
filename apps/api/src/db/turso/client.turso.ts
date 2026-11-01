@@ -13,7 +13,7 @@ export const turso = process.env.DATABASE_DIALECT === 'turso' ? createClient({
 }) : undefined
 
 export const db: LibSQLDatabase | undefined = process.env.DATABASE_DIALECT === 'turso'
-    ? drizzle(turso!)
+    ? drizzle({ client: turso! })
     : undefined
 
 export default db

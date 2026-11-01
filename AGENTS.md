@@ -24,6 +24,7 @@ Agent guidelines for automated agents in this repo.
 - **Files:** Use camelCase for filenames generally, but match existing conventions (e.g., `ProjectsPage.tsx`, `index.tsx`, `PrimarySidebar.tsx`).
 - **Types:** Place any new TypeScript types in `@/types`.
 - **Progress:** Prefer keeping checklists for larger tasks. If a task has a checklist, be sure to check it done after completion.
+- **Check your work:** Always run `pnpm validate` after making changes.
 
 ## Memory and Learnings
 

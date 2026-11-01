@@ -1,14 +1,13 @@
-import type { BuildColumns, BuildExtraConfigColumns } from 'drizzle-orm/column-builder'
+import type { BuildColumns, BuildExtraConfigColumns, ColumnBuilderBase } from 'drizzle-orm/column-builder'
+import type { AnyPgColumnBuilder } from 'drizzle-orm/pg-core'
 import * as postgresCore from 'drizzle-orm/pg-core'
-import type { PgColumnBuilderBase } from 'drizzle-orm/pg-core/columns/common'
 import type { PgTableExtraConfig } from 'drizzle-orm/pg-core/table'
-import type { SQLiteColumnBuilderBase } from 'drizzle-orm/sqlite-core'
 import * as sqliteCore from 'drizzle-orm/sqlite-core'
 import type { SQLiteTableExtraConfig } from 'drizzle-orm/sqlite-core/table'
 import { v7 as uuidv7 } from 'uuid'
 
-export type TursoColumns = Record<string, SQLiteColumnBuilderBase>
-export type PostgresColumns = Record<string, PgColumnBuilderBase>
+export type TursoColumns = Record<string, ColumnBuilderBase>
+export type PostgresColumns = Record<string, AnyPgColumnBuilder>
 
 /**
  * SQLite-friendly timestamp (ISO string)

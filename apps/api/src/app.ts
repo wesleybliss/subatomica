@@ -41,7 +41,7 @@ export const createApiServer = (auth = defaultAuth) => {
         maxAge: 600,
     }))
     
-    if (import.meta.env.VITE_LOG_REQUESTS === 'true')
+    if (process.env.VITE_LOG_REQUESTS === 'true')
         app.use('*', logger())
     
     app.use('*', prettyJSON())
