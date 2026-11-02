@@ -70,29 +70,7 @@ const KanbanBoardDndViewModel = (
         }, {} as Record<string, Task[]>)
     }, [localLanes, displayTasks])
     
-    const {
-        collapsedLanes,
-        isAddingLane,
-        setIsAddingLane,
-        editingLaneId,
-        setEditingLaneId,
-        editingLaneName,
-        setEditingLaneName,
-        savingLaneId,
-        setSavingLaneId,
-        deletingLaneId,
-        setDeletingLaneId,
-        canManageLanes,
-        canDeleteLane,
-        handleAddLane,
-        handleToggleCollapsed,
-        handleStartRenameLane,
-        handleCancelRenameLane,
-        handleRenameLane,
-        handleDeleteLane,
-        handleLaneColorChange,
-        handleReorderLane,
-    } = useTaskLanes(
+    const taskLanes = useTaskLanes(
         teamId,
         projectId,
         localLanes,
@@ -164,23 +142,8 @@ const KanbanBoardDndViewModel = (
         setLocalLanes,
         isCreating,
         setIsCreating,
-        isAddingLane,
-        setIsAddingLane,
-        editingLaneId,
-        setEditingLaneId,
-        editingLaneName,
-        setEditingLaneName,
-        savingLaneId,
-        setSavingLaneId,
-        deletingLaneId,
-        setDeletingLaneId,
-        
-        collapsedLanes,
-        
-        // @todo
-        canManageLanes,
-        canDeleteLane,
         queryClient,
+        taskLanes,
         
         // Memos
         activeQueryKey,
@@ -191,14 +154,6 @@ const KanbanBoardDndViewModel = (
         updateTaskOrderMutation,
         
         // Methods
-        handleAddLane,
-        handleToggleCollapsed,
-        handleStartRenameLane,
-        handleCancelRenameLane,
-        handleRenameLane,
-        handleDeleteLane,
-        handleReorderLane,
-        handleLaneColorChange,
         handleCreateTask,
         handleDrop,
         
