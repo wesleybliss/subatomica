@@ -50,26 +50,26 @@ const KanbanBoardDnd = ({
                     tasks={vm.tasksByStatus[it.key]}
                     teamId={teamId}
                     teamMembers={teamMembers}
-                    isCollapsed={vm.collapsedLanes.includes(it.id)}
-                    onToggleCollapsed={vm.handleToggleCollapsed}
-                    editingLaneId={vm.editingLaneId}
-                    editingLaneName={vm.editingLaneName}
-                    setEditingLaneName={vm.setEditingLaneName}
+                    isCollapsed={vm.taskLanes.collapsedLanes.includes(it.id)}
+                    onToggleCollapsed={vm.taskLanes.handleToggleCollapsed}
+                    editingLaneId={vm.taskLanes.editingLaneId}
+                    editingLaneName={vm.taskLanes.editingLaneName}
+                    setEditingLaneName={vm.taskLanes.setEditingLaneName}
                     isCreating={vm.isCreating}
-                    savingLaneId={vm.savingLaneId}
-                    canManageLanes={vm.canManageLanes}
-                    canDeleteLane={vm.canDeleteLane}
-                    deletingLaneId={vm.deletingLaneId}
+                    savingLaneId={vm.taskLanes.savingLaneId}
+                    canManageLanes={vm.taskLanes.canManageLanes}
+                    canDeleteLane={vm.taskLanes.canDeleteLane}
+                    deletingLaneId={vm.taskLanes.deletingLaneId}
                     handleCreateTask={vm.handleCreateTask}
-                    handleStartRenameLane={vm.handleStartRenameLane}
-                    handleRenameLane={vm.handleRenameLane}
-                    handleCancelRenameLane={vm.handleCancelRenameLane}
-                    handleDeleteLane={vm.handleDeleteLane}
-                    handleReorderLane={vm.handleReorderLane}
-                    handleLaneColorChange={vm.handleLaneColorChange} />
+                    handleStartRenameLane={vm.taskLanes.handleStartRenameLane}
+                    handleRenameLane={vm.taskLanes.handleRenameLane}
+                    handleCancelRenameLane={vm.taskLanes.handleCancelRenameLane}
+                    handleDeleteLane={vm.taskLanes.handleDeleteLane}
+                    handleReorderLane={vm.taskLanes.handleReorderLane}
+                    handleLaneColorChange={vm.taskLanes.handleLaneColorChange} />
             ))}
             
-            {vm.canManageLanes && (
+            {vm.taskLanes.canManageLanes && (
                 <div className="shrink-0 flex flex-col w-8 h-full min-h-0 rounded overflow-hidden pt-8">
                     
                     <div className="flex items-center w-full mb-3 justify-center">
@@ -81,8 +81,8 @@ const KanbanBoardDnd = ({
                             <Button
                                 className="w-full h-full text-xs"
                                 variant="outline"
-                                onClick={vm.handleAddLane}
-                                disabled={vm.isAddingLane}>
+                                onClick={vm.taskLanes.handleAddLane}
+                                disabled={vm.taskLanes.isAddingLane}>
                                 <Plus className="size-4" />
                                 Add lane
                             </Button>
