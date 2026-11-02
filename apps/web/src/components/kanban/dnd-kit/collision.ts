@@ -5,7 +5,7 @@ import {
     pointerWithin,
     type UniqueIdentifier,
 } from '@dnd-kit/core'
-import type { MutableRefObject } from 'react'
+import type { RefObject } from 'react'
 
 /**
  * Empty columns fail with closestCorners alone. Prefer pointer hits; stabilize
@@ -13,8 +13,8 @@ import type { MutableRefObject } from 'react'
  * so collision thrashing can't feed an onDragOver setState loop.
  */
 export const createKanbanCollisionDetection = (
-    lastOverId: MutableRefObject<UniqueIdentifier | null>,
-    recentlyMovedToNewContainer: MutableRefObject<boolean>,
+    lastOverId: RefObject<UniqueIdentifier | null>,
+    recentlyMovedToNewContainer: RefObject<boolean>,
 ): CollisionDetection => args => {
     const pointerHits = pointerWithin(args)
     

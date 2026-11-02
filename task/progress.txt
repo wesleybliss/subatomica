@@ -85,3 +85,8 @@ All 28 checklist items completed. Semantic routing system fully implemented acro
 - Local DB: IndexedDB via idb for dirty+cursors; Neon remains SoT. Skip PGlite unless offline SQL needed.
 - DnD: dnd-kit onDragOver ONLY cross-container (same-col setState↔collision = max update depth); sortable transforms + onDragEnd for same-col; collision lastOverId stabilize. Pragmatic: ghost inside drop-target.
 
+
+## Task store cleanup (2026-11)
+- Tasks SoT = TanStack Query only (queryKey: tasks/teamId/projectId). Zustand keeps selectedTaskSlug only.
+- DnD: temporary dragProjection local state; commit via useUpdateTaskOrderMutation optimisticTasks on drop.
+- useTasks / useTasksQuery shared hooks; imperative: queryClient.getQueryData(tasksQueryKey(...))

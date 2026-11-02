@@ -3,22 +3,19 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import { getStoreName } from '@/lib/constants'
+import { useTasks } from '@/lib/queries/tasks.queries'
 import { createSetterFns } from '@/lib/utils/store.utils'
 
+import { useSelectedProjectId } from './projects'
+import { useSelectedTeamId } from './teams'
+
 interface TaskStore {
-    tasks: Task[]
-    setTasks: StoreAction<Task[]>
     selectedTaskSlug: string | null
     setSelectedTaskSlug: StoreAction<string | null>
-    // selectedTask: Task | null
-    // selectedTaskId: string | null
 }
 
 const initialValues = {
-    tasks: [],
     selectedTaskSlug: null,
-    // selectedTask: null,
-    // selectedTaskId: null,
 } satisfies Partial<TaskStore>
 
 export const useTaskStore = create<TaskStore>()(
@@ -28,7 +25,7 @@ export const useTaskStore = create<TaskStore>()(
             ...createSetterFns<TaskStore>()(set, initialValues),
         }),
         {
-            name: getStoreName('project'),
+            name: getStoreName('task'),
             partialize: state => ({
                 selectedTaskSlug: state.selectedTaskSlug,
             }),
@@ -36,9 +33,12 @@ export const useTaskStore = create<TaskStore>()(
     ),
 )
 
-export const useSelectedTask = () =>
-    useTaskStore(state =>
-        state.tasks.find(it => it.key === state.selectedTaskSlug) ?? null,
-    )
+export const useSelectedTask = (): Task | null => {
+    const selectedTaskSlug = useTaskStore(state => state.selectedTaskSlug)
+    const teamId = useSelectedTeamId()
+    const projectId = useSelectedProjectId()
+    const tasks = useTasks(teamId ?? undefined, projectId ?? undefined)
+    return tasks.find(it => it.key === selectedTaskSlug) ?? null
+}
 
 export const useSelectedTaskId = () => useSelectedTask()?.id

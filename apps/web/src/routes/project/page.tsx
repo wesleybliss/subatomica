@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useGetProjectQuery } from '@/lib/queries/projects.queries'
 import { useGetTeamMembersQuery } from '@/lib/queries/teams.queries'
 import { ProjectDetailClient } from '@/routes/project/ProjectDetailClient'
-import { useProjectStore, useTaskStore, useTeamStore } from '@/store'
+import { useProjectStore, useTeamStore } from '@/store'
 
 const log = new Logger('web/routes/project/page')
 
@@ -18,7 +18,6 @@ export default function ProjectDetailPage() {
     
     const teams = useTeamStore(s => s.teams)
     const projects = useProjectStore(s => s.projects)
-    const tasks = useTaskStore(s => s.tasks)
     
     // Find team by slug to get ID
     const team = teams?.find(t => t.slug === teamSlug)
@@ -72,7 +71,6 @@ export default function ProjectDetailPage() {
         <ProjectDetailClient
             teamId={teamId}
             project={projectData}
-            initialTasks={tasks}
             initialLanes={projectData?.taskLanes || []}
             teamMembers={teamMembers}
             projects={projects} />

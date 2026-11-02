@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 
 import { useGetProjectsQuery } from '@/lib/queries/projects.queries'
-import { useGetTasksQuery } from '@/lib/queries/tasks.queries'
+import { useTasksQuery } from '@/lib/queries/tasks.queries'
 import { useTeamStore } from '@/store'
 
 export default function ProjectsLayout() {
@@ -20,7 +20,7 @@ export default function ProjectsLayout() {
     const teamId = team?.id
     
     const { isPending: projectsIsPending, error: projectsError } = useGetProjectsQuery(teamId!)
-    const { isPending: tasksIsPending, error: tasksError } = useGetTasksQuery(teamId!)
+    const { isPending: tasksIsPending, error: tasksError } = useTasksQuery(teamId!)
     
     const isPending = useMemo(() => (
         projectsIsPending || tasksIsPending

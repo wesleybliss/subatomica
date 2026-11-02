@@ -1,5 +1,7 @@
 import type { ComponentType } from 'react'
 
+export type ID = string
+
 export interface SidebarItem {
     id: string
     label: string

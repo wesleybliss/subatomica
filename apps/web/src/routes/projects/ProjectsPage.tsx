@@ -2,13 +2,14 @@ import { FolderKanban, LayoutGrid, Loader2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useProjectStore, useSelectedTeam, useTaskStore } from '@/store'
+import { useTasks } from '@/lib/queries/tasks.queries'
+import { useProjectStore, useSelectedTeam } from '@/store'
 
 export default function TeamProjectsPage() {
     const team = useSelectedTeam()
     
     const projects = useProjectStore(s => s.projects)
-    const tasks = useTaskStore(s => s.tasks)
+    const tasks = useTasks(team?.id)
     
     const getTaskCountForProject = (projectId: string) =>
         tasks.filter(task => task.projectId === projectId).length

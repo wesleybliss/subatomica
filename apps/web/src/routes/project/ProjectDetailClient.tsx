@@ -1,4 +1,4 @@
-import type { Project, Task, TaskLane, TeamMemberProfile } from '@repo/shared/types'
+import type { Project, TaskLane, TeamMemberProfile } from '@repo/shared/types'
 import { useCallback, useMemo, useState } from 'react'
 
 import KanbanView from '@/components/kanban/KanbanView'
@@ -6,12 +6,11 @@ import ListView from '@/components/list/ListView'
 import ProjectDetailNavbar from '@/components/ProjectDetailNavbar'
 import { useSyncScope } from '@/components/sync/sync-context'
 import TimelineView from '@/components/timeline/TimelineView'
-import { useGetTasksQuery } from '@/lib/queries/tasks.queries'
+import { useTasksQuery } from '@/lib/queries/tasks.queries'
 
 interface ProjectDetailClientProps {
     teamId: string
     project: Project
-    initialTasks: Task[]
     initialLanes: TaskLane[]
     teamMembers: TeamMemberProfile[]
     projects: Project[]
@@ -20,7 +19,6 @@ interface ProjectDetailClientProps {
 export function ProjectDetailClient({
     teamId,
     project,
-    initialTasks,
     initialLanes,
     teamMembers,
     projects,
@@ -30,7 +28,7 @@ export function ProjectDetailClient({
     const [tasksQuery, setTasksQuery] = useState<string>('')
     const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set())
     
-    const { tasksQueryKey, data: tasks = initialTasks } = useGetTasksQuery(teamId, project.id)
+    const { tasksQueryKey, data: tasks = [] } = useTasksQuery(teamId, project.id)
     
     useSyncScope(teamId, project.id)
     
@@ -88,7 +86,7 @@ export function ProjectDetailClient({
                     tasksQueryKey={tasksQueryKey} />
             ) : (
                 <div className="flex-1 overflow-hidden">
-                    <TimelineView projects={[project]} tasks={initialTasks} />
+                    <TimelineView projects={[project]} tasks={tasks} />
                 </div>
             )}
         

@@ -4,39 +4,49 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { request } from '@/lib/api/client'
-import * as store from '@/store'
 
 const log = new Logger('web/lib/queries/tasks.queries')
 
-export const useGetTasksQuery = (teamId: string | undefined, projectId?: string) => {
+export const tasksQueryKey = (
+    teamId: string | undefined,
+    projectId?: string,
+) => ['tasks', teamId, projectId] as const
+
+export const useTasksQuery = (teamId: string | undefined, projectId?: string) => {
     
-    const tasksQueryKey = useMemo(() => (
-        ['tasks', teamId, projectId] as const
-    ), [teamId, projectId])
+    const queryKey = useMemo(
+        () => tasksQueryKey(teamId, projectId),
+        [teamId, projectId],
+    )
     
     const query = useQuery<Task[], Error>({
-        queryKey: tasksQueryKey,
+        queryKey,
         queryFn: async () => {
             try {
                 const url = projectId
                     ? `/tasks?teamId=${teamId}&projectId=${projectId}`
                     : `/tasks?teamId=${teamId}`
                 const res = await request<Task[]>(url)
-                store.useTaskStore.getState().setTasks(res || [])
-                
                 return res || []
             } catch (e) {
-                log.e('useGetTasksQuery', e)
+                log.e('useTasksQuery', e)
                 return []
             }
         },
         enabled: !!teamId,
-        // initialData: [],
     })
     
     return {
         ...query,
-        tasksQueryKey,
+        tasksQueryKey: queryKey,
     }
     
+}
+
+/** @deprecated Prefer useTasksQuery */
+export const useGetTasksQuery = useTasksQuery
+
+export const useTasks = (teamId: string | undefined, projectId?: string) => {
+    const { data: tasks = [] } = useTasksQuery(teamId, projectId)
+    return tasks
 }

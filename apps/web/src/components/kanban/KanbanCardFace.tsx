@@ -46,7 +46,6 @@ export const KanbanCardFace = memo(function KanbanCardFace({
                 className,
             )}
             onClick={() => {
-                console.log(task)
                 if (!isDragging) onOpen?.()
             }}>
             <div className="flex items-start justify-between gap-2 mb-2">

@@ -11,7 +11,7 @@ import RecentProjectsTable from '@/components/projects/RecentProjectsTable'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useCreateProjectMutation } from '@/lib/mutations/projects'
 import { useGetProjectsQuery } from '@/lib/queries/projects.queries'
-import { useGetTasksQuery } from '@/lib/queries/tasks.queries'
+import { useTasksQuery } from '@/lib/queries/tasks.queries'
 import { useGetTeamMembersQuery } from '@/lib/queries/teams.queries'
 import { useTeamStore } from '@/store'
 
@@ -33,7 +33,7 @@ export default function TeamPage() {
     const teamId = team?.id
     
     const { isPending: projectsIsPending, error: projectsError, data: projects = [] } = useGetProjectsQuery(teamId)
-    const { isPending: tasksIsPending, error: tasksError, data: tasks = [] } = useGetTasksQuery(teamId)
+    const { isPending: tasksIsPending, error: tasksError, data: tasks = [] } = useTasksQuery(teamId)
     const { isPending: teamMembersIsPending, error: teamMembersError, data: teamMembers = [] } =
         useGetTeamMembersQuery(teamId)
     

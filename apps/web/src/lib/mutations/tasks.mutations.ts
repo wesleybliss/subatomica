@@ -13,10 +13,10 @@ interface UpdateTaskData {
     order?: number
 }
 
+type TasksQueryKey = readonly (string | number | boolean | undefined | Record<string, unknown>)[]
+
 export const useCreateTaskMutation = (
-    localTasks: Task[],
-    setLocalTasks: (value: Task[]) => void,
-    activeQueryKey: readonly (string | number | boolean | undefined | Record<string, unknown>)[],
+    activeQueryKey: TasksQueryKey,
     teamId?: string | null,
     projectId?: string | null,
     onRefresh?: () => void,
@@ -51,10 +51,10 @@ export const useCreateTaskMutation = (
             
             await queryClient.cancelQueries({ queryKey: activeQueryKey })
             
-            const previousTasks = queryClient.getQueryData<Task[]>(activeQueryKey)
+            const previousTasks = queryClient.getQueryData<Task[]>(activeQueryKey) ?? []
             const nextOrder = Math.max(
                 0,
-                ...localTasks
+                ...previousTasks
                     .filter(task => task.status === status)
                     .map(task => task.order),
             ) + 1000
@@ -78,9 +78,7 @@ export const useCreateTaskMutation = (
                 key: '',
             }
             
-            const nextTasks = [...(previousTasks || localTasks), optimisticTask]
-            queryClient.setQueryData(activeQueryKey, nextTasks)
-            setLocalTasks(nextTasks)
+            queryClient.setQueryData(activeQueryKey, [...previousTasks, optimisticTask])
             
             return { previousTasks }
             
@@ -109,18 +107,21 @@ export const useCreateTaskMutation = (
     
 }
 
+export type MoveTaskVariables = UpdateTaskOrderInput & {
+    /** Full board snapshot for DnD projections that renumber multiple tasks */
+    optimisticTasks?: Task[]
+}
+
 export const useUpdateTaskOrderMutation = (
-    localTasks: Task[],
-    setLocalTasks: (value: Task[]) => void,
-    activeQueryKey: readonly (string | number | boolean | undefined | Record<string, unknown>)[],
+    activeQueryKey: TasksQueryKey,
     teamId?: string,
     projectId?: string,
     onRefresh?: () => void,
 ) => {
     const queryClient = useQueryClient()
     
-    return useMutation<Task, Error, UpdateTaskOrderInput, { previousTasks?: Task[] }>({
-        mutationFn: async ({ taskId, status, order }: UpdateTaskOrderInput) => {
+    return useMutation<Task, Error, MoveTaskVariables, { previousTasks?: Task[] }>({
+        mutationFn: async ({ taskId, status, order }: MoveTaskVariables) => {
             const queryParams = new URLSearchParams()
             if (teamId) queryParams.append('teamId', teamId)
             if (projectId) queryParams.append('projectId', projectId)
@@ -134,18 +135,21 @@ export const useUpdateTaskOrderMutation = (
             })
             return response as Task
         },
-        onMutate: async ({ taskId, status, order }: UpdateTaskOrderInput) => {
+        onMutate: async ({ taskId, status, order, optimisticTasks }: MoveTaskVariables) => {
             await queryClient.cancelQueries({ queryKey: activeQueryKey })
             
             const updatedAt = hybridClock.nowIso()
             const previousTasks = queryClient.getQueryData<Task[]>(activeQueryKey)
-            const nextTasks = (previousTasks || localTasks).map((task: Task) =>
-                task.id === taskId
-                    ? { ...task, status, order, updatedAt }
-                    : task,
-            )
+            const nextTasks = optimisticTasks
+                ? optimisticTasks.map((task: Task) =>
+                    task.id === taskId ? { ...task, updatedAt } : task,
+                )
+                : (previousTasks || []).map((task: Task) =>
+                    task.id === taskId
+                        ? { ...task, status, order, updatedAt }
+                        : task,
+                )
             queryClient.setQueryData(activeQueryKey, nextTasks)
-            setLocalTasks(nextTasks)
             
             if (teamId && projectId) {
                 void markDirtyTask(teamId, projectId, {
@@ -158,7 +162,7 @@ export const useUpdateTaskOrderMutation = (
             
             return { previousTasks }
         },
-        onError: (_error: Error, _vars: UpdateTaskOrderInput, context: { previousTasks?: Task[] } | undefined) => {
+        onError: (_error: Error, _vars: MoveTaskVariables, context: { previousTasks?: Task[] } | undefined) => {
             if (context?.previousTasks)
                 queryClient.setQueryData(activeQueryKey, context.previousTasks)
         },
@@ -186,7 +190,7 @@ export const useUpdateTaskMutation = (
     onSuccess?: (task: Task) => void,
 ) => {
     const queryClient = useQueryClient()
-    const tasksQueryKey = ['tasks', teamId, projectId]
+    const key = ['tasks', teamId, projectId]
     
     return useMutation<Task, Error, UpdateTaskDetailInput>({
         mutationFn: async ({ taskId, data }: UpdateTaskDetailInput) => {
@@ -204,7 +208,9 @@ export const useUpdateTaskMutation = (
             return response
         },
         onSuccess: (updated: Task) => {
-            queryClient.invalidateQueries({ queryKey: tasksQueryKey })
+            queryClient.setQueryData(key, (current?: Task[]) =>
+                (current || []).map((task: Task) => (task.id === updated.id ? updated : task)),
+            )
             onSuccess?.(updated)
         },
     })

@@ -1,23 +1,61 @@
-import { DragOverEvent, DragStartEvent } from '@dnd-kit/core'
+import {
+    type CollisionDetection,
+    type DragEndEvent,
+    type DragOverEvent,
+    type DragStartEvent,
+    type UniqueIdentifier,
+} from '@dnd-kit/core'
 import { Task } from '@repo/shared/types'
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { createKanbanCollisionDetection } from '@/components/kanban/dnd-kit/collision'
+import { moveTaskInBoard } from '@/components/kanban/kanbanDndOrder'
 import { resolveTarget } from '@/lib/kanban'
 
-const useDraggableTasks = (
-    onAfterDragStart: () => void,
-    onAfterDragOver: () => void,
-) => {
+interface UseDraggableTasksArgs {
+    displayTasks: Task[]
+    setDragProjection: (tasks: Task[] | null) => void
+    persistTask: (taskList: Task[], taskId: string) => void
+    reorderLane: (sourceLaneId: string, targetLaneId: string) => void
+}
+
+const useDraggableTasks = ({
+    displayTasks,
+    setDragProjection,
+    persistTask,
+    reorderLane,
+}: UseDraggableTasksArgs) => {
     
     const [activeTask, setActiveTask] = useState<Task | null>(null)
     
+    const dragSnapshotRef = useRef<Task[] | null>(null)
+    const tasksRef = useRef(displayTasks)
+    const lastOverIdRef = useRef<UniqueIdentifier | null>(null)
+    const recentlyMovedToNewContainerRef = useRef(false)
+    
+    useEffect(() => {
+        tasksRef.current = displayTasks
+    }, [displayTasks])
+    
+    const collisionDetection = useCallback<CollisionDetection>(
+        args => createKanbanCollisionDetection(lastOverIdRef, recentlyMovedToNewContainerRef)(args),
+        [],
+    )
+    
+    const resetDragUi = () => {
+        setActiveTask(null)
+        lastOverIdRef.current = null
+        recentlyMovedToNewContainerRef.current = false
+        dragSnapshotRef.current = null
+    }
+    
     const onDragStart = (event: DragStartEvent) => {
-        lastOverId.current = null
-        recentlyMovedToNewContainer.current = false
+        lastOverIdRef.current = null
+        recentlyMovedToNewContainerRef.current = false
         const data = event.active.data.current
         if (data?.type === 'task') {
-            dragSnapshot.current = vm.localTasks
-            const task = vm.localTasks.find(t => t.id === String(event.active.id))
+            dragSnapshotRef.current = tasksRef.current
+            const task = tasksRef.current.find(t => t.id === String(event.active.id))
             setActiveTask(task ?? null)
         }
     }
@@ -49,16 +87,78 @@ const useDraggableTasks = (
         const next = moveTaskInBoard(board, activeId, target.status, target.overTaskId)
         if (!next) return
         
-        recentlyMovedToNewContainer.current = true
+        recentlyMovedToNewContainerRef.current = true
         tasksRef.current = next
-        vm.setLocalTasks(next)
+        setDragProjection(next)
+    }
+    
+    const onDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event
+        resetDragUi()
+        
+        if (active.data.current?.type === 'lane') {
+            setDragProjection(null)
+            if (over?.data.current?.type === 'lane')
+                void reorderLane(active.data.current.laneId, over.data.current.laneId)
+            return
+        }
+        
+        if (active.data.current?.type !== 'task') {
+            setDragProjection(null)
+            return
+        }
+        
+        if (!over) {
+            // Clearing projection restores the query-cache ordering
+            setDragProjection(null)
+            return
+        }
+        
+        const board = tasksRef.current
+        
+        if (over.data.current?.type === 'lane') {
+            persistTask(board, String(active.id))
+            setDragProjection(null)
+            return
+        }
+        
+        // Finalize position (same-column reorder + any last cross-column nudge)
+        const target = resolveTarget(
+            over.id,
+            over.data.current as Record<string, unknown> | undefined,
+            board,
+        )
+        if (target) {
+            const next = moveTaskInBoard(
+                board,
+                String(active.id),
+                target.status,
+                target.overTaskId,
+            )
+            if (next) {
+                // Commit into query cache first, then drop the temporary projection
+                persistTask(next, String(active.id))
+                setDragProjection(null)
+                return
+            }
+        }
+        
+        persistTask(board, String(active.id))
+        setDragProjection(null)
+    }
+    
+    const onDragCancel = () => {
+        resetDragUi()
+        setDragProjection(null)
     }
     
     return {
         activeTask,
-        setActiveTask,
+        collisionDetection,
         onDragStart,
         onDragOver,
+        onDragEnd,
+        onDragCancel,
     }
     
 }

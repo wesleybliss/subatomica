@@ -6,14 +6,9 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { v7 as uuidv7 } from 'uuid'
 
+import useTaskLanes from '@/hooks/useTaskLanes'
 import { normalizeLaneHexForStorage } from '@/lib/constants/lane-colors.constants'
-import {
-    useCreateTaskLaneMutation,
-    useDeleteTaskLaneMutation,
-    useUpdateTaskLaneMutation,
-} from '@/lib/mutations/lanes.mutations'
 import { useCreateTaskMutation, useUpdateTaskOrderMutation } from '@/lib/mutations/tasks.mutations'
-import { useLaneStore } from '@/store'
 
 import { type ColumnDropData, isColumnDropData, isTaskDragData, isTaskDropData, type TaskDropData } from './dragTypes'
 
@@ -30,17 +25,11 @@ const KanbanBoardDndViewModel = (
     enablePragmaticMonitor = true,
 ) => {
     
-    const [localTasks, setLocalTasks] = useState<Task[]>(tasks)
+    // Temporary drag projection only — never a second server-state copy.
+    // While non-null, board rendering uses this overlay; query cache stays untouched until drop.
+    const [dragProjection, setDragProjection] = useState<Task[] | null>(null)
     const [localLanes, setLocalLanes] = useState<TaskLane[]>(lanes)
     const [isCreating, setIsCreating] = useState<string | null>(null)
-    const [isAddingLane, setIsAddingLane] = useState(false)
-    const [editingLaneId, setEditingLaneId] = useState<string | null>(null)
-    const [editingLaneName, setEditingLaneName] = useState('')
-    const [savingLaneId, setSavingLaneId] = useState<string | null>(null)
-    const [deletingLaneId, setDeletingLaneId] = useState<string | null>(null)
-    
-    const collapsedLanes = useLaneStore(s => s.collapsedLanes)
-    const setCollapsedLanes = useLaneStore(s => s.setCollapsedLanes)
     
     const canManageLanes = Boolean(projectId && onLanesChange)
     const canDeleteLane = localLanes.length > 1
@@ -53,53 +42,20 @@ const KanbanBoardDndViewModel = (
         [projectId],
     )
     
-    useEffect(() => {
-        setLocalTasks(tasks)
-    }, [tasks])
+    const displayTasks = dragProjection ?? tasks
     
     useEffect(() => {
         setLocalLanes(lanes)
     }, [lanes])
     
     const createTaskMutation = useCreateTaskMutation(
-        localTasks,
-        setLocalTasks,
         activeQueryKey,
         teamId,
         projectId,
         onRefresh,
     )
     
-    const createTaskLaneMutation = useCreateTaskLaneMutation(
-        teamId,
-        projectId,
-        localLanes,
-        setLocalLanes,
-        lanesQueryKey,
-        onRefresh,
-    )
-    
-    const updateTaskLaneMutation = useUpdateTaskLaneMutation(
-        teamId,
-        projectId,
-        localLanes,
-        setLocalLanes,
-        lanesQueryKey,
-        onRefresh,
-    )
-    
-    const deleteTaskLaneMutation = useDeleteTaskLaneMutation(
-        teamId,
-        projectId,
-        localLanes,
-        setLocalLanes,
-        lanesQueryKey,
-        onRefresh,
-    )
-    
     const updateTaskOrderMutation = useUpdateTaskOrderMutation(
-        localTasks,
-        setLocalTasks,
         activeQueryKey,
         teamId,
         projectId,
@@ -107,7 +63,7 @@ const KanbanBoardDndViewModel = (
     )
     
     const tasksByStatus = useMemo<Record<string, Task[]>>(() => {
-        const sorted = [...localTasks].sort((a, b) => a.order - b.order)
+        const sorted = [...displayTasks].sort((a, b) => a.order - b.order)
         return sorted.reduce((acc, task) => {
             // Sanity check warning if there are tasks that don't have a corresponding lane
             // This should never happen, but it's an edge case if a lane is renamed, but
@@ -123,44 +79,32 @@ const KanbanBoardDndViewModel = (
             acc[task.status].push(task)
             return acc
         }, {} as Record<string, Task[]>)
-    }, [localLanes, localTasks])
+    }, [localLanes, displayTasks])
     
-    const handleAddLane = async () => {
-        if (!projectId || !onLanesChange) return
-        setIsAddingLane(true)
-        try {
-            const tempId = uuidv7()
-            await createTaskLaneMutation.mutateAsync({
-                key: generateSlug('New Lane'),
-                name: 'New Lane',
-                color: 'bg-muted',
-                tempId,
-            })
-            const next = queryClient.getQueryData<TaskLane[]>(lanesQueryKey) || localLanes
-            onLanesChange(next)
-        } catch (error) {
-            log.e('Failed to create lane:', error)
-        } finally {
-            setIsAddingLane(false)
-        }
-    }
-    
-    const handleToggleCollapsed = (laneId: string) => {
-        
-        setCollapsedLanes((prev: string[]) => {
-            
-            const next = new Set(prev)
-            
-            if (next.has(laneId))
-                next.delete(laneId)
-            else
-                next.add(laneId)
-            
-            return Array.from(next)
-            
-        })
-        
-    }
+    const {
+        collapsedLanes,
+        isAddingLane,
+        setIsAddingLane,
+        editingLaneId,
+        setEditingLaneId,
+        editingLaneName,
+        setEditingLaneName,
+        savingLaneId,
+        setSavingLaneId,
+        deletingLaneId,
+        setDeletingLaneId,
+        updateTaskLaneMutation,
+        deleteTaskLaneMutation,
+        handleAddLane,
+        handleToggleCollapsed,
+    } = useTaskLanes(
+        teamId,
+        projectId,
+        localLanes,
+        setLocalLanes,
+        onRefresh,
+        onLanesChange,
+    )
     
     const handleCreateTask = async (status: TaskStatus) => {
         if (!projectId) return
@@ -181,37 +125,32 @@ const KanbanBoardDndViewModel = (
         targetTaskId?: string,
     ) => {
         log.d('Drag drop:', { taskId, newStatus, targetTaskId })
-        const task = localTasks.find(t => t.id === taskId)
+        const currentTasks = queryClient.getQueryData<Task[]>(activeQueryKey) ?? tasks
+        const task = currentTasks.find(t => t.id === taskId)
         if (!task) return
-        // Optimistic update
-        const tasksInNewStatus = localTasks
+        const tasksInNewStatus = currentTasks
             .filter(t => t.status === newStatus && t.id !== taskId)
             .sort((a, b) => a.order - b.order)
         let newOrder: number
         if (!targetTaskId) {
-            // Drop at end
             const maxOrder = tasksInNewStatus.length > 0
                 ? Math.max(...tasksInNewStatus.map(t => t.order))
                 : 0
             newOrder = maxOrder + 1000
         } else {
-            // Drop before target
             const targetIndex = tasksInNewStatus.findIndex(t => t.id === targetTaskId)
             const prevTask = targetIndex > 0 ? tasksInNewStatus[targetIndex - 1] : null
             const nextTask = tasksInNewStatus[targetIndex]
             if (prevTask && nextTask) {
-                // Calculate midpoint
                 newOrder = (prevTask.order + nextTask.order) / 2
             } else if (nextTask) {
-                // First position
                 newOrder = nextTask.order - 1000
             } else {
-                // Only one item
                 newOrder = 1000
             }
         }
         updateTaskOrderMutation.mutate({ taskId, status: newStatus, order: newOrder })
-    }, [localTasks, updateTaskOrderMutation])
+    }, [activeQueryKey, queryClient, tasks, updateTaskOrderMutation])
     
     // Keep monitor registration stable — do not re-bind when handleDrop identity changes
     const handleDropRef = useRef(handleDrop)
@@ -291,11 +230,13 @@ const KanbanBoardDndViewModel = (
         
         setSavingLaneId(laneId)
         try {
-            // Optimistically update tasks if key changed
+            // Optimistically update task statuses in the query cache if key changed
             if (oldKey !== nextKey) {
-                setLocalTasks(prev => prev.map(task =>
-                    task.status === oldKey ? { ...task, status: nextKey } : task,
-                ))
+                queryClient.setQueryData<Task[]>(activeQueryKey, current =>
+                    (current || []).map(task =>
+                        task.status === oldKey ? { ...task, status: nextKey } : task,
+                    ),
+                )
             }
             
             await updateTaskLaneMutation.mutateAsync({
@@ -381,8 +322,9 @@ const KanbanBoardDndViewModel = (
     return {
         
         // State
-        localTasks,
-        setLocalTasks,
+        displayTasks,
+        dragProjection,
+        setDragProjection,
         localLanes,
         setLocalLanes,
         isCreating,

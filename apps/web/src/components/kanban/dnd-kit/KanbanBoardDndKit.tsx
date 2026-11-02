@@ -1,29 +1,21 @@
 import {
-    type CollisionDetection,
     DndContext,
-    type DragEndEvent,
-    type DragOverEvent,
     DragOverlay,
-    type DragStartEvent,
     MouseSensor,
     TouchSensor,
-    type UniqueIdentifier,
     useSensor,
     useSensors,
 } from '@dnd-kit/core'
-import type { Task, TaskLane, TaskStatus } from '@repo/shared/types'
+import type { Task, TaskLane } from '@repo/shared/types'
 import { Plus } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import useKanbanBoardDndViewModel from '@/components/kanban/KanbanBoardDndViewModel'
 import { KanbanCardFace } from '@/components/kanban/KanbanCardFace'
-import { moveTaskInBoard } from '@/components/kanban/kanbanDndOrder'
 import { Button } from '@/components/ui/button'
-import { resolveTarget } from '@/lib/kanban'
+import useDraggableTasks from '@/hooks/useDraggableTasks'
 
 import type { KanbanBoardProps } from '../KanbanBoardDnd'
-import { createKanbanCollisionDetection } from './collision'
 import { KanbanTaskLaneDndKit } from './KanbanTaskLaneDndKit'
 
 const KanbanBoardDndKit = ({
@@ -47,96 +39,35 @@ const KanbanBoardDndKit = ({
         false,
     )
     
-    
-    const dragSnapshot = useRef<Task[] | null>(null)
-    const tasksRef = useRef(vm.localTasks)
-    // Collision stabilizer (MultipleContainers pattern) — prevents over-id thrashing
-    const lastOverId = useRef<UniqueIdentifier | null>(null)
-    const recentlyMovedToNewContainer = useRef(false)
-    const collisionDetection = useCallback<CollisionDetection>(
-        args => createKanbanCollisionDetection(lastOverId, recentlyMovedToNewContainer)(args),
-        [],
-    )
-    
-    useEffect(() => {
-        tasksRef.current = vm.localTasks
-    }, [vm.localTasks])
-    
     const sensors = useSensors(
         useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
         useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 8 } }),
     )
     
-    
-    
-    const persistActiveTask = (taskList: Task[], taskId: string) => {
-        const task = taskList.find(t => t.id === taskId)
-        if (!task) return
-        vm.updateTaskOrderMutation.mutate({
-            taskId: task.id,
-            status: task.status,
-            order: task.order,
-        })
-    }
-    
-    const onDragEnd = (event: DragEndEvent) => {
-        const { active, over } = event
-        setActiveTask(null)
-        lastOverId.current = null
-        recentlyMovedToNewContainer.current = false
-        const snapshot = dragSnapshot.current
-        dragSnapshot.current = null
-        
-        if (active.data.current?.type === 'lane') {
-            if (over?.data.current?.type === 'lane')
-                void vm.handleReorderLane(active.data.current.laneId, over.data.current.laneId)
-            return
-        }
-        
-        if (active.data.current?.type !== 'task') return
-        
-        if (!over) {
-            if (snapshot) vm.setLocalTasks(snapshot)
-            return
-        }
-        
-        if (over.data.current?.type === 'lane') {
-            persistActiveTask(vm.localTasks, String(active.id))
-            return
-        }
-        
-        // Finalize position (same-column reorder + any last cross-column nudge)
-        const target = resolveTarget(
-            over.id,
-            over.data.current as Record<string, unknown> | undefined,
-            vm.localTasks,
-        )
-        if (target) {
-            const next = moveTaskInBoard(
-                vm.localTasks,
-                String(active.id),
-                target.status,
-                target.overTaskId,
-            )
-            if (next) {
-                vm.setLocalTasks(next)
-                persistActiveTask(next, String(active.id))
-                return
-            }
-        }
-        
-        persistActiveTask(vm.localTasks, String(active.id))
-    }
-    
-    const onDragCancel = () => {
-        setActiveTask(null)
-        lastOverId.current = null
-        recentlyMovedToNewContainer.current = false
-        if (dragSnapshot.current) {
-            vm.setLocalTasks(dragSnapshot.current)
-            dragSnapshot.current = null
-        }
-    }
+    const {
+        activeTask,
+        collisionDetection,
+        onDragStart,
+        onDragOver,
+        onDragEnd,
+        onDragCancel,
+    } = useDraggableTasks({
+        displayTasks: vm.displayTasks,
+        setDragProjection: vm.setDragProjection,
+        persistTask: (taskList: Task[], taskId: string) => {
+            const task = taskList.find(t => t.id === taskId)
+            if (!task) return
+            vm.updateTaskOrderMutation.mutate({
+                taskId: task.id,
+                status: task.status,
+                order: task.order,
+                optimisticTasks: taskList,
+            })
+        },
+        reorderLane: (sourceLaneId, targetLaneId) => {
+            void vm.handleReorderLane(sourceLaneId, targetLaneId)
+        },
+    })
     
     return (
         <DndContext

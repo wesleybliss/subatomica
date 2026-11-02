@@ -1,32 +1,28 @@
-import { Task } from '@repo/shared/types'
 import Logger from '@repo/shared/utils/logger'
-import { useState } from 'react'
 import { toast } from 'sonner'
 import { v7 as uuidv7 } from 'uuid'
 
 import { useCreateTaskMutation } from '@/lib/mutations/tasks.mutations'
-import { useLaneStore, useSelectedProjectId, useSelectedTeamId, useTaskStore } from '@/store'
+import { tasksQueryKey } from '@/lib/queries/tasks.queries'
+import { useLaneStore, useSelectedProjectId, useSelectedTeamId } from '@/store'
 
 const log = new Logger('web/components/dialogs/GlobalCommand/GlobalCommandProjectViewModel')
 
-const activeQueryKey = ['tasks']
-
 const GlobalCommandProjectViewModel = () => {
     
-    const tasks = useTaskStore(s => s.tasks)
     const lanes = useLaneStore(s => s.lanes)
     const selectedTeamId = useSelectedTeamId()
     const selectedProjectId = useSelectedProjectId()
     
-    const [localTasks, setLocalTasks] = useState<Task[]>(tasks || [])
+    const activeQueryKey = tasksQueryKey(
+        selectedTeamId ?? undefined,
+        selectedProjectId ?? undefined,
+    )
     
     const createTaskMutation = useCreateTaskMutation(
-        localTasks,
-        setLocalTasks,
         activeQueryKey,
         selectedTeamId,
         selectedProjectId,
-        window.location.reload,
     )
     
     const handleCreateTask = async () => {

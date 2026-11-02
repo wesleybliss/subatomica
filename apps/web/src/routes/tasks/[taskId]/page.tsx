@@ -2,8 +2,8 @@ import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { TaskDetailForm } from '@/components/tasks/TaskDetailForm'
+import { useTasks } from '@/lib/queries/tasks.queries'
 import { useGetTeamMembersQuery } from '@/lib/queries/teams.queries'
-import { useTaskStore } from '@/store'
 
 export default function TaskPage() {
     
@@ -13,11 +13,11 @@ export default function TaskPage() {
     const teamId = params.teamId as string
     const projectId = params.projectId as string
     
-    const tasks = useTaskStore(s => s.tasks)
+    const tasks = useTasks(teamId, projectId)
     const { data: teamMembers = [] } = useGetTeamMembersQuery(teamId)
     
     const task = useMemo(() => (
-        tasks?.find(it => it.id === taskId)
+        tasks.find(it => it.id === taskId)
     ), [tasks, taskId])
     
     if (!task)
