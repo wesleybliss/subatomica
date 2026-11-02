@@ -90,10 +90,10 @@ export const KanbanTaskLaneDndKit = ({
         setDragRef(node)
         setDropRef(node)
     }, [setDragRef, setDropRef])
-    
+    console.log(lane.name, laneColor.backgroundColor)
     return (
         <div
-            data-testid="TaskLane"
+            data-testid="KanbanTaskLaneDndKit"
             className={cn('shrink-0 flex flex-col h-full min-h-0 rounded ring-2 p-2', laneColor.tailwindBackground, {
                 'bg-primary/5 ring-primary/12': !isDragging && !isOver && !laneColor.backgroundColor,
                 'opacity-60': isDragging,
@@ -201,7 +201,8 @@ export const KanbanTaskLaneDndKit = ({
                     status={lane.key}
                     tasks={tasks}
                     teamId={teamId}
-                    teamMembers={teamMembers} />
+                    teamMembers={teamMembers}
+                    cardBackgroundColor={laneColor.cardBackgroundColor} />
             </div>
         </div>
     )

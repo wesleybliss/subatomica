@@ -23,7 +23,7 @@
         "db:push:prod": "DRIZZLE_USE_REMOTE=true node --env-file=../../.env ./node_modules/drizzle-kit/bin.cjs push",
         "db:generate": "node --env-file=../../.env ./node_modules/drizzle-kit/bin.cjs generate",
         "db:migrate": "node --env-file=../../.env ./node_modules/drizzle-kit/bin.cjs migrate",
-        "db:dump": "turso db shell subatomica .dump > backups/dump_`ts`.sql",
+        "db:backup": "turso db shell subatomica .dump > backups/dump_`ts`.sql",
         "db:restore": "echo 'turso db shell subatomica < backups/dump-.sql'",
         "import:clickup": "tsx --env-file=../../.env bin/importClickupTasks.ts"
     },

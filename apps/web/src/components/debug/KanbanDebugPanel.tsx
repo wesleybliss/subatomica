@@ -1,4 +1,5 @@
-import type { KanbanDndEngine } from '@/lib/constants/kanban.constants'
+import type { KanbanDndEngine } from '@repo/shared/constants/kanban.constants'
+
 import { cn } from '@/lib/utils'
 import { useDebugStore } from '@/store'
 

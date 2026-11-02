@@ -20,7 +20,7 @@
     "db:push:prod": "pnpm --filter @repo/api db:push:prod",
     "db:generate": "pnpm --filter @repo/api db:generate",
     "db:migrate": "pnpm --filter @repo/api db:migrate",
-    "db:dump": "pnpm --filter @repo/api db:dump",
+    "db:backup": "pnpm --filter @repo/api db:backup",
     "db:restore": "pnpm --filter @repo/api db:restore",
     "test:web": "pnpm --filter @repo/web test",
     "test:api": "pnpm --filter @repo/api test",

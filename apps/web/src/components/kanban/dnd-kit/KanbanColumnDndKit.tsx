@@ -12,6 +12,7 @@ type KanbanColumnDndKitProps = {
     tasks: Task[]
     teamId?: string
     teamMembers: TeamMemberProfile[]
+    cardBackgroundColor: string | undefined
 }
 
 export const KanbanColumnDndKit = ({
@@ -19,6 +20,7 @@ export const KanbanColumnDndKit = ({
     tasks,
     teamId,
     teamMembers,
+    cardBackgroundColor,
 }: KanbanColumnDndKitProps) => {
     const data = useMemo(
         () => ({ type: 'column' as const, status }),
@@ -47,7 +49,8 @@ export const KanbanColumnDndKit = ({
                         key={task.id}
                         task={task}
                         teamId={teamId}
-                        teamMembers={teamMembers} />
+                        teamMembers={teamMembers}
+                        cardBackgroundColor={cardBackgroundColor} />
                 ))}
                 {empty && !isOver && (
                     <div className="text-center text-muted-foreground text-sm py-8">

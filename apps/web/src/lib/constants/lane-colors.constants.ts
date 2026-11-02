@@ -13,6 +13,7 @@ export const LANE_QUICK_COLORS = [
     '#ec4899',
 ] as const
 
+// Default lane background: #3ecfc2
 export const DEFAULT_LANE_ICON_COLOR = '#94a3b8'
 
 /** Hex in DB is stored with `#`. Tailwind / other tokens are stored as-is (no `#`). */
@@ -43,3 +44,27 @@ export const laneColorToHex = (
 
 /** Normalize picker output for DB: always `#rrggbb`. */
 export const normalizeLaneHexForStorage = (hex: string): string => colord(hex).toHex()
+
+export const blendHex = (fgHex: string, bgHex: string, alpha: number): string => {
+    const parse = (hex: string) => {
+        const h = hex.replace('#', '')
+        return [
+            parseInt(h.slice(0, 2), 16),
+            parseInt(h.slice(2, 4), 16),
+            parseInt(h.slice(4, 6), 16),
+        ]
+    }
+    
+    const fg = parse(fgHex)
+    const bg = parse(bgHex)
+    
+    const out = fg.map((c, i) => Math.round(c * alpha + bg[i] * (1 - alpha)))
+    
+    return '#' + out.map(c => c.toString(16).padStart(2, '0')).join('')
+}
+
+// 0.05
+export const lightenHex = (hex: string, targetPercent: number) => {
+    return blendHex(hex, '#ffffff', targetPercent)
+}
+console.log('lightenHex', lightenHex('#272b3a', 0.05))

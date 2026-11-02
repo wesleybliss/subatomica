@@ -17,19 +17,25 @@ const useLaneColor = (laneColor: string) => {
         ? `color-mix(in srgb, ${hexBackground}, transparent 95%)`
         : undefined
     
+    const cardBackgroundColor = hexBackground
+        ? `color-mix(in srgb, ${hexBackground}, transparent 95%)`
+        : undefined
+    
     const laneStyles = {} as CSSProperties
     
     if (ringColor)
         laneStyles['--tw-ring-color'] = ringColor
     
-    if (backgroundColor)
+    if (backgroundColor) {
         laneStyles.backgroundColor = backgroundColor
+    }
     
     return {
         hexBackground,
         tailwindBackground,
         ringColor,
         backgroundColor,
+        cardBackgroundColor,
         styles: laneStyles,
     }
     

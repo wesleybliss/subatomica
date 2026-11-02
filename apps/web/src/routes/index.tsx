@@ -26,6 +26,9 @@ import TeamSettingsPage from '@/routes/team-settings/TeamSettingsPage'
 import TeamsLayout from '@/routes/teams/TeamsLayout'
 import TeamsPage from '@/routes/teams/TeamsPage'
 
+import DebugColorsPage from './debug/colors/page'
+import DebugLayout from './debug/layout'
+
 // const VERCEL_ANALYTICS_ENABLED = false
 
 preconnect('https://fonts.googleapis.com')
@@ -65,7 +68,10 @@ export default function RootLayout() {
                         
                         <Route element={<ProtectedRoute />}>
                             
-                            <Route path="debug" element={<DebugPage />} />
+                            <Route path="debug" element={<DebugLayout />}>
+                                <Route index element={<DebugPage />} />
+                                <Route path="colors" element={<DebugColorsPage />} />
+                            </Route>
                             
                             <Route path="settings" element={<SettingsLayout />}>
                                 <Route index element={<SettingsPage />} />

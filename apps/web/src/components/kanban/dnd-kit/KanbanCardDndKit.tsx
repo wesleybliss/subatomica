@@ -1,7 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import type { Task, TeamMemberProfile } from '@repo/shared/types'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { CSSProperties, useEffect, useMemo, useRef, useState } from 'react'
 
 import { TaskDetailDialog } from '@/components/tasks/TaskDetailDialog'
 
@@ -13,6 +13,7 @@ type KanbanCardDndKitProps = {
     task: Task
     teamId?: string
     teamMembers: TeamMemberProfile[]
+    cardBackgroundColor: string | undefined
 }
 
 const noLayoutAnim = () => false
@@ -21,7 +22,12 @@ const noLayoutAnim = () => false
  * Thin sortable shell. Card face is memoized so dnd-kit's per-frame transform
  * updates only touch this wrapper — matching the official demo pattern.
  */
-export const KanbanCardDndKit = ({ task, teamId, teamMembers }: KanbanCardDndKitProps) => {
+export const KanbanCardDndKit = ({
+    task,
+    teamId,
+    teamMembers,
+    cardBackgroundColor,
+}: KanbanCardDndKitProps) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const dragEndedAt = useRef(0)
     const wasDragging = useRef(false)
@@ -44,42 +50,50 @@ export const KanbanCardDndKit = ({ task, teamId, teamMembers }: KanbanCardDndKit
         animateLayoutChanges: noLayoutAnim,
     })
     
+    const cardStyle = useMemo(() => {
+        const value = {
+            transform: CSS.Transform.toString(transform),
+            // Skip transition while dragging — snappier like the demos
+            transition: isDragging ? undefined : transition,
+            opacity: isDragging ? 0 : 1,
+        } as CSSProperties
+        
+        if (cardBackgroundColor)
+            value.backgroundColor = cardBackgroundColor
+        
+        return value
+    }, [cardBackgroundColor, isDragging, transform, transition])
+    
     useEffect(() => {
         if (wasDragging.current && !isDragging)
             dragEndedAt.current = Date.now()
         wasDragging.current = isDragging
     }, [isDragging])
     
-    return (
-        <>
-            <div
-                ref={setNodeRef}
-                style={{
-                    transform: CSS.Transform.toString(transform),
-                    // Skip transition while dragging — snappier like the demos
-                    transition: isDragging ? undefined : transition,
-                    opacity: isDragging ? 0 : 1,
+    return (<>
+        <div
+            ref={setNodeRef}
+            style={cardStyle}
+            {...listeners}
+            {...attributes}
+            className="touch-manipulation outline-none">
+            <KanbanCardFace
+                task={task}
+                teamId={teamId}
+                teamMembers={teamMembers}
+                isDragging={isDragging}
+                onOpen={() => {
+                    if (Date.now() - dragEndedAt.current < CLICK_SUPPRESS_MS) return
+                    setIsDialogOpen(true)
                 }}
-                {...listeners}
-                {...attributes}
-                className="touch-manipulation outline-none">
-                <KanbanCardFace
-                    task={task}
-                    teamId={teamId}
-                    teamMembers={teamMembers}
-                    isDragging={isDragging}
-                    onOpen={() => {
-                        if (Date.now() - dragEndedAt.current < CLICK_SUPPRESS_MS) return
-                        setIsDialogOpen(true)
-                    }} />
-            </div>
-            {isDialogOpen ? (
-                <TaskDetailDialog
-                    task={task}
-                    teamMembers={teamMembers}
-                    open={isDialogOpen}
-                    onOpenChange={setIsDialogOpen} />
-            ) : null}
-        </>
-    )
+                cardBackgroundColor={cardBackgroundColor} />
+        </div>
+        {isDialogOpen ? (
+            <TaskDetailDialog
+                task={task}
+                teamMembers={teamMembers}
+                open={isDialogOpen}
+                onOpenChange={setIsDialogOpen} />
+        ) : null}
+    </>)
 }

@@ -1,5 +1,6 @@
 import { projects, taskLanes, teamMembers, teams } from '@repo/db/schema'
 import type { Project, TaskLane } from '@repo/db/types'
+import { DEFAULT_TASK_LANES } from '@repo/shared/constants/kanban.constants'
 import { generateSlug } from '@repo/shared/utils/slugs'
 import { and, eq, inArray } from 'drizzle-orm'
 
@@ -34,12 +35,6 @@ const getTeamRole = async (userId: string, teamId: string) => {
 }
 
 export const ensureProjectLanes = async (projectId: string) => {
-    const defaultLanes = [
-        { key: 'todo', name: 'To Do', order: 0 },
-        { key: 'in-progress', name: 'In Progress', order: 1 },
-        { key: 'done', name: 'Done', order: 2 },
-    ]
-    
     const existingLanes = await db
         .select()
         .from(taskLanes)
@@ -47,7 +42,7 @@ export const ensureProjectLanes = async (projectId: string) => {
     
     if (existingLanes.length === 0) {
         await db.insert(taskLanes).values(
-            defaultLanes.map(lane => ({
+            DEFAULT_TASK_LANES.map(lane => ({
                 ...lane,
                 projectId,
             })),

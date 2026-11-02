@@ -14,6 +14,7 @@ type KanbanCardFaceProps = {
     className?: string
     isDragging?: boolean
     onOpen?: () => void
+    cardBackgroundColor: string | undefined
 }
 
 export const KanbanCardFace = memo(function KanbanCardFace({
@@ -22,6 +23,7 @@ export const KanbanCardFace = memo(function KanbanCardFace({
     className,
     isDragging = false,
     onOpen,
+    cardBackgroundColor,
 }: KanbanCardFaceProps) {
     const teamSegment = teamId ?? task.projectId
     const taskHref = `/t/${teamSegment}/p/${task.projectId}/s/${task.id}`
@@ -40,8 +42,9 @@ export const KanbanCardFace = memo(function KanbanCardFace({
     return (
         <div
             className={cn(
-                'bg-card border border-border rounded-lg p-3 cursor-move min-w-0 overflow-hidden',
+                ' border border-border rounded-lg p-3 cursor-move min-w-0 overflow-hidden',
                 'transition-shadow transition-colors hover:shadow-md hover:border-primary/50',
+                cardBackgroundColor || 'bg-primary/10',
                 isDragging ? 'opacity-50' : 'opacity-100',
                 className,
             )}

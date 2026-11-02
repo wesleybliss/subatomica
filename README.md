@@ -88,3 +88,9 @@ To learn more about the technologies used in this project, take a look at the fo
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Drizzle ORM Documentation](https://orm.drizzle.team/docs/overview) - learn about Drizzle ORM.
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs) - learn about Tailwind CSS.
+
+
+## TODO
+
+- [ ] Fetch causes full re-render every few seconds (see KanbanTaskLaneDndKit.tsx console log)
+- [ ] Hard-coded bg red when dragging tasks. See KanbanBoardDndKit.tsx

@@ -133,6 +133,7 @@ const KanbanBoardDndKit = ({
                             task={activeTask}
                             teamId={teamId}
                             teamMembers={teamMembers}
+                            cardBackgroundColor={'bg-red-500'}
                             className="shadow-lg rotate-1 cursor-grabbing" />
                     ) : null}
                 </DragOverlay>,
